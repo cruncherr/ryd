@@ -1,0 +1,29 @@
+# zależności
+/node_modules
+
+# Next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# środowisko (sekrety zostają lokalnie)
+.env
+.env*.local
+
+# pliki wgrane lokalnie przez panel (na produkcji trafiają do magazynu plików)
+/media
+
+# testy
+/coverage
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# różne
+.DS_Store
+*.pem
+npm-debug.log*
+.vercel
+.idea
