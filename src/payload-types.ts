@@ -393,6 +393,10 @@ export interface ShippingMethod {
    * Mniejsza liczba = wyżej na liście.
    */
   sortOrder?: number | null;
+  /**
+   * Odznacz, gdy ustawisz prawdziwą cenę i opis tej dostawy.
+   */
+  sampleData?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -788,6 +792,7 @@ export interface ShippingMethodsSelect<T extends boolean = true> {
   allowCod?: T;
   active?: T;
   sortOrder?: T;
+  sampleData?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -989,6 +994,10 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Homepage {
   id: number;
+  /**
+   * Zaznaczone, dopóki strona główna ma teksty przygotowane automatycznie. Odznacz, gdy dopasujesz je do swojej oferty.
+   */
+  needsReview?: boolean | null;
   hero?: {
     /**
      * Małe słowo nad nagłówkiem. Pole opcjonalne.
@@ -1193,6 +1202,7 @@ export interface Setting {
     ga4Id?: string | null;
     metaPixelId?: string | null;
   };
+  seededAt?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1201,6 +1211,7 @@ export interface Setting {
  * via the `definition` "homepage_select".
  */
 export interface HomepageSelect<T extends boolean = true> {
+  needsReview?: T;
   hero?:
     | T
     | {
@@ -1356,6 +1367,7 @@ export interface SettingsSelect<T extends boolean = true> {
         ga4Id?: T;
         metaPixelId?: T;
       };
+  seededAt?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

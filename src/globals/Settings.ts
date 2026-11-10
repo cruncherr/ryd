@@ -401,6 +401,8 @@ export const Settings: GlobalConfig = {
         },
       ],
     },
+    // Znacznik: dane startowe zostały już wgrane (żeby kolejne wdrożenia ich nie przywracały).
+    { name: 'seededAt', type: 'date', admin: { hidden: true } },
   ],
   hooks: {
     afterChange: [revalidateGlobalAfterChange],

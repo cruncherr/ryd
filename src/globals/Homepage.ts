@@ -39,6 +39,16 @@ export const Homepage: GlobalConfig = {
   },
   fields: [
     {
+      name: 'needsReview',
+      type: 'checkbox',
+      label: 'Teksty przykładowe — do sprawdzenia',
+      defaultValue: false,
+      admin: {
+        description:
+          'Zaznaczone, dopóki strona główna ma teksty przygotowane automatycznie. Odznacz, gdy dopasujesz je do swojej oferty.',
+      },
+    },
+    {
       type: 'tabs',
       tabs: [
         {

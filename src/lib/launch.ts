@@ -44,26 +44,33 @@ export async function getLaunchChecklist(
   const payments = settings?.payments
   const manufacturer = settings?.manufacturer
 
-  const [publishedProducts, sampleProducts, shippingMethods, legalPages] = await Promise.all([
+  const [publishedProducts, sampleProducts, shippingMethods, sampleShipping, pages, homepage] = await Promise.all([
     payload.count({ collection: 'products', where: { _status: { equals: 'published' } } }),
     payload.count({
       collection: 'products',
       where: { and: [{ _status: { equals: 'published' } }, { sampleData: { equals: true } }] },
     }),
     payload.count({ collection: 'shipping-methods', where: { active: { equals: true } } }),
+    payload.count({
+      collection: 'shipping-methods',
+      where: { and: [{ active: { equals: true } }, { sampleData: { equals: true } }] },
+    }),
     payload.find({
       collection: 'pages',
-      where: { slug: { in: [LEGAL_SLUGS.terms, LEGAL_SLUGS.privacy, LEGAL_SLUGS.returns] } },
       depth: 0,
-      limit: 10,
+      limit: 200,
       pagination: false,
+      select: { slug: true, title: true, needsReview: true, _status: true },
     }),
+    payload.findGlobal({ slug: 'homepage', depth: 0 }),
   ])
 
-  const legalReady = [LEGAL_SLUGS.terms, LEGAL_SLUGS.privacy, LEGAL_SLUGS.returns].every((slug) => {
-    const page = legalPages.docs.find((doc) => doc.slug === slug)
-    return Boolean(page && page._status === 'published' && !page.needsReview)
-  })
+  const legalSlugs = [LEGAL_SLUGS.terms, LEGAL_SLUGS.privacy, LEGAL_SLUGS.returns] as string[]
+  const missingLegal = legalSlugs.filter(
+    (slug) => !pages.docs.some((doc) => doc.slug === slug && doc._status === 'published'),
+  )
+  const pagesToReview = pages.docs.filter((doc) => doc._status === 'published' && doc.needsReview)
+  const pagesReady = missingLegal.length === 0 && pagesToReview.length === 0
 
   const anyPayment =
     Boolean(payments?.transferEnabled) ||
@@ -111,8 +118,11 @@ export async function getLaunchChecklist(
     {
       id: 'shipping',
       label: 'Metody dostawy',
-      hint: 'Co najmniej jedna aktywna metoda dostawy z prawdziwą ceną.',
-      done: shippingMethods.totalDocs > 0,
+      hint:
+        sampleShipping.totalDocs > 0
+          ? `Metod dostawy z przykładową ceną: ${sampleShipping.totalDocs}. Ustaw prawdziwe ceny i odznacz „Dane przykładowe".`
+          : 'Co najmniej jedna aktywna metoda dostawy z prawdziwą ceną.',
+      done: shippingMethods.totalDocs > 0 && sampleShipping.totalDocs === 0,
       blocking: true,
       href: '/admin/collections/shipping-methods',
     },
@@ -128,9 +138,16 @@ export async function getLaunchChecklist(
     },
     {
       id: 'legal',
-      label: 'Regulamin, polityka prywatności, zwroty',
-      hint: 'Przeczytaj szkice, dostosuj do swojej firmy (najlepiej z prawnikiem) i odznacz „Treść przykładowa".',
-      done: legalReady,
+      label: 'Regulamin i strony informacyjne',
+      hint:
+        missingLegal.length > 0
+          ? 'Brakuje opublikowanej strony: regulamin, polityka prywatności lub zwroty i reklamacje.'
+          : pagesToReview.length > 0
+            ? `Do sprawdzenia: ${pagesToReview
+                .map((doc) => doc.title)
+                .join(', ')}. Przeczytaj szkice, uzupełnij miejsca oznaczone [UZUPEŁNIJ] (regulamin najlepiej z prawnikiem) i odznacz „Treść przykładowa".`
+            : 'Regulamin, polityka prywatności oraz zwroty i reklamacje są opublikowane i sprawdzone.',
+      done: pagesReady,
       blocking: true,
       href: '/admin/collections/pages',
     },
@@ -149,6 +166,14 @@ export async function getLaunchChecklist(
       done: isEmailConfigured(),
       blocking: true,
       href: '/admin/globals/settings',
+    },
+    {
+      id: 'homepage',
+      label: 'Teksty strony głównej',
+      hint: 'Przejrzyj hasła i opisy na stronie głównej, dopasuj je do swojej oferty i odznacz „Teksty przykładowe".',
+      done: !homepage?.needsReview,
+      blocking: false,
+      href: '/admin/globals/homepage',
     },
     {
       id: 'orderEmail',

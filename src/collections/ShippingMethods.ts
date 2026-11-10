@@ -83,6 +83,16 @@ export const ShippingMethods: CollectionConfig = {
         description: 'Mniejsza liczba = wyżej na liście.',
       },
     },
+    {
+      name: 'sampleData',
+      type: 'checkbox',
+      label: 'Dane przykładowe — do sprawdzenia',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Odznacz, gdy ustawisz prawdziwą cenę i opis tej dostawy.',
+      },
+    },
   ],
   hooks: {
     afterChange: [revalidateAfterChange],
