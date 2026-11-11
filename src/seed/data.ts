@@ -59,7 +59,7 @@ export const PRODUCTS: SeedProduct[] = [
     },
     functionViews: [
       { label: 'Sofa', caption: 'Zagłówki opuszczone — niska, spokojna linia oparcia.', file: 'bergen-02' },
-      { label: 'Zagłówki w górze', caption: 'Podnosisz je, gdy chcesz wygodnie oprzeć głowę.', file: 'bergen-04' },
+      { label: 'Zagłówki', caption: 'Podnosisz je, gdy chcesz wygodnie oprzeć głowę.', file: 'bergen-04' },
       { label: 'Wysuwanie', caption: 'Dolna część wyjeżdża do przodu na kółkach.', file: 'bergen-07' },
       { label: 'Łóżko', caption: 'Materac podnosisz za uchwyt do wysokości siedziska.', file: 'bergen-08' },
     ],

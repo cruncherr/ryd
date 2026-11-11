@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 import ReactDOM from 'react-dom'
 
+import { CartDrawer } from '@/components/cart/CartDrawer'
 import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
 import { AnnouncementBar, PreviewBar } from '@/components/layout/PreviewBar'
@@ -78,6 +79,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
           {children}
         </main>
         <Footer categories={categories} settings={settings} />
+        <CartDrawer />
         <Toaster />
       </body>
     </html>

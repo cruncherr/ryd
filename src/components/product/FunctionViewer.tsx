@@ -111,7 +111,7 @@ export function FunctionViewer({ views, sizes, className }: Props) {
         >
           {views.map((view) => (
             <Tabs.Tab
-              className="relative z-10 h-10 shrink-0 rounded-full px-4 text-sm font-medium text-ink-soft transition-colors duration-200 ease-out outline-none hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink data-active:text-paper"
+              className="relative z-10 h-10 shrink-0 rounded-full px-3 text-sm font-medium sm:px-4 text-ink-soft transition-colors duration-200 ease-out outline-none hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink data-active:text-paper"
               key={view.id}
               value={view.id}
             >

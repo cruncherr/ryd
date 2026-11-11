@@ -677,3 +677,23 @@
 .skip-link:focus-visible {
   transform: none;
 }
+
+/* Zmiana napisu na przycisku („Dodaj do koszyka" → „Dodano"): rozmycie maskuje przenikanie dwóch stanów. */
+@keyframes label-swap {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*='label-swap'] {
+    animation: fade-only 150ms ease both;
+  }
+}

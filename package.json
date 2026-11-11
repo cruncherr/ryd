@@ -18,7 +18,7 @@
     "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run src/seed/run.ts",
     "seed:auto": "cross-env NODE_OPTIONS=--no-deprecation payload run src/seed/auto.ts",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test"
   },
