@@ -91,7 +91,8 @@ export default buildConfig({
     // Lokalnie, bez tokenu, pliki zapisują się w katalogu /media.
     vercelBlobStorage({
       collections: {
-        media: true,
+        // Zdjęcia są publiczne, więc sklep podaje ich bezpośredni adres w magazynie (szybciej i taniej).
+        media: { disablePayloadAccessControl: true },
       },
       token: process.env.BLOB_READ_WRITE_TOKEN,
       clientUploads: true,

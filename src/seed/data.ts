@@ -269,7 +269,7 @@ export const DETAIL_IMAGES: SeedImage[] = [
 export const HOMEPAGE = {
   hero: {
     eyebrow: 'Meble tapicerowane',
-    title: 'Sofy, na których chce się zostać dłużej',
+    title: 'Sofy, na których chce się zostać *dłużej*',
     text: 'Sprężyste wypełnienie, staranne szwy i funkcja spania, która działa bez wysiłku. Meble tapicerowane do codziennego wypoczynku.',
     primaryLabel: 'Zobacz sofy',
     primaryUrl: '/sklep',
@@ -290,13 +290,13 @@ export const HOMEPAGE = {
   },
   functions: {
     eyebrow: 'Funkcje',
-    title: 'Jedna sofa, kilka ustawień',
+    title: 'Jedna sofa, *kilka* ustawień',
     text: 'Zobacz, jak zmienia się Bergen: od sofy z opuszczonymi zagłówkami po wygodne łóżko.',
     productSlug: 'sofa-rozkladana-bergen',
   },
   quality: {
     eyebrow: 'Jakość',
-    title: 'Jakość, którą czuć od pierwszego dotyku',
+    title: 'Jakość, którą czuć od *pierwszego dotyku*',
     text: 'Dobry mebel poznaje się po detalach, których na co dzień się nie zauważa.',
     items: [
       {
@@ -318,7 +318,7 @@ export const HOMEPAGE = {
   },
   story: {
     eyebrow: 'O marce',
-    title: 'Meble, z których sami chcielibyśmy korzystać',
+    title: 'Meble, z których *sami* chcielibyśmy korzystać',
     text: 'Sofa ma być wygodna na co dzień i od święta. Dlatego stawiamy na staranne wykonanie i wypełnienia dobrej jakości, a nie na krótkotrwały efekt.',
     linkLabel: 'Poznaj nas',
     linkUrl: '/o-nas',

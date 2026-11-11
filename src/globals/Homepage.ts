@@ -16,7 +16,10 @@ const heading = (titlePlaceholder: string): Field[] => [
     type: 'text',
     label: 'Nagłówek',
     maxLength: 90,
-    admin: { placeholder: titlePlaceholder },
+    admin: {
+      placeholder: titlePlaceholder,
+      description: 'Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.',
+    },
   },
   {
     name: 'text',

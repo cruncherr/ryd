@@ -1,0 +1,679 @@
+@import 'tailwindcss';
+
+/*
+ * RYD — system wizualny sklepu.
+ * Ciepły papier, grafitowy tusz, zdjęcia mebli na jasnej „scenie".
+ * Ruch: krótki, celowy, zawsze transform/opacity; krzywe i czasy wg zasad Emila Kowalskiego.
+ */
+
+/* Kroje: jeden plik na odmianę, tylko znaki łacińskie i polskie. */
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/fraunces-roman.woff2') format('woff2');
+  font-weight: 300 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/fraunces-italic.woff2') format('woff2');
+  font-weight: 300 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-roman.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Kroje zastępcze dopasowane metrycznie — tekst nie „skacze", gdy doładuje się właściwy krój. */
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Times New Roman'), local('Times'), local('Liberation Serif');
+  size-adjust: 104.06%;
+  ascent-override: 93.99%;
+  descent-override: 24.51%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans');
+  size-adjust: 107.64%;
+  ascent-override: 90%;
+  descent-override: 22.41%;
+  line-gap-override: 0%;
+}
+
+@theme {
+  --color-paper: #f6f3ee;
+  --color-stage: #ebe6de;
+  --color-surface: #ffffff;
+  --color-ink: #1c1a18;
+  --color-ink-soft: #5c574f;
+  --color-ink-faint: #8b857b;
+  --color-line: rgb(28 26 24 / 0.12);
+  --color-line-strong: rgb(28 26 24 / 0.28);
+  --color-accent: #a34e2b;
+  --color-success: #2c6648;
+  --color-danger: #b3261e;
+  --color-notice: #f1e2b8;
+
+  --font-display: 'Fraunces', 'Fraunces Fallback', 'Times New Roman', serif;
+  --font-sans: 'Inter', 'Inter Fallback', Arial, sans-serif;
+
+  /* Mocne krzywe: wbudowane w CSS są zbyt łagodne. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --radius-panel: 14px;
+  --radius-field: 10px;
+
+  --container-shell: 85rem;
+}
+
+/* Najechanie tylko tam, gdzie jest prawdziwy wskaźnik — na telefonie nie „przykleja się" po dotknięciu. */
+@custom-variant hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+
+@custom-variant group-hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:is(:where(.group):hover *) {
+      @slot;
+    }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    background: var(--color-paper);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    min-height: 100svh;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-feature-settings: 'cv11', 'ss03';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgb(163 78 43 / 0.22);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  /* 16 px w polach: iOS nie przybliża strony po dotknięciu pola. */
+  input,
+  textarea,
+  select {
+    font-size: 1rem;
+  }
+
+  /* Kontrolki reagują natychmiast i nie zaznaczają etykiety przy dłuższym przytrzymaniu. */
+  button,
+  a,
+  [role='button'],
+  summary,
+  label[for] {
+    touch-action: manipulation;
+  }
+
+  button,
+  [role='button'],
+  summary {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  img {
+    -webkit-user-drag: none;
+  }
+}
+
+/* ---------- Typografia ---------- */
+
+@utility display-1 {
+  font-family: var(--font-display);
+  font-weight: 340;
+  font-size: clamp(2.75rem, 1.5rem + 4.6vw, 5.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+@utility display-2 {
+  font-family: var(--font-display);
+  font-weight: 350;
+  font-size: clamp(2.125rem, 1.4rem + 2.9vw, 3.875rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+}
+
+@utility display-3 {
+  font-family: var(--font-display);
+  font-weight: 370;
+  font-size: clamp(1.5rem, 1.25rem + 1vw, 2.125rem);
+  line-height: 1.12;
+  letter-spacing: -0.022em;
+}
+
+@utility display-4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.375rem;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+@utility eyebrow {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+@utility lead {
+  font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--color-ink-soft);
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum', 'cv11', 'ss03';
+}
+
+/* ---------- Układ ---------- */
+
+@utility shell {
+  width: 100%;
+  max-width: var(--container-shell);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+@utility section-y {
+  padding-block: clamp(4.5rem, 9vw, 9rem);
+}
+
+/* ---------- Scena dla zdjęć na białym tle ---------- */
+
+@utility stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-panel);
+  background: var(--color-stage);
+  isolation: isolate;
+}
+
+/* Białe tło zdjęcia stapia się ze sceną, a cień mebla zostaje. */
+@utility packshot {
+  mix-blend-mode: multiply;
+  object-fit: contain;
+}
+
+/* ---------- Ruch ---------- */
+
+/* Przycisk i każda rzecz, którą się naciska: natychmiastowa odpowiedź na dotyk. */
+@utility pressable {
+  transition: transform 160ms var(--ease-out);
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+/* Przycisk: nacisk skaluje całość, kolory zmieniają się spokojnie. */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  border-radius: 999px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    opacity 180ms ease;
+
+  &:active:not(:disabled, [aria-disabled='true']) {
+    transform: scale(0.97);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+/* Okrągły przycisk z ikoną (koszyk, zamknij, strzałki). */
+@utility icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  color: var(--color-ink);
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 180ms ease;
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: rgb(28 26 24 / 0.06);
+    }
+  }
+}
+
+/* Link z kreską, która wysuwa się od lewej. */
+@utility link-line {
+  position: relative;
+  display: inline-block;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 240ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover::after {
+      transform: scaleX(1);
+    }
+  }
+
+  &[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+}
+
+/*
+ * Wejście sekcji przy przewijaniu — tylko na stronach „wystawowych", jednorazowo.
+ * Bez JavaScriptu (brak klasy .js na <html>) treść jest po prostu widoczna.
+ */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 700ms var(--ease-out),
+    transform 700ms var(--ease-out);
+  transition-delay: calc(var(--reveal-index, 0) * 70ms);
+}
+
+.js [data-reveal][data-visible] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Wejście pierwszego ekranu: kolejne elementy co 70 ms. Animacja CSS — płynna także podczas ładowania strony. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes settle-in {
+  from {
+    opacity: 0;
+    transform: scale(1.035);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility enter-rise {
+  animation: rise-in 800ms var(--ease-out) both;
+  animation-delay: calc(var(--enter-index, 0) * 70ms);
+}
+
+@utility enter-settle {
+  animation: settle-in 1100ms var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] {
+    transform: none;
+    transition: opacity 300ms ease;
+  }
+
+  .enter-rise,
+  .enter-settle {
+    animation: fade-only 300ms ease both;
+  }
+
+  .pressable:active,
+  .btn:active,
+  .icon-btn:active {
+    transform: none;
+  }
+}
+
+@keyframes fade-only {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- Treść z edytora (strony informacyjne, opis produktu) ---------- */
+
+.prose-ryd {
+  color: var(--color-ink);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  max-width: 68ch;
+}
+
+.prose-ryd > * + * {
+  margin-top: 1.1em;
+}
+
+.prose-ryd h2 {
+  margin-top: 2.4em;
+  font-family: var(--font-display);
+  font-weight: 380;
+  font-size: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.prose-ryd h2:first-child {
+  margin-top: 0;
+}
+
+.prose-ryd h3 {
+  margin-top: 2em;
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.prose-ryd h2 + *,
+.prose-ryd h3 + * {
+  margin-top: 0.7em;
+}
+
+.prose-ryd ul,
+.prose-ryd ol {
+  padding-left: 1.4em;
+}
+
+.prose-ryd ul {
+  list-style: disc;
+}
+
+.prose-ryd ol {
+  list-style: decimal;
+}
+
+.prose-ryd li + li {
+  margin-top: 0.5em;
+}
+
+.prose-ryd li::marker {
+  color: var(--color-ink-faint);
+}
+
+.prose-ryd a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .prose-ryd a:hover {
+    color: var(--color-accent);
+  }
+}
+
+.prose-ryd strong {
+  font-weight: 600;
+}
+
+.prose-ryd blockquote {
+  padding-left: 1.2em;
+  border-left: 2px solid var(--color-line-strong);
+  color: var(--color-ink-soft);
+}
+
+.prose-ryd hr {
+  margin-block: 2.4em;
+  border: 0;
+  border-top: 1px solid var(--color-line);
+}
+
+/* Miejsca do uzupełnienia przez właściciela są dobrze widoczne w trybie przygotowania sklepu. */
+.prose-ryd mark,
+.todo-mark {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--color-notice);
+  color: var(--color-ink);
+}
+
+/* ---------- Szuflady (koszyk, menu mobilne) — Base UI Drawer ---------- */
+
+.drawer-backdrop {
+  --backdrop-opacity: 0.4;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  min-height: 100dvh;
+  background: var(--color-ink);
+  /* Tło jaśnieje razem z ruchem palca podczas zamykania gestem. */
+  opacity: calc(var(--backdrop-opacity) * (1 - var(--drawer-swipe-progress, 0)));
+  transition: opacity 450ms var(--ease-drawer);
+}
+
+.drawer-backdrop[data-swiping] {
+  transition-duration: 0ms;
+}
+
+.drawer-backdrop[data-starting-style],
+.drawer-backdrop[data-ending-style] {
+  opacity: 0;
+}
+
+.drawer-backdrop[data-ending-style] {
+  transition-duration: calc(var(--drawer-swipe-strength, 1) * 400ms);
+}
+
+@supports (-webkit-touch-callout: none) {
+  .drawer-backdrop {
+    position: absolute;
+  }
+}
+
+.drawer-viewport {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+}
+
+/* Arkusz wysuwany od dołu. Zapas (--bleed) chowa szczelinę, gdy arkusz „odbija" przy przeciąganiu. */
+.drawer-sheet {
+  --bleed: 3rem;
+  width: 100%;
+  max-height: calc(90dvh + var(--bleed));
+  margin-bottom: calc(-1 * var(--bleed));
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bleed));
+  border-radius: 22px 22px 0 0;
+  background: var(--color-paper);
+  outline: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: auto;
+  transform: translateY(var(--drawer-swipe-movement-y, 0px));
+  transition: transform 450ms var(--ease-drawer);
+}
+
+.drawer-sheet[data-starting-style],
+.drawer-sheet[data-ending-style] {
+  transform: translateY(calc(100% - var(--bleed) + 2px));
+}
+
+/* Panel wysuwany z prawej strony. */
+.drawer-side {
+  --bleed: 3rem;
+  display: flex;
+  flex-direction: column;
+  width: calc(28rem + var(--bleed));
+  max-width: calc(100vw - 2.5rem + var(--bleed));
+  height: 100%;
+  margin-right: calc(-1 * var(--bleed));
+  padding-right: var(--bleed);
+  background: var(--color-paper);
+  outline: none;
+  touch-action: auto;
+  transform: translateX(var(--drawer-swipe-movement-x, 0px));
+  transition: transform 450ms var(--ease-drawer);
+}
+
+.drawer-side[data-starting-style],
+.drawer-side[data-ending-style] {
+  transform: translateX(calc(100% - var(--bleed) + 2px));
+}
+
+.drawer-sheet[data-swiping],
+.drawer-side[data-swiping] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.drawer-sheet[data-ending-style],
+.drawer-side[data-ending-style] {
+  transition-duration: calc(var(--drawer-swipe-strength, 1) * 400ms);
+}
+
+@supports (-webkit-touch-callout: none) {
+  .drawer-side {
+    --bleed: 0px;
+  }
+}
+
+.drawer-handle {
+  width: 2.5rem;
+  height: 0.25rem;
+  margin: 0.75rem auto 0.25rem;
+  border-radius: 999px;
+  background: var(--color-line-strong);
+}
+
+@keyframes badge-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer-sheet,
+  .drawer-side {
+    transition-duration: 0ms;
+  }
+
+  .drawer-backdrop {
+    transition-duration: 150ms;
+  }
+}
+
+/* Pomija nawigację: widoczne dopiero po wejściu klawiszem Tab. */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}

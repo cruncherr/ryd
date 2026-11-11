@@ -1003,6 +1003,9 @@ export interface Homepage {
      * Małe słowo nad nagłówkiem. Pole opcjonalne.
      */
     eyebrow?: string | null;
+    /**
+     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
+     */
     title?: string | null;
     text?: string | null;
     primaryLabel?: string | null;
@@ -1032,6 +1035,9 @@ export interface Homepage {
      * Małe słowo nad nagłówkiem. Pole opcjonalne.
      */
     eyebrow?: string | null;
+    /**
+     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
+     */
     title?: string | null;
     text?: string | null;
   };
@@ -1040,6 +1046,9 @@ export interface Homepage {
      * Małe słowo nad nagłówkiem. Pole opcjonalne.
      */
     eyebrow?: string | null;
+    /**
+     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
+     */
     title?: string | null;
     text?: string | null;
     /**
@@ -1052,6 +1061,9 @@ export interface Homepage {
      * Małe słowo nad nagłówkiem. Pole opcjonalne.
      */
     eyebrow?: string | null;
+    /**
+     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
+     */
     title?: string | null;
     text?: string | null;
     items?:
@@ -1071,6 +1083,9 @@ export interface Homepage {
      * Małe słowo nad nagłówkiem. Pole opcjonalne.
      */
     eyebrow?: string | null;
+    /**
+     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
+     */
     title?: string | null;
     text?: string | null;
     linkLabel?: string | null;
