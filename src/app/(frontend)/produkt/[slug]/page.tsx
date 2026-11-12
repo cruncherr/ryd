@@ -6,6 +6,7 @@ import { ProductCard } from '@/components/product/ProductCard'
 import { ProductDetails } from '@/components/product/ProductDetails'
 import { ProductHero, type ProductHeroData } from '@/components/product/ProductHero'
 import { PurchaseInfo } from '@/components/product/PurchaseInfo'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import {
@@ -19,7 +20,9 @@ import {
 } from '@/lib/catalog'
 import { cn } from '@/lib/cn'
 import { AVAILABILITY, labelOf } from '@/lib/constants'
+import { mediaShareImage, pageMetadata } from '@/lib/metadata'
 import { getProductBySlug, getProducts, getSettings, getShippingMethods } from '@/lib/queries'
+import { breadcrumbJsonLd, productJsonLd } from '@/lib/seo'
 import { noOrphans } from '@/lib/typography'
 
 export async function generateStaticParams() {
@@ -32,23 +35,12 @@ export async function generateMetadata({ params }: PageProps<'/produkt/[slug]'>)
   const product = await getProductBySlug(slug)
   if (!product) return { title: 'Nie znaleziono produktu' }
 
-  const image = primaryImage(product)
-  const description = product.metaDescription || product.shortDescription || undefined
-
-  return {
+  return pageMetadata({
     title: product.metaTitle || product.title,
-    description,
-    alternates: { canonical: productPath(product) },
-    openGraph: {
-      type: 'website',
-      title: product.metaTitle || product.title,
-      description,
-      url: productPath(product),
-      images: image?.url
-        ? [{ url: image.url, width: image.width ?? undefined, height: image.height ?? undefined, alt: image.alt ?? product.title }]
-        : undefined,
-    },
-  }
+    description: product.metaDescription || product.shortDescription,
+    path: productPath(product),
+    image: mediaShareImage(primaryImage(product), product.title),
+  })
 }
 
 export default async function ProductPage({ params }: PageProps<'/produkt/[slug]'>) {
@@ -97,6 +89,16 @@ export default async function ProductPage({ params }: PageProps<'/produkt/[slug]
 
   return (
     <>
+      <JsonLd
+        data={[
+          productJsonLd(product, settings, shippingMethods),
+          breadcrumbJsonLd([
+            { name: 'Sklep', path: '/sklep' },
+            ...(category ? [{ name: category.title, path: categoryPath(category) }] : []),
+            { name: product.title, path: productPath(product) },
+          ]),
+        ]}
+      />
       <ProductHero
         breadcrumbs={
           <Breadcrumbs

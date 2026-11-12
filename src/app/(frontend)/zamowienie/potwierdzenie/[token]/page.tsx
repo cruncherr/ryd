@@ -273,7 +273,24 @@ export default async function OrderConfirmationPage({ params, searchParams }: Pa
 
   return (
     <div className="shell pt-8 pb-20 md:pt-14 md:pb-28">
-      <OrderPlacedEffects />
+      <OrderPlacedEffects
+        purchase={
+          order.isTest || cancelled
+            ? null
+            : {
+                number: order.orderNumber,
+                total: order.total,
+                shipping: order.shippingCost,
+                items: order.items.map((item) => ({
+                  id: typeof item.product === 'object' && item.product ? item.product.id : (item.product ?? item.title),
+                  name: item.title,
+                  variant: item.variantName,
+                  price: item.unitPrice,
+                  quantity: item.quantity,
+                })),
+              }
+        }
+      />
       {awaitingOnline && paymentParam === 'ok' && <PaymentStatusPoller />}
 
       <div className="max-w-3xl">

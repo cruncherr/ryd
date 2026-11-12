@@ -5,6 +5,7 @@ import { ContactForm } from '@/components/content/ContactForm'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { RichText } from '@/components/ui/RichText'
 import { LEGAL_SLUGS } from '@/lib/constants'
+import { pageMetadata } from '@/lib/metadata'
 import { getPageBySlug, getSettings } from '@/lib/queries'
 import { noOrphans } from '@/lib/typography'
 import { formatPhone } from '@/lib/validation'
@@ -19,11 +20,11 @@ const DEFAULT_LEAD =
  */
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug('kontakt')
-  return {
+  return pageMetadata({
     title: page?.metaTitle || page?.title || DEFAULT_TITLE,
     description: page?.metaDescription || page?.lead || DEFAULT_LEAD,
-    alternates: { canonical: '/kontakt' },
-  }
+    path: '/kontakt',
+  })
 }
 
 export default async function ContactPage() {

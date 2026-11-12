@@ -2,12 +2,15 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { CompanyDetails } from '@/components/content/CompanyDetails'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { RichText } from '@/components/ui/RichText'
 import { cn } from '@/lib/cn'
+import { pageMetadata } from '@/lib/metadata'
 import { formatOrderDate } from '@/lib/orders/view'
 import { getPageBySlug, getPublishedPageSlugs, getSettings } from '@/lib/queries'
 import { extractHeadings } from '@/lib/richtext/headings'
+import { breadcrumbJsonLd } from '@/lib/seo'
 import { noOrphans } from '@/lib/typography'
 
 /**
@@ -36,13 +39,12 @@ export async function generateMetadata({ params }: PageProps<'/[...slug]'>): Pro
   const page = await findPage(slug)
   if (!page) return { title: 'Nie znaleziono strony' }
 
-  const description = page.metaDescription || page.lead || undefined
-  return {
+  return pageMetadata({
     title: page.metaTitle || page.title,
-    description,
-    alternates: { canonical: `/${page.slug}` },
-    openGraph: { type: 'article', title: page.metaTitle || page.title, description, url: `/${page.slug}` },
-  }
+    description: page.metaDescription || page.lead,
+    path: `/${page.slug}`,
+    type: 'article',
+  })
 }
 
 export default async function ContentPage({ params }: PageProps<'/[...slug]'>) {
@@ -57,6 +59,7 @@ export default async function ContentPage({ params }: PageProps<'/[...slug]'>) {
 
   return (
     <article className="shell pt-8 pb-20 md:pt-12 md:pb-28">
+      <JsonLd data={breadcrumbJsonLd([{ name: page.title, path: `/${page.slug}` }])} />
       <Breadcrumbs items={[{ label: 'Strona główna', href: '/' }, { label: page.title }]} />
 
       <header className="mt-8 max-w-3xl md:mt-10">

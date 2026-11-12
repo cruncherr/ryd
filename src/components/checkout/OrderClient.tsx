@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState, useTransition } from 'react'
 
 import { Button } from '@/components/ui/Button'
+import { trackPurchase, type AnalyticsItem } from '@/lib/analytics'
 import { useCart } from '@/lib/cart/store'
 import { cn } from '@/lib/cn'
 import { startOnlinePayment } from '@/lib/orders/actions'
@@ -16,9 +17,21 @@ import { clearDraft, consumeOrderPlaced } from './draft'
  * nie znikało klientowi sprzed oczu w trakcie przechodzenia na tę stronę.
  * Późniejsze wejścia z odnośnika w e-mailu nie ruszają nowego koszyka.
  */
-export function OrderPlacedEffects() {
+type PlacedOrder = {
+  number: string
+  total: number
+  shipping: number
+  items: AnalyticsItem[]
+}
+
+export function OrderPlacedEffects({ purchase }: { purchase: PlacedOrder | null }) {
+  // Dane zamówienia są potrzebne tylko raz, przy pierwszym wyświetleniu — stąd referencja zamiast zależności.
+  const placed = useRef(purchase)
+
   useEffect(() => {
     if (!consumeOrderPlaced()) return
+    // Pomiar „zakup" — wyłącznie dla właśnie złożonego, prawdziwego zamówienia i tylko za zgodą klienta.
+    if (placed.current) trackPurchase(placed.current)
     clearDraft()
     // Koszyk mógł jeszcze nie zostać wczytany z pamięci przeglądarki — czyścimy również zapis.
     const clear = () => useCart.getState().clear()

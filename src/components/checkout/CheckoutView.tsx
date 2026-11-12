@@ -3,11 +3,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useRef, useState, useTransition, type ChangeEvent, type FocusEvent, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, useTransition, type ChangeEvent, type FocusEvent, type FormEvent, type ReactNode } from 'react'
 
 import { AnimatedPrice } from '@/components/cart/CartDrawer'
 import { Button, buttonClass } from '@/components/ui/Button'
 import { Checkbox, FieldError, OptionCard, TextArea, TextField } from '@/components/ui/Field'
+import { trackBeginCheckout } from '@/lib/analytics'
 import { cartSubtotal, useCart, type CartLine } from '@/lib/cart/store'
 import { orderTotal, shippingCostFor, type PaymentOption } from '@/lib/cart/totals'
 import type { PaymentMethod } from '@/lib/constants'
@@ -137,6 +138,16 @@ function CheckoutForm({ config, lines }: { config: CheckoutConfig; lines: CartLi
   const [shippingChoice, setShippingChoice] = useState<number | null>(draft.shippingMethodId ?? null)
   const [paymentChoice, setPaymentChoice] = useState<PaymentMethod | null>(draft.paymentMethod ?? null)
   const [wantsInvoice, setWantsInvoice] = useState(Boolean(draft.wantsInvoice))
+
+  // Pomiar „rozpoczęto zamówienie" — raz, przy wejściu na formularz (koszyk z tej chwili).
+  const linesAtStart = useRef(lines)
+  useEffect(() => {
+    trackBeginCheckout(
+      linesAtStart.current
+        .filter((line) => !line.unavailable)
+        .map((line) => ({ id: line.productId, name: line.title, variant: line.variantName, price: line.unitPrice, quantity: line.quantity })),
+    )
+  }, [])
 
   const { shippingMethods, paymentOptions, links } = config
   const subtotal = cartSubtotal(lines)

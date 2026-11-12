@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 import { Price } from '@/components/ui/Price'
 import { buttonClass } from '@/components/ui/Button'
+import { trackAddToCart, trackViewItem } from '@/lib/analytics'
 import { useCart } from '@/lib/cart/store'
 import type { PriceView } from '@/lib/catalog'
 import { cn } from '@/lib/cn'
@@ -80,6 +81,11 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
     if (addedTimer.current) clearTimeout(addedTimer.current)
   }, [])
 
+  // Pomiar „obejrzano produkt" — raz na wejście na stronę i tylko za zgodą klienta.
+  useEffect(() => {
+    trackViewItem({ id: product.id, name: product.title, price: product.price.current, quantity: 1 })
+  }, [product.id, product.title, product.price.current])
+
   const addToCart = () => {
     if (!variant || !purchasable) return
     add(
@@ -94,6 +100,7 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
       },
       quantity,
     )
+    trackAddToCart({ id: product.id, name: product.title, variant: variant.name, price: product.price.current, quantity })
     setJustAdded(true)
     if (addedTimer.current) clearTimeout(addedTimer.current)
     addedTimer.current = setTimeout(() => setJustAdded(false), 2200)
