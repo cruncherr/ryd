@@ -245,6 +245,14 @@ export const Orders: CollectionConfig = {
       ],
     },
     {
+      name: 'orderSidebar',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: { Field: '@/components/admin/OrderSidebar' },
+      },
+    },
+    {
       name: 'isTest',
       type: 'checkbox',
       label: 'Zamówienie testowe',
@@ -269,7 +277,7 @@ export const Orders: CollectionConfig = {
       admin: {
         position: 'sidebar',
         readOnly: true,
-        date: { pickerAppearance: 'dayAndTime' },
+        date: { pickerAppearance: 'dayAndTime', displayFormat: 'd MMM yyyy, HH:mm' },
       },
     },
     { name: 'customerName', type: 'text', label: 'Klient', admin: { hidden: true } },

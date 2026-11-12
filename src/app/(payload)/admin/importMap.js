@@ -28,6 +28,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { SpecRowLabel as SpecRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { OrderItemRowLabel as OrderItemRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
+import { default as default_68cb5732f6bc7c014dfa2820e3e9c596 } from '@/components/admin/OrderSidebar'
 import { NavRowLabel as NavRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { default as default_534076e2c753ea5d539a54b05f456b1b } from '@/components/admin/Icon'
 import { default as default_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admin/Logo'
@@ -67,6 +68,7 @@ export const importMap = {
   "@/components/admin/RowLabels#SpecRowLabel": SpecRowLabel_602181e9d445b98d48bce238807017cb,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
   "@/components/admin/RowLabels#OrderItemRowLabel": OrderItemRowLabel_602181e9d445b98d48bce238807017cb,
+  "@/components/admin/OrderSidebar#default": default_68cb5732f6bc7c014dfa2820e3e9c596,
   "@/components/admin/RowLabels#NavRowLabel": NavRowLabel_602181e9d445b98d48bce238807017cb,
   "@/components/admin/Icon#default": default_534076e2c753ea5d539a54b05f456b1b,
   "@/components/admin/Logo#default": default_a44df17d0fc3dcd873dae43dc3bf66bd,

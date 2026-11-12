@@ -77,7 +77,9 @@ export function FunctionViewer({ views, sizes, className }: Props) {
 
   return (
     <Tabs.Root
-      className={cn('grid gap-5', className)}
+      // `min-w-0` i jedna kolumna o elastycznej szerokości: na wąskim telefonie pasek z nazwami funkcji
+      // przewija się w poziomie w swoim obrębie, zamiast rozpychać całą stronę.
+      className={cn('grid min-w-0 grid-cols-1 gap-5', className)}
       onValueChange={(value) => {
         stopAutoplay()
         setActive(String(value))
@@ -104,7 +106,7 @@ export function FunctionViewer({ views, sizes, className }: Props) {
         ))}
       </div>
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
+      <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
         <Tabs.List
           aria-label="Ustawienia mebla"
           className="relative isolate flex w-fit max-w-full gap-1 overflow-x-auto rounded-full bg-stage p-1 [scrollbar-width:none]"

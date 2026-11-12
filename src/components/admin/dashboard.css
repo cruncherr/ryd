@@ -204,3 +204,65 @@
     display: none;
   }
 }
+
+/* ---------- Boczny panel zamówienia ---------- */
+
+.ryd-order-side {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m, 4px);
+  background: var(--theme-elevation-50);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.ryd-order-side__link {
+  display: inline-block;
+  margin-bottom: 0.875rem;
+  font-weight: 500;
+  color: var(--theme-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ryd-order-side__title {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  color: var(--theme-text);
+}
+
+.ryd-order-side__empty {
+  margin: 0;
+  color: var(--theme-elevation-500);
+}
+
+.ryd-order-side__list {
+  display: grid;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ryd-order-side__name {
+  display: block;
+  color: var(--theme-text);
+}
+
+.ryd-order-side__status {
+  display: block;
+  color: var(--theme-elevation-500);
+}
+
+.ryd-order-side__status.is-ok {
+  color: var(--theme-success-600, #2c6648);
+}
+
+.ryd-order-side__status.is-warn {
+  color: var(--theme-warning-650, #8a6100);
+}
+
+.ryd-order-side__status.is-error {
+  color: var(--theme-error-600, #b3261e);
+}

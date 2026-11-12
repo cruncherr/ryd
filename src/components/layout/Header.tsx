@@ -16,7 +16,7 @@ export function Header({ settings }: { settings: Setting }) {
       <div className="shell grid h-16 grid-cols-[1fr_auto] items-center gap-6 md:h-[4.5rem] md:grid-cols-[1fr_auto_1fr]">
         <Link
           aria-label={`${storeName} — strona główna`}
-          className="justify-self-start text-[1.3125rem] leading-none font-semibold tracking-[0.2em] uppercase"
+          className="-my-3 justify-self-start py-3 text-[1.3125rem] leading-none font-semibold tracking-[0.2em] uppercase"
           href="/"
         >
           {storeName}

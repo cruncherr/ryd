@@ -352,6 +352,15 @@
   &[aria-current='page']::after {
     transform: scaleX(1);
   }
+
+  /* Na ekranach dotykowych odnośnik łatwiej trafić palcem: niewidoczny obszar dotyku jest większy niż sam napis. */
+  @media (pointer: coarse) {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -0.625rem -0.375rem;
+    }
+  }
 }
 
 /*

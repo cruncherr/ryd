@@ -119,12 +119,12 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
   return (
     <>
       <div className="shell grid gap-x-12 gap-y-8 pt-3 lg:grid-cols-12 lg:pt-4">
-        <div className="lg:col-span-7">
+        <div className="min-w-0 lg:col-span-7">
           {/* Zmiana koloru to inny zestaw zdjęć — galeria zaczyna wtedy od nowa, od pierwszego zdjęcia. */}
           <Gallery images={variant?.images ?? []} key={variant?.id ?? 'brak'} title={product.title} />
         </div>
 
-        <div className="lg:col-span-5">
+        <div className="min-w-0 lg:col-span-5">
           <div className="lg:sticky lg:top-24">
             {breadcrumbs}
             <h1 className="display-2 mt-4 text-[clamp(2rem,1.5rem+2vw,3.125rem)]">{noOrphans(product.title)}</h1>
@@ -179,7 +179,8 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
               )}
             </p>
 
-            <div className="mt-5 flex gap-3" ref={cta}>
+            {/* Na najwęższych telefonach przycisk przechodzi pod wybór ilości, zamiast wystawać poza ekran. */}
+            <div className="mt-5 flex flex-wrap gap-3" ref={cta}>
               {purchasable ? (
                 <>
                   <div className="flex h-14 shrink-0 items-center rounded-full border border-line-strong">
@@ -206,7 +207,7 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
                       <Plus aria-hidden="true" size={16} strokeWidth={1.75} />
                     </button>
                   </div>
-                  <button className={buttonClass({ size: 'lg', className: 'flex-1 px-5' })} onClick={addToCart} type="button">
+                  <button className={buttonClass({ size: 'lg', className: 'flex-1 basis-44 px-5' })} onClick={addToCart} type="button">
                     {/* Zmiana napisu potwierdza dodanie; lekkie rozmycie łączy oba stany w jedno przejście. */}
                     <span
                       className="inline-flex animate-[label-swap_260ms_var(--ease-out)_both] items-center gap-2"
@@ -215,7 +216,7 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
                       {justAdded ? (
                         <>
                           <Check aria-hidden="true" size={18} strokeWidth={2} />
-                          Dodano do koszyka
+                          Dodano
                         </>
                       ) : (
                         'Dodaj do koszyka'
