@@ -6,8 +6,8 @@ const BEFORE_SHIPPING: Array<Order['status']> = ['new', 'confirmed', 'in_product
 
 /**
  * Powiadomienia dla klienta przy zmianach w zamówieniu:
- *  - status „Wysłane" → e-mail z numerem przesyłki,
- *  - płatność „Opłacone" (przelew zaksięgowany w panelu albo płatność online) → e-mail z potwierdzeniem wpłaty.
+ *  - status „Wysłane” → e-mail z numerem przesyłki,
+ *  - płatność „Opłacone” (przelew zaksięgowany w panelu albo płatność online) → e-mail z potwierdzeniem wpłaty.
  * Wiadomości wychodzą po zapisaniu zmian, więc kłopot z pocztą nie blokuje pracy w panelu.
  */
 export const notifyOnStatusChange: CollectionAfterChangeHook<Order> = async ({

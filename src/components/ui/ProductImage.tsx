@@ -17,7 +17,7 @@ type Props = {
 
 /**
  * Zdjęcie z biblioteki sklepu, zawsze wypełniające swój kontener (rodzic ustala proporcje).
- * Białe tło zdjęcia stapia się z kolorem „sceny" pod spodem, więc rodzic musi mieć tło `bg-stage`.
+ * Białe tło zdjęcia stapia się z kolorem „sceny” pod spodem, więc rodzic musi mieć tło `bg-stage`.
  * Rozmiar i format (AVIF/WebP) dobiera automatycznie Next.js.
  */
 export function ProductImage({ media, alt, sizes, fit = 'contain', eager = false, className }: Props) {

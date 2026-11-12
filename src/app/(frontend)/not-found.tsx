@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Nie znaleziono strony',
 }
 
-/** Strona „404": adres nie istnieje albo produkt został wycofany z oferty. */
+/** Strona „404”: adres nie istnieje albo produkt został wycofany z oferty. */
 export default function NotFound() {
   return (
     <div className="shell flex min-h-[60svh] flex-col justify-center py-20 md:py-28">

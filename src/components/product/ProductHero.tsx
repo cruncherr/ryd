@@ -81,10 +81,12 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
     if (addedTimer.current) clearTimeout(addedTimer.current)
   }, [])
 
-  // Pomiar „obejrzano produkt" — raz na wejście na stronę i tylko za zgodą klienta.
+  // Pomiar „obejrzano produkt” — raz na wejście na stronę i tylko za zgodą klienta.
+  const { id: productId, title: productTitle } = product
+  const currentPrice = product.price.current
   useEffect(() => {
-    trackViewItem({ id: product.id, name: product.title, price: product.price.current, quantity: 1 })
-  }, [product.id, product.title, product.price.current])
+    trackViewItem({ id: productId, name: productTitle, price: currentPrice, quantity: 1 })
+  }, [productId, productTitle, currentPrice])
 
   const addToCart = () => {
     if (!variant || !purchasable) return
@@ -118,7 +120,8 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
     <>
       <div className="shell grid gap-x-12 gap-y-8 pt-3 lg:grid-cols-12 lg:pt-4">
         <div className="lg:col-span-7">
-          <Gallery images={variant?.images ?? []} title={product.title} />
+          {/* Zmiana koloru to inny zestaw zdjęć — galeria zaczyna wtedy od nowa, od pierwszego zdjęcia. */}
+          <Gallery images={variant?.images ?? []} key={variant?.id ?? 'brak'} title={product.title} />
         </div>
 
         <div className="lg:col-span-5">

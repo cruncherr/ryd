@@ -213,7 +213,7 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
   }
 }
 
-/** Rozpoczyna (albo ponawia) płatność online za już złożone zamówienie — przycisk „Zapłać online". */
+/** Rozpoczyna (albo ponawia) płatność online za już złożone zamówienie — przycisk „Zapłać online”. */
 export async function startOnlinePayment(token: unknown): Promise<StartPaymentResult> {
   const unavailable: StartPaymentResult = {
     ok: false,

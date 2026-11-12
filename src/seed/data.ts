@@ -1,6 +1,6 @@
 /**
  * Dane startowe sklepu. Wszystko, co tu jest, to PUNKT WYJŚCIA przygotowany na podstawie
- * zdjęć: nazwy, ceny i opisy są przykładowe i w panelu są oznaczone jako „do sprawdzenia".
+ * zdjęć: nazwy, ceny i opisy są przykładowe i w panelu są oznaczone jako „do sprawdzenia”.
  * Sklep nie pozwoli włączyć sprzedaży, dopóki właściciel ich nie zweryfikuje.
  */
 

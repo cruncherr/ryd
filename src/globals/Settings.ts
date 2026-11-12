@@ -92,7 +92,7 @@ export const Settings: GlobalConfig = {
               label: 'Pasek ogłoszeń',
               maxLength: 120,
               admin: {
-                description: 'Krótka informacja nad menu, np. „Darmowa dostawa od 3000 zł". Puste = pasek ukryty.',
+                description: 'Krótka informacja nad menu, np. „Darmowa dostawa od 3000 zł”. Puste = pasek ukryty.',
               },
             },
             {
@@ -295,7 +295,7 @@ export const Settings: GlobalConfig = {
               type: 'text',
               label: 'Dopisek przy cenie',
               defaultValue: 'Cena zawiera VAT',
-              admin: { description: 'Jeśli nie jesteś płatnikiem VAT, zmień np. na „Sprzedawca zwolniony z VAT".' },
+              admin: { description: 'Jeśli nie jesteś płatnikiem VAT, zmień np. na „Sprzedawca zwolniony z VAT”.' },
             },
           ],
         },

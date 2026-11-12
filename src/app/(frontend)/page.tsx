@@ -17,7 +17,7 @@ export default async function HomePage() {
     getSettings(),
     getProducts({ featuredOnly: true }),
   ])
-  // Gdy żaden produkt nie jest oznaczony „Pokaż na stronie głównej", pokazujemy całą ofertę.
+  // Gdy żaden produkt nie jest oznaczony „Pokaż na stronie głównej”, pokazujemy całą ofertę.
   const products = featured.length > 0 ? featured : await getProducts()
 
   return (

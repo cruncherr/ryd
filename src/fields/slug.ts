@@ -3,7 +3,7 @@ import { slugField, type Field } from 'payload'
 import { slugify } from '@/lib/slugify'
 
 /**
- * Pole „adres strony" tworzone automatycznie z nazwy (z obsługą polskich znaków).
+ * Pole „adres strony” tworzone automatycznie z nazwy (z obsługą polskich znaków).
  * Po zapisaniu adres się nie zmienia, żeby nie psuć linków, które ktoś już udostępnił.
  */
 export function polishSlugField(useAsSlug = 'title'): Field {

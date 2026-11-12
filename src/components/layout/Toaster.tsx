@@ -2,7 +2,7 @@
 
 import { Toaster as SonnerToaster } from 'sonner'
 
-/** Krótkie komunikaty (np. „Skopiowano numer rachunku"). */
+/** Krótkie komunikaty (np. „Skopiowano numer rachunku”). */
 export function Toaster() {
   return (
     <SonnerToaster

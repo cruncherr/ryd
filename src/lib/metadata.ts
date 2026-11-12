@@ -25,7 +25,7 @@ export function defaultShareImage(settings: Setting, alt?: string): ShareImage {
 type PageMetadataInput = {
   title: string
   description?: string | null
-  /** Ścieżka strony, np. „/sklep". */
+  /** Ścieżka strony, np. „/sklep”. */
   path: string
   image?: ShareImage | null
   type?: 'website' | 'article'

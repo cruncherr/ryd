@@ -3,7 +3,7 @@
 import { useRowLabel } from '@payloadcms/ui'
 
 /**
- * Czytelne nagłówki wierszy w panelu: zamiast „Kolor 01" widać „Grafitowy · 8 zdjęć".
+ * Czytelne nagłówki wierszy w panelu: zamiast „Kolor 01” widać „Grafitowy · 8 zdjęć”.
  */
 
 function Label({ children }: { children: React.ReactNode }) {

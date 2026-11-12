@@ -12,7 +12,7 @@ const POLISH: Record<string, string> = {
 
 /**
  * Zamienia dowolny tekst na końcówkę adresu: małe litery, bez polskich znaków,
- * słowa połączone myślnikami. „Sofa Łucja 3-osobowa" → „sofa-lucja-3-osobowa".
+ * słowa połączone myślnikami. „Sofa Łucja 3-osobowa” → „sofa-lucja-3-osobowa”.
  */
 export function slugify(input: string): string {
   return input

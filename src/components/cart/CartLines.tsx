@@ -27,7 +27,7 @@ function Line({ line, onNavigate }: { line: CartLine; onNavigate?: () => void })
       remove(line.productId, line.variantId)
       return
     }
-    // Pozycja najpierw się zwija, dopiero potem znika — lista nie „przeskakuje".
+    // Pozycja najpierw się zwija, dopiero potem znika — lista nie „przeskakuje”.
     setRemoving(true)
     window.setTimeout(() => remove(line.productId, line.variantId), 220)
   }

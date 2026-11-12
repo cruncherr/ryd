@@ -19,6 +19,7 @@ import {
   customerFullName,
   formatOrderDate,
   invoiceLines,
+  orderAgeMs,
   orderItemImage,
   shippingLabel,
   transferDetails,
@@ -247,8 +248,7 @@ export default async function OrderConfirmationPage({ params, searchParams }: Pa
   }
 
   const settings = await getSettings()
-  const createdAt = new Date(order.createdAt).getTime()
-  const age = Date.now() - createdAt
+  const age = orderAgeMs(order)
   const detailed = age < DETAILS_VISIBLE_FOR
   const fresh = age < FRESH_FOR
   const cancelled = order.status === 'cancelled'

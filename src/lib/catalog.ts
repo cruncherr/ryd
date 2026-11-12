@@ -78,7 +78,7 @@ export function categoryPath(category: Pick<Category, 'slug'>): string {
   return `/sklep/${category.slug}`
 }
 
-/** Widoki do pokazu funkcji (zakładka „Zdjęcia i kolory → Pokaz funkcji" w panelu). */
+/** Widoki do pokazu funkcji (zakładka „Zdjęcia i kolory → Pokaz funkcji” w panelu). */
 export function functionViews(product: Product): Array<{
   id: string
   label: string

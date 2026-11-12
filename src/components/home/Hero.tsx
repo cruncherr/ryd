@@ -10,7 +10,7 @@ import type { Homepage } from '@/payload-types'
 const step = (index: number) => ({ '--enter-index': index }) as CSSProperties
 
 /**
- * Pierwszy ekran. Elementy wchodzą po kolei (co 70 ms), zdjęcie „osiada" — raz, przy wejściu na stronę.
+ * Pierwszy ekran. Elementy wchodzą po kolei (co 70 ms), zdjęcie „osiada” — raz, przy wejściu na stronę.
  * To animacje CSS: zaczynają się od razu i pozostają płynne, gdy przeglądarka jeszcze ładuje resztę strony.
  */
 export function Hero({ hero }: { hero: Homepage['hero'] }) {

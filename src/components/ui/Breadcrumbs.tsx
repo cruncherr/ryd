@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export type Crumb = { label: string; href?: string }
 
-/** Ścieżka nawigacji („okruszki") nad tytułem strony. */
+/** Ścieżka nawigacji („okruszki”) nad tytułem strony. */
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
     <nav aria-label="Ścieżka nawigacji">

@@ -23,7 +23,7 @@ type Props = {
  * Rozwijane sekcje (szczegóły produktu, pytania).
  * Zamknięte sekcje zostają w kodzie strony (`hidden="until-found"`), więc znajdzie je
  * wyszukiwarka i Ctrl+F w przeglądarce. Wysokość animujemy krótko — to jedyny wyjątek
- * od zasady „tylko transform i opacity", bo panel nie ma odpowiednika w transformacjach.
+ * od zasady „tylko transform i opacity”, bo panel nie ma odpowiednika w transformacjach.
  */
 export function Accordion({ items, defaultOpen = [], className }: Props) {
   if (items.length === 0) return null

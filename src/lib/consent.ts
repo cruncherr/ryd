@@ -20,7 +20,7 @@ const STORAGE_KEY = 'ryd-zgody'
 const CHANGE_EVENT = 'ryd:consent-changed'
 export const OPEN_EVENT = 'ryd:open-consent'
 
-// Jedna, niezmienna wartość „brak decyzji" — React wymaga, żeby odczyt stanu nie tworzył nowych obiektów.
+// Jedna, niezmienna wartość „brak decyzji” — React wymaga, żeby odczyt stanu nie tworzył nowych obiektów.
 let cache: { raw: string | null; value: Consent | null } = { raw: null, value: null }
 
 function read(): Consent | null {

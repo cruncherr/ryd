@@ -110,7 +110,7 @@ export const Homepage: GlobalConfig = {
               name: 'collection',
               type: 'group',
               label: 'Sekcja z produktami',
-              admin: { description: 'Pokazuje produkty z zaznaczoną opcją „Pokaż na stronie głównej".' },
+              admin: { description: 'Pokazuje produkty z zaznaczoną opcją „Pokaż na stronie głównej”.' },
               fields: heading('np. Kolekcja'),
             },
           ],
@@ -130,7 +130,7 @@ export const Homepage: GlobalConfig = {
                   relationTo: 'products',
                   label: 'Produkt z pokazem funkcji',
                   admin: {
-                    description: 'Wybierz produkt, który ma uzupełnione widoki w zakładce „Zdjęcia i kolory → Pokaz funkcji".',
+                    description: 'Wybierz produkt, który ma uzupełnione widoki w zakładce „Zdjęcia i kolory → Pokaz funkcji”.',
                   },
                 },
               ],

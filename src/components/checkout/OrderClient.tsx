@@ -30,7 +30,7 @@ export function OrderPlacedEffects({ purchase }: { purchase: PlacedOrder | null 
 
   useEffect(() => {
     if (!consumeOrderPlaced()) return
-    // Pomiar „zakup" — wyłącznie dla właśnie złożonego, prawdziwego zamówienia i tylko za zgodą klienta.
+    // Pomiar „zakup” — wyłącznie dla właśnie złożonego, prawdziwego zamówienia i tylko za zgodą klienta.
     if (placed.current) trackPurchase(placed.current)
     clearDraft()
     // Koszyk mógł jeszcze nie zostać wczytany z pamięci przeglądarki — czyścimy również zapis.
@@ -42,7 +42,7 @@ export function OrderPlacedEffects({ purchase }: { purchase: PlacedOrder | null 
   return null
 }
 
-/** Przycisk „Kopiuj" przy danych do przelewu, z krótkim potwierdzeniem. */
+/** Przycisk „Kopiuj” przy danych do przelewu, z krótkim potwierdzeniem. */
 export function CopyButton({ value, label }: { value: string; label: string }) {
   const [copied, setCopied] = useState(false)
   const timer = useRef<number | null>(null)
@@ -84,7 +84,7 @@ export function CopyButton({ value, label }: { value: string; label: string }) {
   )
 }
 
-/** „Zapłać online" — rozpoczyna płatność za złożone zamówienie i przenosi na stronę operatora. */
+/** „Zapłać online” — rozpoczyna płatność za złożone zamówienie i przenosi na stronę operatora. */
 export function PayOnlineButton({ token, label = 'Zapłać online' }: { token: string; label?: string }) {
   const [isPending, startTransition] = useTransition()
   const [leaving, setLeaving] = useState(false)

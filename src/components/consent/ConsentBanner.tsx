@@ -52,7 +52,7 @@ function Toggle({
 /**
  * Baner zgody na pliki cookie. Pokazuje się tylko w sklepach, które mają podłączone
  * narzędzia analityczne lub marketingowe, i tylko do czasu podjęcia decyzji.
- * Odmowa jest równie łatwa jak zgoda; decyzję można zmienić ze stopki („Ustawienia cookies").
+ * Odmowa jest równie łatwa jak zgoda; decyzję można zmienić ze stopki („Ustawienia cookies”).
  */
 export function ConsentBanner({ hasAnalytics, hasMarketing, privacyUrl }: Props) {
   const consent = useConsent()
@@ -79,13 +79,13 @@ export function ConsentBanner({ hasAnalytics, hasMarketing, privacyUrl }: Props)
     }
   }, [])
 
-  // `undefined` = strona dopiero się wczytuje; nie pokazujemy banera „na chwilę" osobom, które już wybrały.
+  // `undefined` = strona dopiero się wczytuje; nie pokazujemy banera „na chwilę” osobom, które już wybrały.
   if (consent === undefined) return null
   const visible = consent === null || reopened
   if (!visible) return null
 
   const finish = (choice: { analytics: boolean; marketing: boolean }) => {
-    // Najpierw krótkie wyjście, potem zapis — baner nie znika „w pół ruchu".
+    // Najpierw krótkie wyjście, potem zapis — baner nie znika „w pół ruchu”.
     setClosing(true)
     closeTimer.current = window.setTimeout(() => {
       saveConsent({ analytics: hasAnalytics && choice.analytics, marketing: hasMarketing && choice.marketing })

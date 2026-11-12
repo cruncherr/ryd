@@ -138,7 +138,7 @@ export async function markPaymentFailed(payload: Payload, session: Stripe.Checko
 
 /**
  * Sprawdza u operatora stan ostatniej płatności zamówienia. Używane po powrocie klienta
- * ze strony płatności — dzięki temu status „Opłacone" pojawia się od razu,
+ * ze strony płatności — dzięki temu status „Opłacone” pojawia się od razu,
  * nawet zanim dotrze powiadomienie od Stripe.
  */
 export async function refreshPaymentStatus(payload: Payload, order: Order): Promise<SettleResult> {

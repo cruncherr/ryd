@@ -2,7 +2,7 @@
 
 /*
  * RYD — system wizualny sklepu.
- * Ciepły papier, grafitowy tusz, zdjęcia mebli na jasnej „scenie".
+ * Ciepły papier, grafitowy tusz, zdjęcia mebli na jasnej „scenie”.
  * Ruch: krótki, celowy, zawsze transform/opacity; krzywe i czasy wg zasad Emila Kowalskiego.
  */
 
@@ -31,7 +31,7 @@
   font-display: swap;
 }
 
-/* Kroje zastępcze dopasowane metrycznie — tekst nie „skacze", gdy doładuje się właściwy krój. */
+/* Kroje zastępcze dopasowane metrycznie — tekst nie „skacze”, gdy doładuje się właściwy krój. */
 @font-face {
   font-family: 'Fraunces Fallback';
   src: local('Times New Roman'), local('Times'), local('Liberation Serif');
@@ -78,7 +78,7 @@
   --container-shell: 85rem;
 }
 
-/* Najechanie tylko tam, gdzie jest prawdziwy wskaźnik — na telefonie nie „przykleja się" po dotknięciu. */
+/* Najechanie tylko tam, gdzie jest prawdziwy wskaźnik — na telefonie nie „przykleja się” po dotknięciu. */
 @custom-variant hover {
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -355,7 +355,7 @@
 }
 
 /*
- * Wejście sekcji przy przewijaniu — tylko na stronach „wystawowych", jednorazowo.
+ * Wejście sekcji przy przewijaniu — tylko na stronach „wystawowych”, jednorazowo.
  * Treść jest chowana wyłącznie wtedy, gdy przeglądarka ma włączony JavaScript (to on ją potem odsłania);
  * bez niego — oraz w starszych przeglądarkach, które nie znają tego warunku — jest po prostu widoczna.
  */
@@ -581,7 +581,7 @@
   display: flex;
 }
 
-/* Arkusz wysuwany od dołu. Zapas (--bleed) chowa szczelinę, gdy arkusz „odbija" przy przeciąganiu. */
+/* Arkusz wysuwany od dołu. Zapas (--bleed) chowa szczelinę, gdy arkusz „odbija” przy przeciąganiu. */
 .drawer-sheet {
   --bleed: 3rem;
   width: 100%;
@@ -691,7 +691,7 @@
   transform: none;
 }
 
-/* Zmiana napisu na przycisku („Dodaj do koszyka" → „Dodano"): rozmycie maskuje przenikanie dwóch stanów. */
+/* Zmiana napisu na przycisku („Dodaj do koszyka” → „Dodano”): rozmycie maskuje przenikanie dwóch stanów. */
 @keyframes label-swap {
   from {
     opacity: 0;

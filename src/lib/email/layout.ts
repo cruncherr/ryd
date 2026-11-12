@@ -63,7 +63,7 @@ export function panel(html: string, options: { tone?: 'neutral' | 'notice' } = {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 18px;"><tr><td style="background:${background};border-radius:10px;padding:18px 20px;font-family:${SANS};font-size:15px;line-height:24px;color:${COLOR.ink};">${html}</td></tr></table>`
 }
 
-/** Tabela „etykieta — wartość". Wartości muszą być już bezpiecznym HTML-em. */
+/** Tabela „etykieta — wartość”. Wartości muszą być już bezpiecznym HTML-em. */
 export function keyValues(rows: Array<[label: string, valueHtml: string]>): string {
   const body = rows
     .filter(([, value]) => value !== '')

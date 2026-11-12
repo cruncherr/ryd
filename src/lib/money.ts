@@ -23,7 +23,7 @@ export function sum(values: number[]): number {
 const NBSP = '\u00a0'
 
 /**
- * „3 990 zł" dla pełnych złotych, „3 990,50 zł" gdy są grosze.
+ * „3 990 zł” dla pełnych złotych, „3 990,50 zł” gdy są grosze.
  * Formatowanie jest napisane ręcznie (bez Intl), żeby serwer i każda przeglądarka
  * dawały identyczny tekst — inaczej React zgłaszałby różnice przy hydracji.
  */

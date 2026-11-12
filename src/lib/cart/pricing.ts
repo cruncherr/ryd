@@ -1,30 +1,17 @@
-import { z } from 'zod'
-
 import { asMedia, variantImages } from '@/lib/catalog'
-import { CART_LIMITS } from '@/lib/constants'
 import { effectivePrice, lineTotal, sum } from '@/lib/money'
 import { getProductsByIds } from '@/lib/queries'
-import type { Setting } from '@/payload-types'
 
+import type { CartInput } from './input'
 import type { CartLine } from './store'
-import type { PaymentOption } from './totals'
 
-export { orderTotal, shippingCostFor, type PaymentOption } from './totals'
+export { cartInputSchema, parseCartInput, type CartInput } from './input'
+export { orderTotal, paymentOptions, shippingCostFor, type PaymentOption } from './totals'
 
 /**
  * Jedyne miejsce, w którym powstają kwoty zamówienia. Przeglądarka przysyła wyłącznie
  * identyfikatory i ilości — ceny, nazwy i dostępność zawsze bierzemy z bazy.
  */
-
-const lineSchema = z.object({
-  productId: z.number().int().positive(),
-  variantId: z.string().min(1).max(64),
-  quantity: z.number().int().min(1).max(CART_LIMITS.maxQuantityPerLine),
-})
-
-export const cartInputSchema = z.array(lineSchema).max(CART_LIMITS.maxLines)
-
-export type CartInput = z.infer<typeof cartInputSchema>
 
 export type PricedLine = {
   productId: number
@@ -47,24 +34,6 @@ export type PricedCart = {
   subtotal: number
   itemCount: number
   hasUnavailable: boolean
-}
-
-/** Odczytuje koszyk przysłany przez przeglądarkę; odrzuca wszystko, co nie pasuje do wzorca. */
-export function parseCartInput(raw: unknown): CartInput {
-  const parsed = cartInputSchema.safeParse(raw)
-  if (!parsed.success) return []
-
-  // Łączymy powtórzone pozycje tego samego produktu i koloru.
-  const merged = new Map<string, CartInput[number]>()
-  for (const line of parsed.data) {
-    const key = `${line.productId}:${line.variantId}`
-    const existing = merged.get(key)
-    merged.set(key, {
-      ...line,
-      quantity: Math.min(CART_LIMITS.maxQuantityPerLine, (existing?.quantity ?? 0) + line.quantity),
-    })
-  }
-  return [...merged.values()]
 }
 
 export async function priceCart(input: CartInput): Promise<PricedCart> {
@@ -131,39 +100,4 @@ export function toCartLines(priced: PricedCart): CartLine[] {
     imageUrl: line.imageUrl,
     unavailable: line.unavailable || undefined,
   }))
-}
-
-/**
- * Formy płatności dostępne w zamówieniu — według ustawień sklepu.
- * Płatność online pojawia się tylko wtedy, gdy podłączono operatora płatności.
- */
-export function paymentOptions(settings: Setting, onlineConfigured: boolean): PaymentOption[] {
-  const payments = settings.payments
-  const options: PaymentOption[] = []
-
-  if (payments?.onlineEnabled && onlineConfigured) {
-    options.push({
-      value: 'online',
-      label: 'Płatność online',
-      description: 'BLIK, szybki przelew lub karta. Po złożeniu zamówienia przejdziesz na bezpieczną stronę płatności.',
-      fee: 0,
-    })
-  }
-  if (payments?.transferEnabled) {
-    options.push({
-      value: 'transfer',
-      label: 'Przelew tradycyjny',
-      description: 'Dane do przelewu otrzymasz na stronie potwierdzenia i w wiadomości e-mail.',
-      fee: 0,
-    })
-  }
-  if (payments?.codEnabled) {
-    options.push({
-      value: 'cod',
-      label: 'Płatność przy odbiorze',
-      description: 'Płacisz kurierowi przy dostawie.',
-      fee: payments.codFee ?? 0,
-    })
-  }
-  return options
 }

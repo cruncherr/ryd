@@ -10,7 +10,7 @@ import { appendPriceHistory, type PriceHistoryEntry } from '@/lib/priceHistory'
 
 /**
  * Zapisuje historię cen opublikowanego produktu. Dzięki niej sklep sam pokazuje
- * przy obniżce „najniższą cenę z 30 dni przed obniżką".
+ * przy obniżce „najniższą cenę z 30 dni przed obniżką”.
  */
 const recordPriceHistory: CollectionBeforeChangeHook = ({ data, originalDoc }) => {
   const merged = { ...(originalDoc ?? {}), ...data }
@@ -129,7 +129,7 @@ export const Products: CollectionConfig = {
                   label: 'Czas realizacji',
                   admin: {
                     placeholder: 'np. Wysyłka w 3–5 tygodni',
-                    description: 'Wyświetlany przy przycisku „Dodaj do koszyka".',
+                    description: 'Wyświetlany przy przycisku „Dodaj do koszyka”.',
                     width: '60%',
                   },
                 },
@@ -352,7 +352,7 @@ export const Products: CollectionConfig = {
               labels: { singular: 'Pozycja', plural: 'Pozycje' },
               admin: {
                 description:
-                  'Dowolne pary „nazwa — wartość", np. Wypełnienie siedziska — pianka wysokoelastyczna; Stelaż — drewno i płyta; Funkcja spania — tak.',
+                  'Dowolne pary „nazwa — wartość”, np. Wypełnienie siedziska — pianka wysokoelastyczna; Stelaż — drewno i płyta; Funkcja spania — tak.',
                 initCollapsed: true,
                 components: {
                   RowLabel: '@/components/admin/RowLabels#SpecRowLabel',

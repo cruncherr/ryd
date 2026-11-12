@@ -1,7 +1,7 @@
 ## §1. Postanowienia ogólne
 
 1. Regulamin określa zasady korzystania ze sklepu internetowego, składania zamówień, płatności, dostawy, odstąpienia od umowy oraz reklamacji.
-2. Sklep prowadzi Sprzedawca, którego pełne dane (nazwa, adres, NIP oraz dane kontaktowe) znajdują się w ramce „Dane sprzedawcy" na tej stronie.
+2. Sklep prowadzi Sprzedawca, którego pełne dane (nazwa, adres, NIP oraz dane kontaktowe) znajdują się w ramce „Dane sprzedawcy” na tej stronie.
 3. Kontakt ze Sprzedawcą jest możliwy pocztą elektroniczną, telefonicznie oraz przez formularz kontaktowy w sklepie.
 4. Użyte w regulaminie pojęcia oznaczają:
    - **Klient** — osoba fizyczna, osoba prawna lub jednostka organizacyjna, która składa zamówienie w sklepie;
@@ -26,7 +26,7 @@
    - podaje dane potrzebne do realizacji zamówienia: imię i nazwisko, adres dostawy, adres e-mail i numer telefonu, a jeśli chce otrzymać fakturę na firmę — również dane firmy i NIP;
    - wybiera sposób dostawy i sposób płatności;
    - zapoznaje się z regulaminem i polityką prywatności oraz potwierdza to w formularzu;
-   - zatwierdza zamówienie przyciskiem „Zamawiam z obowiązkiem zapłaty".
+   - zatwierdza zamówienie przyciskiem „Zamawiam z obowiązkiem zapłaty”.
 3. Przed zatwierdzeniem zamówienia Klient widzi jego podsumowanie: zamówione Towary, cenę łączną, koszt dostawy i inne koszty, jeśli występują.
 4. Po złożeniu zamówienia Klient otrzymuje wiadomość e-mail z potwierdzeniem jego otrzymania i treścią zamówienia. Z chwilą otrzymania tej wiadomości zostaje zawarta Umowa.
 5. Sprzedawca może skontaktować się z Klientem telefonicznie lub e-mailowo w celu potwierdzenia szczegółów zamówienia, w szczególności terminu dostawy.
@@ -64,7 +64,7 @@
 
 1. Sprzedawca ma obowiązek dostarczyć Towar zgodny z Umową.
 2. Wobec Konsumenta i Przedsiębiorcy na prawach konsumenta Sprzedawca odpowiada za brak zgodności Towaru z Umową istniejący w chwili jego dostarczenia i ujawniony w ciągu dwóch lat od tej chwili, na zasadach określonych w ustawie o prawach konsumenta.
-3. Reklamację można złożyć pocztą elektroniczną lub listownie, na adresy podane w ramce „Dane sprzedawcy". W zgłoszeniu warto podać: numer zamówienia, opis i datę stwierdzenia niezgodności, zdjęcia oraz oczekiwany sposób załatwienia sprawy.
+3. Reklamację można złożyć pocztą elektroniczną lub listownie, na adresy podane w ramce „Dane sprzedawcy”. W zgłoszeniu warto podać: numer zamówienia, opis i datę stwierdzenia niezgodności, zdjęcia oraz oczekiwany sposób załatwienia sprawy.
 4. Jeżeli Towar jest niezgodny z Umową, Klient może żądać jego naprawy lub wymiany, a w przypadkach wskazanych w ustawie — złożyć oświadczenie o obniżeniu ceny albo odstąpieniu od Umowy.
 5. Sprzedawca udziela odpowiedzi na reklamację w terminie 14 dni od jej otrzymania.
 6. Koszty odbioru i dostarczenia reklamowanego Towaru w uzasadnionych przypadkach ponosi Sprzedawca.
@@ -93,7 +93,7 @@ Administratorem danych osobowych Klientów jest Sprzedawca. Zasady przetwarzania
 
 Formularz należy wypełnić i odesłać tylko w przypadku chęci odstąpienia od umowy.
 
-Adresat: [nazwa, adres i e-mail Sprzedawcy — z ramki „Dane sprzedawcy"]
+Adresat: [nazwa, adres i e-mail Sprzedawcy — z ramki „Dane sprzedawcy”]
 
 Ja/My niniejszym informuję/informujemy o moim/naszym odstąpieniu od umowy sprzedaży następujących rzeczy: ……………………………………
 

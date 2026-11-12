@@ -3,8 +3,8 @@ import { Fragment } from 'react'
 import { noOrphans } from '@/lib/typography'
 
 /**
- * Nagłówek z wyróżnieniem: słowa wpisane w panelu między gwiazdkami (np. „zostać *dłużej*")
- * są składane kursywą. Reszta tekstu dostaje polskie „twarde spacje" po jednoliterowych słowach.
+ * Nagłówek z wyróżnieniem: słowa wpisane w panelu między gwiazdkami (np. „zostać *dłużej*”)
+ * są składane kursywą. Reszta tekstu dostaje polskie „twarde spacje” po jednoliterowych słowach.
  */
 export function Emphasis({ text }: { text: string | null | undefined }) {
   if (!text) return null

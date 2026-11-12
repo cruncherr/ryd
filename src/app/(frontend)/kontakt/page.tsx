@@ -16,7 +16,7 @@ const DEFAULT_LEAD =
 
 /**
  * Tytuł, wstęp i dodatkową treść tej strony można zmienić w panelu: wystarczy utworzyć
- * w „Stronach" stronę o końcówce adresu „kontakt". Bez niej strona ma treść domyślną.
+ * w „Stronach” stronę o końcówce adresu „kontakt”. Bez niej strona ma treść domyślną.
  */
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug('kontakt')

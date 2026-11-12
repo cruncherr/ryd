@@ -35,7 +35,7 @@ export function isValidEmail(value: string): boolean {
 
 /* ---------- Telefon ---------- */
 
-/** „600 100 200", „+48 600-100-200", „0048600100200" → „+48600100200". Zwraca '' dla błędnego numeru. */
+/** „600 100 200”, „+48 600-100-200”, „0048600100200” → „+48600100200”. Zwraca '' dla błędnego numeru. */
 export function normalizePhone(value: unknown): string {
   if (typeof value !== 'string') return ''
   const compact = value.replace(/[\s().-]/g, '')
@@ -50,7 +50,7 @@ export function normalizePhone(value: unknown): string {
   return ''
 }
 
-/** „+48600100200" → „+48 600 100 200" (do wyświetlania w e-mailach i na stronie potwierdzenia). */
+/** „+48600100200” → „+48 600 100 200” (do wyświetlania w e-mailach i na stronie potwierdzenia). */
 export function formatPhone(value: string | null | undefined): string {
   if (!value) return ''
   const polish = /^\+48(\d{3})(\d{3})(\d{3})$/.exec(value)
@@ -59,7 +59,7 @@ export function formatPhone(value: string | null | undefined): string {
 
 /* ---------- Kod pocztowy ---------- */
 
-/** „00950" i „00 950" → „00-950". Zwraca '' dla błędnego kodu. */
+/** „00950” i „00 950” → „00-950”. Zwraca '' dla błędnego kodu. */
 export function normalizePostalCode(value: unknown): string {
   if (typeof value !== 'string') return ''
   const digits = value.replace(/[\s-]/g, '')
@@ -76,7 +76,7 @@ export function formatPostalCodeInput(value: string): string {
 
 const NIP_WEIGHTS = [6, 5, 7, 2, 3, 4, 5, 6, 7] as const
 
-/** „PL 521-301-28-41" → „5213012841". Zwraca '' dla numeru z błędną sumą kontrolną. */
+/** „PL 521-301-28-41” → „5213012841”. Zwraca '' dla numeru z błędną sumą kontrolną. */
 export function normalizeNip(value: unknown): string {
   if (typeof value !== 'string') return ''
   const digits = value.replace(/^\s*PL/i, '').replace(/[\s-]/g, '')

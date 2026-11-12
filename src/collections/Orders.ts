@@ -23,7 +23,7 @@ export const Orders: CollectionConfig = {
     defaultColumns: ['orderNumber', 'createdAt', 'customerName', 'total', 'status', 'paymentStatus'],
     listSearchableFields: ['orderNumber', 'customerName', 'email', 'phone'],
     description:
-      'Zamówienia złożone w sklepie. Zmieniaj status w miarę realizacji — po oznaczeniu „Wysłane" klient dostaje e-mail z informacją o wysyłce.',
+      'Zamówienia złożone w sklepie. Zmieniaj status w miarę realizacji — po oznaczeniu „Wysłane” klient dostaje e-mail z informacją o wysyłce.',
   },
   defaultSort: '-createdAt',
   // Zamówienia tworzy wyłącznie serwer sklepu po sprawdzeniu cen i danych.
@@ -275,7 +275,7 @@ export const Orders: CollectionConfig = {
     { name: 'customerName', type: 'text', label: 'Klient', admin: { hidden: true } },
     { name: 'accessToken', type: 'text', index: true, admin: { hidden: true } },
     { name: 'stripeSessionId', type: 'text', index: true, admin: { hidden: true } },
-    // Identyfikator próby złożenia zamówienia — ponowne kliknięcie „Zamawiam" przy słabym łączu nie tworzy duplikatu.
+    // Identyfikator próby złożenia zamówienia — ponowne kliknięcie „Zamawiam” przy słabym łączu nie tworzy duplikatu.
     { name: 'requestId', type: 'text', index: true, admin: { hidden: true } },
     { name: 'emailsSent', type: 'json', admin: { hidden: true } },
   ],

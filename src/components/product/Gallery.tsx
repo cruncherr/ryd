@@ -132,13 +132,6 @@ export function Gallery({ images, title }: Props) {
   const onIndexChange = useCallback((index: number) => setActive(clamp(index)), [clamp])
   const onZoomIndexChange = useCallback((index: number) => setZoomActive(clamp(index)), [clamp])
 
-  // Po zmianie koloru (inny zestaw zdjęć) wracamy do pierwszego zdjęcia.
-  const firstId = images[0]?.id
-  useEffect(() => {
-    scrollToIndex(track.current, 0, false)
-    setActive(0)
-  }, [firstId])
-
   if (count === 0) {
     return <div aria-hidden="true" className="stage aspect-[4/3]" />
   }

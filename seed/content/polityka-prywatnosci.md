@@ -1,6 +1,6 @@
 ## Kto jest administratorem Twoich danych
 
-Administratorem danych osobowych jest Sprzedawca prowadzący sklep. Jego pełne dane oraz adres e-mail do kontaktu w sprawach danych osobowych znajdują się w ramce „Dane sprzedawcy" na tej stronie.
+Administratorem danych osobowych jest Sprzedawca prowadzący sklep. Jego pełne dane oraz adres e-mail do kontaktu w sprawach danych osobowych znajdują się w ramce „Dane sprzedawcy” na tej stronie.
 
 ## Jakie dane przetwarzamy i po co
 
@@ -49,7 +49,7 @@ Masz prawo do:
 - wycofania zgody w dowolnym momencie, bez wpływu na zgodność z prawem przetwarzania sprzed jej wycofania;
 - wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (ul. Stawki 2, 00-193 Warszawa).
 
-Aby skorzystać ze swoich praw, napisz do nas na adres e-mail podany w ramce „Dane sprzedawcy".
+Aby skorzystać ze swoich praw, napisz do nas na adres e-mail podany w ramce „Dane sprzedawcy”.
 
 Nie podejmujemy wobec Ciebie decyzji opartych wyłącznie na zautomatyzowanym przetwarzaniu, w tym profilowaniu, które wywoływałyby skutki prawne.
 
@@ -60,7 +60,7 @@ Sklep korzysta z pamięci przeglądarki oraz plików cookie w następujący spos
 - **Niezbędne.** Zawartość koszyka oraz Twój wybór dotyczący zgód zapisujemy w pamięci przeglądarki na Twoim urządzeniu. Są one konieczne do działania sklepu i nie wymagają zgody.
 - **Analityczne i marketingowe.** Jeśli korzystamy z narzędzi takich jak Google Analytics lub Meta Pixel, uruchamiamy je dopiero po wyrażeniu przez Ciebie zgody w banerze. Pomagają nam zrozumieć, jak klienci korzystają ze sklepu, i mierzyć skuteczność reklam.
 
-Swoją decyzję możesz zmienić w każdej chwili, klikając „Ustawienia cookies" w stopce sklepu. Pliki cookie możesz też usunąć lub zablokować w ustawieniach przeglądarki.
+Swoją decyzję możesz zmienić w każdej chwili, klikając „Ustawienia cookies” w stopce sklepu. Pliki cookie możesz też usunąć lub zablokować w ustawieniach przeglądarki.
 
 ## Zmiany polityki prywatności
 

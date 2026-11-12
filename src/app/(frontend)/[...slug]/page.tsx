@@ -15,7 +15,7 @@ import { noOrphans } from '@/lib/typography'
 
 /**
  * Strony informacyjne tworzone w panelu (Regulamin, O nas, Dostawa i płatności…).
- * Ta sama trasa obsługuje każdy adres, którego sklep nie zna — wtedy pokazuje stronę „Nie znaleziono".
+ * Ta sama trasa obsługuje każdy adres, którego sklep nie zna — wtedy pokazuje stronę „Nie znaleziono”.
  */
 
 /** Spis treści pojawia się dopiero przy dłuższych dokumentach. */
@@ -70,7 +70,7 @@ export default async function ContentPage({ params }: PageProps<'/[...slug]'>) {
       {showReviewNotice && (
         <p className="mt-8 max-w-3xl rounded-[var(--radius-field)] bg-notice px-5 py-4 text-[0.9375rem] leading-relaxed">
           <strong className="font-medium">Treść przykładowa.</strong> To szkic do sprawdzenia przed uruchomieniem sklepu — uzupełnij miejsca
-          oznaczone na żółto i odznacz w panelu pole „Treść przykładowa".
+          oznaczone na żółto i odznacz w panelu pole „Treść przykładowa”.
         </p>
       )}
 

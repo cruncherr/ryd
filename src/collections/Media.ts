@@ -25,7 +25,7 @@ export const Media: CollectionConfig = {
       label: 'Opis zdjęcia',
       admin: {
         description:
-          'Jedno zdanie o tym, co widać na zdjęciu, np. „Sofa w kolorze grafitowym, widok z przodu". Czytają je wyszukiwarki i czytniki ekranu.',
+          'Jedno zdanie o tym, co widać na zdjęciu, np. „Sofa w kolorze grafitowym, widok z przodu”. Czytają je wyszukiwarki i czytniki ekranu.',
       },
     },
   ],

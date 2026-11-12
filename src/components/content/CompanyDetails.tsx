@@ -2,7 +2,7 @@ import { formatPhone } from '@/lib/validation'
 import type { Setting } from '@/payload-types'
 
 /**
- * Ramka „Dane sprzedawcy" pod regulaminem, polityką prywatności i zasadami zwrotów.
+ * Ramka „Dane sprzedawcy” pod regulaminem, polityką prywatności i zasadami zwrotów.
  * Dane pochodzą z ustawień sklepu, więc zmiana w panelu od razu trafia do wszystkich dokumentów.
  */
 export function CompanyDetails({ settings }: { settings: Setting }) {

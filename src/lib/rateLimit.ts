@@ -3,7 +3,7 @@ import { headers } from 'next/headers'
 
 /**
  * Prosty ogranicznik liczby zgłoszeń z jednego adresu (zamówienia, formularz kontaktowy).
- * Liczniki żyją w pamięci serwera — to ochrona „na pierwszej linii" przed automatami
+ * Liczniki żyją w pamięci serwera — to ochrona „na pierwszej linii” przed automatami
  * zalewającymi sklep zgłoszeniami, a nie twarda gwarancja. Adres IP nie jest nigdzie zapisywany:
  * w pamięci trzymamy tylko jego skrót, a i ten znika po kilkunastu minutach.
  */

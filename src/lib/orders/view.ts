@@ -27,15 +27,20 @@ export function formatOrderDate(value: string | Date): string {
 }
 
 export function formatOrderDateTime(value: string | Date): string {
-  // „12 listopada 2026 08:55" → „12 listopada 2026, 08:55"
+  // „12 listopada 2026 08:55” → „12 listopada 2026, 08:55”
   return dateTimeFormatter.format(new Date(value)).replace(/,?\s+(\d{1,2}:\d{2})$/, ', $1')
 }
 
-/** „Dostawa: Kurier DPD"; nazwy zaczynającej się od słowa „Dostawa" nie poprzedzamy nim drugi raz. */
+/** „Dostawa: Kurier DPD”; nazwy zaczynającej się od słowa „Dostawa” nie poprzedzamy nim drugi raz. */
 export function shippingLabel(methodName: string | null | undefined): string {
   const name = methodName?.trim()
   if (!name) return 'Dostawa'
   return /^dostawa/i.test(name) ? name : `Dostawa: ${name}`
+}
+
+/** Ile czasu (w milisekundach) minęło od złożenia zamówienia. */
+export function orderAgeMs(order: Pick<Order, 'createdAt'>): number {
+  return Date.now() - new Date(order.createdAt).getTime()
 }
 
 export type TransferDetails = {

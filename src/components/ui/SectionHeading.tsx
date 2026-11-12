@@ -9,7 +9,7 @@ type Props = {
   eyebrow?: string | null
   title?: string | null
   text?: string | null
-  /** Element po prawej stronie nagłówka, np. link „Zobacz wszystkie". */
+  /** Element po prawej stronie nagłówka, np. link „Zobacz wszystkie”. */
   action?: ReactNode
   /** Poziom nagłówka w strukturze strony. */
   as?: 'h1' | 'h2'

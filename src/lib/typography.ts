@@ -8,7 +8,7 @@ const NBSP = '\u00a0'
 export function noOrphans(text: string | null | undefined): string {
   if (!text) return ''
   const pattern = /(^|[\s(„"«])([aiouwzAIOUWZ]) +/g
-  // Dwa przebiegi: pierwszy „zjada" spację przed kolejnym jednoliterowym słowem („a w domu").
+  // Dwa przebiegi: pierwszy „zjada” spację przed kolejnym jednoliterowym słowem („a w domu”).
   return text.replace(pattern, `$1$2${NBSP}`).replace(pattern, `$1$2${NBSP}`)
 }
 

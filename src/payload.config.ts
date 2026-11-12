@@ -60,6 +60,10 @@ export default buildConfig({
       connectionString: databaseUrl,
     },
     migrationDir: path.resolve(dirname, 'migrations'),
+    // Tabele tworzą się „same” wyłącznie podczas pracy nad sklepem na własnym komputerze (pnpm dev).
+    // Na serwerze strukturę bazy zmieniają tylko migracje — skrypty wdrożeniowe nigdy jej nie ruszają,
+    // dzięki czemu kolejne wdrożenia nie zatrzymują się na pytaniu o potwierdzenie.
+    push: process.env.NODE_ENV === 'development',
   }),
   i18n: {
     fallbackLanguage: 'pl',

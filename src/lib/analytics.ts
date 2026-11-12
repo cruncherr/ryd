@@ -40,7 +40,7 @@ const valueOf = (items: AnalyticsItem[]): number => Math.round(items.reduce((tot
 
 type Pending = { tool: 'ga' | 'pixel'; name: string; params: Record<string, unknown> }
 
-// Zdarzenia zgłoszone, zanim narzędzie zdążyło się uruchomić (np. „obejrzano produkt" tuż po wczytaniu strony).
+// Zdarzenia zgłoszone, zanim narzędzie zdążyło się uruchomić (np. „obejrzano produkt” tuż po wczytaniu strony).
 const pending: Pending[] = []
 const MAX_PENDING = 20
 

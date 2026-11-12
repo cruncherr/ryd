@@ -11,7 +11,7 @@ type Props = {
 
 /**
  * Jednorazowe, spokojne wejście elementu, gdy pojawia się na ekranie.
- * Używamy go tylko na stronach „wystawowych" (strona główna), nigdy w koszyku czy zamówieniu.
+ * Używamy go tylko na stronach „wystawowych” (strona główna), nigdy w koszyku czy zamówieniu.
  * Styl i wariant dla ograniczonego ruchu są w globals.css ([data-reveal]).
  */
 export function Reveal({ children, index = 0, className }: Props) {

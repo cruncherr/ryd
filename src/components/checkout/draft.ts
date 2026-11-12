@@ -69,7 +69,7 @@ export function clearDraft(): void {
   }
 }
 
-/** Znacznik „właśnie złożono zamówienie" — strona potwierdzenia opróżnia po nim koszyk. */
+/** Znacznik „właśnie złożono zamówienie” — strona potwierdzenia opróżnia po nim koszyk. */
 export function markOrderPlaced(): void {
   try {
     window.sessionStorage.setItem(PLACED_KEY, '1')

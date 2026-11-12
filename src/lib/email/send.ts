@@ -33,7 +33,7 @@ type Envelope = EmailContent & {
   to: string
   replyTo?: string
   attachments?: Attachment[]
-  /** Krótka nazwa do podglądu i dziennika, np. „potwierdzenie-RYD-1001". */
+  /** Krótka nazwa do podglądu i dziennika, np. „potwierdzenie-RYD-1001”. */
   label: string
 }
 
@@ -83,7 +83,7 @@ async function deliver(payload: Payload, settings: Setting, envelope: Envelope):
     })
     return 'sent'
   } catch (error) {
-    payload.logger.error({ err: error }, `Nie udało się wysłać e-maila „${envelope.subject}" do ${envelope.to}`)
+    payload.logger.error({ err: error }, `Nie udało się wysłać e-maila „${envelope.subject}” do ${envelope.to}`)
     return 'failed'
   }
 }
@@ -181,7 +181,7 @@ async function legalAttachments(
       if (!body) return []
 
       const header = `${page.title.toUpperCase()}\n${context.settings.storeName ?? ''} · ${context.siteUrl}/${slug}\nTreść obowiązująca w dniu ${formatOrderDate(new Date())}`
-      // Dokument odsyła do ramki „Dane sprzedawcy" na stronie — w załączniku dopisujemy je wprost.
+      // Dokument odsyła do ramki „Dane sprzedawcy” na stronie — w załączniku dopisujemy je wprost.
       const seller = page.showCompanyDetails ? sellerBlock(context.settings) : ''
       return [
         {

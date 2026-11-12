@@ -6,7 +6,7 @@ import type { Setting } from '@/payload-types'
 /**
  * Lista kontrolna przed uruchomieniem sklepu. Ta sama lista:
  *  - jest pokazywana na pulpicie panelu,
- *  - blokuje przełączenie sklepu na „Uruchomiony", dopóki brakuje rzeczy koniecznych.
+ *  - blokuje przełączenie sklepu na „Uruchomiony”, dopóki brakuje rzeczy koniecznych.
  * Dzięki temu sklep nie wystartuje z przykładowymi cenami ani bez danych sprzedawcy.
  */
 export type ChecklistItem = {
@@ -77,7 +77,7 @@ export async function getLaunchChecklist(
     (slug) => !pages.docs.some((doc) => doc.slug === slug && doc._status === 'published'),
   )
   const pagesToReview = pages.docs.filter((doc) => doc._status === 'published' && doc.needsReview)
-  // Niewypełnione miejsca w szkicach — sklep nie może ruszyć z tekstem „[UZUPEŁNIJ: …]" w regulaminie.
+  // Niewypełnione miejsca w szkicach — sklep nie może ruszyć z tekstem „[UZUPEŁNIJ: …]” w regulaminie.
   const pagesWithPlaceholders = pages.docs.filter(
     (doc) => doc._status === 'published' && !doc.needsReview && hasPlaceholder(doc.content),
   )
@@ -120,7 +120,7 @@ export async function getLaunchChecklist(
       label: 'Produkty sprawdzone i opublikowane',
       hint:
         sampleProducts.totalDocs > 0
-          ? `Produktów z danymi przykładowymi: ${sampleProducts.totalDocs}. Sprawdź nazwę, cenę, wymiary i opis, a potem odznacz „Dane przykładowe".`
+          ? `Produktów z danymi przykładowymi: ${sampleProducts.totalDocs}. Sprawdź nazwę, cenę, wymiary i opis, a potem odznacz „Dane przykładowe”.`
           : 'Co najmniej jeden opublikowany produkt z prawdziwą ceną i wymiarami.',
       done: publishedProducts.totalDocs > 0 && sampleProducts.totalDocs === 0,
       blocking: true,
@@ -131,7 +131,7 @@ export async function getLaunchChecklist(
       label: 'Metody dostawy',
       hint:
         sampleShipping.totalDocs > 0
-          ? `Metod dostawy z przykładową ceną: ${sampleShipping.totalDocs}. Ustaw prawdziwe ceny i odznacz „Dane przykładowe".`
+          ? `Metod dostawy z przykładową ceną: ${sampleShipping.totalDocs}. Ustaw prawdziwe ceny i odznacz „Dane przykładowe”.`
           : 'Co najmniej jedna aktywna metoda dostawy z prawdziwą ceną.',
       done: shippingMethods.totalDocs > 0 && sampleShipping.totalDocs === 0,
       blocking: true,
@@ -156,7 +156,7 @@ export async function getLaunchChecklist(
           : pagesToReview.length > 0
             ? `Do sprawdzenia: ${pagesToReview
                 .map((doc) => doc.title)
-                .join(', ')}. Przeczytaj szkice, uzupełnij miejsca oznaczone [UZUPEŁNIJ] (regulamin najlepiej z prawnikiem) i odznacz „Treść przykładowa".`
+                .join(', ')}. Przeczytaj szkice, uzupełnij miejsca oznaczone [UZUPEŁNIJ] (regulamin najlepiej z prawnikiem) i odznacz „Treść przykładowa”.`
             : pagesWithPlaceholders.length > 0
               ? `W treści zostały niewypełnione miejsca [UZUPEŁNIJ]: ${pagesWithPlaceholders.map((doc) => doc.title).join(', ')}. Uzupełnij je albo usuń.`
               : 'Regulamin, polityka prywatności oraz zwroty i reklamacje są opublikowane i sprawdzone.',
@@ -183,7 +183,7 @@ export async function getLaunchChecklist(
     {
       id: 'homepage',
       label: 'Teksty strony głównej',
-      hint: 'Przejrzyj hasła i opisy na stronie głównej, dopasuj je do swojej oferty i odznacz „Teksty przykładowe".',
+      hint: 'Przejrzyj hasła i opisy na stronie głównej, dopasuj je do swojej oferty i odznacz „Teksty przykładowe”.',
       done: !homepage?.needsReview,
       blocking: false,
       href: '/admin/globals/homepage',

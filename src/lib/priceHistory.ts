@@ -1,6 +1,6 @@
 /**
  * Historia cen potrzebna do informacji wymaganej przy obniżkach (dyrektywa Omnibus):
- * „Najniższa cena z 30 dni przed obniżką". Zapisujemy każdą zmianę ceny, którą widział
+ * „Najniższa cena z 30 dni przed obniżką”. Zapisujemy każdą zmianę ceny, którą widział
  * klient, i z tej historii wyliczamy najniższą cenę z 30 dni poprzedzających obniżkę.
  */
 

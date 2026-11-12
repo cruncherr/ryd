@@ -139,7 +139,7 @@ function CheckoutForm({ config, lines }: { config: CheckoutConfig; lines: CartLi
   const [paymentChoice, setPaymentChoice] = useState<PaymentMethod | null>(draft.paymentMethod ?? null)
   const [wantsInvoice, setWantsInvoice] = useState(Boolean(draft.wantsInvoice))
 
-  // Pomiar „rozpoczęto zamówienie" — raz, przy wejściu na formularz (koszyk z tej chwili).
+  // Pomiar „rozpoczęto zamówienie” — raz, przy wejściu na formularz (koszyk z tej chwili).
   const linesAtStart = useRef(lines)
   useEffect(() => {
     trackBeginCheckout(
@@ -550,7 +550,7 @@ function CheckoutForm({ config, lines }: { config: CheckoutConfig; lines: CartLi
               .
             </Checkbox>
             <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-soft">
-              {/* Nazwa firmy często kończy się kropką („sp. z o.o.") — nie stawiamy wtedy drugiej. */}
+              {/* Nazwa firmy często kończy się kropką („sp. z o.o.”) — nie stawiamy wtedy drugiej. */}
               Administratorem Twoich danych osobowych jest {(config.sellerName || 'sprzedawca').replace(/\.$/, '')}. Wykorzystamy je do
               realizacji zamówienia.
               {links.privacy && (

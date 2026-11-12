@@ -161,7 +161,7 @@ export interface Product {
   salePrice?: number | null;
   availability: 'in_stock' | 'made_to_order' | 'unavailable';
   /**
-   * Wyświetlany przy przycisku „Dodaj do koszyka".
+   * Wyświetlany przy przycisku „Dodaj do koszyka”.
    */
   leadTime?: string | null;
   /**
@@ -235,7 +235,7 @@ export interface Product {
     sleepLength?: number | null;
   };
   /**
-   * Dowolne pary „nazwa — wartość", np. Wypełnienie siedziska — pianka wysokoelastyczna; Stelaż — drewno i płyta; Funkcja spania — tak.
+   * Dowolne pary „nazwa — wartość”, np. Wypełnienie siedziska — pianka wysokoelastyczna; Stelaż — drewno i płyta; Funkcja spania — tak.
    */
   specs?:
     | {
@@ -340,7 +340,7 @@ export interface Category {
 export interface Media {
   id: number;
   /**
-   * Jedno zdanie o tym, co widać na zdjęciu, np. „Sofa w kolorze grafitowym, widok z przodu". Czytają je wyszukiwarki i czytniki ekranu.
+   * Jedno zdanie o tym, co widać na zdjęciu, np. „Sofa w kolorze grafitowym, widok z przodu”. Czytają je wyszukiwarki i czytniki ekranu.
    */
   alt?: string | null;
   prefix?: string | null;
@@ -403,7 +403,7 @@ export interface ShippingMethod {
   createdAt: string;
 }
 /**
- * Zamówienia złożone w sklepie. Zmieniaj status w miarę realizacji — po oznaczeniu „Wysłane" klient dostaje e-mail z informacją o wysyłce.
+ * Zamówienia złożone w sklepie. Zmieniaj status w miarę realizacji — po oznaczeniu „Wysłane” klient dostaje e-mail z informacją o wysyłce.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "orders".
@@ -1057,7 +1057,7 @@ export interface Homepage {
       }[]
     | null;
   /**
-   * Pokazuje produkty z zaznaczoną opcją „Pokaż na stronie głównej".
+   * Pokazuje produkty z zaznaczoną opcją „Pokaż na stronie głównej”.
    */
   collection?: {
     /**
@@ -1081,7 +1081,7 @@ export interface Homepage {
     title?: string | null;
     text?: string | null;
     /**
-     * Wybierz produkt, który ma uzupełnione widoki w zakładce „Zdjęcia i kolory → Pokaz funkcji".
+     * Wybierz produkt, który ma uzupełnione widoki w zakładce „Zdjęcia i kolory → Pokaz funkcji”.
      */
     product?: (number | null) | Product;
   };
@@ -1148,7 +1148,7 @@ export interface Setting {
    */
   storeStatus: 'preparing' | 'live';
   /**
-   * Krótka informacja nad menu, np. „Darmowa dostawa od 3000 zł". Puste = pasek ukryty.
+   * Krótka informacja nad menu, np. „Darmowa dostawa od 3000 zł”. Puste = pasek ukryty.
    */
   announcement?: string | null;
   contact?: {
@@ -1210,7 +1210,7 @@ export interface Setting {
     onlineEnabled?: boolean | null;
   };
   /**
-   * Jeśli nie jesteś płatnikiem VAT, zmień np. na „Sprzedawca zwolniony z VAT".
+   * Jeśli nie jesteś płatnikiem VAT, zmień np. na „Sprzedawca zwolniony z VAT”.
    */
   priceNote?: string | null;
   headerNav?:
