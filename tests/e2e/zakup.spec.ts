@@ -79,7 +79,9 @@ test.describe('zakup', () => {
     await page.getByRole('dialog').getByRole('link', { name: 'Zobacz cały koszyk' }).click()
     await page.waitForURL('**/koszyk')
 
-    const line = page.getByRole('listitem').filter({ hasText: productTitle })
+    // Szuflada z koszykiem zamyka się po przejściu na stronę koszyka.
+    await expect(page.getByRole('dialog')).toBeHidden()
+    const line = page.getByRole('main').getByRole('listitem').filter({ hasText: productTitle })
     await expect(line).toBeVisible()
     await line.getByRole('button', { name: /Zwiększ ilość/ }).click()
     await expect(line.getByText('Ilość: 2', { exact: false })).toBeAttached()

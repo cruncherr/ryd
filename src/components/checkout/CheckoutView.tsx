@@ -3,7 +3,17 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState, useTransition, type ChangeEvent, type FocusEvent, type FormEvent, type ReactNode } from 'react'
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useTransition,
+  type ChangeEvent,
+  type FocusEvent,
+  type FormEvent,
+  type ReactNode,
+} from 'react'
 
 import { AnimatedPrice } from '@/components/cart/CartDrawer'
 import { Button, buttonClass } from '@/components/ui/Button'
@@ -26,7 +36,7 @@ import {
   type CheckoutField,
 } from '@/lib/validation'
 
-import { clearDraft, markOrderPlaced, readDraft, saveDraft, TEXT_FIELDS, type CheckoutDraft, type TextFieldName } from './draft'
+import { clearDraft, markOrderPlaced, readDraft, saveDraftFromForm, TEXT_FIELDS, type CheckoutDraft, type TextFieldName } from './draft'
 
 export type CheckoutShippingMethod = {
   id: number
@@ -128,6 +138,7 @@ function SummaryLines({ lines }: { lines: CartLine[] }) {
 function CheckoutForm({ config, lines }: { config: CheckoutConfig; lines: CartLine[] }) {
   const router = useRouter()
   const saveTimer = useRef<number | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
   // Ten formularz powstaje dopiero w przeglądarce (po wczytaniu koszyka), więc może od razu sięgnąć do jej pamięci.
   const [draft] = useState<CheckoutDraft>(readDraft)
   const [requestId] = useState(newRequestId)
@@ -169,19 +180,38 @@ function CheckoutForm({ config, lines }: { config: CheckoutConfig; lines: CartLi
   const total = orderTotal({ subtotal, shippingCost, paymentFee })
   const busy = isPending || placed
 
+  // Wpisywane dane zapisują się chwilę po ostatniej zmianie…
   const scheduleDraftSave = (form: HTMLFormElement) => {
     if (saveTimer.current !== null) window.clearTimeout(saveTimer.current)
     saveTimer.current = window.setTimeout(() => {
-      const values = readForm(form)
-      const stored: CheckoutDraft = { wantsInvoice: values.wantsInvoice }
-      for (const name of TEXT_FIELDS) stored[name] = values[name]
-      const shippingId = Number(values.shippingMethodId)
-      if (Number.isInteger(shippingId) && shippingId > 0) stored.shippingMethodId = shippingId
-      const paymentValue = paymentOptions.find((option) => option.value === values.paymentMethod)?.value
-      if (paymentValue) stored.paymentMethod = paymentValue
-      saveDraft(stored)
+      saveTimer.current = null
+      saveDraftFromForm(form)
     }, 250)
   }
+
+  // …a przy wyjściu z pola, opuszczeniu strony albo jej odświeżeniu — od razu, żeby nic nie przepadło.
+  const flushDraft = (form: HTMLFormElement) => {
+    if (saveTimer.current === null) return
+    window.clearTimeout(saveTimer.current)
+    saveTimer.current = null
+    saveDraftFromForm(form)
+  }
+
+  useLayoutEffect(() => {
+    const form = formRef.current
+    if (!form) return
+    const flush = () => {
+      if (saveTimer.current === null) return
+      window.clearTimeout(saveTimer.current)
+      saveTimer.current = null
+      saveDraftFromForm(form)
+    }
+    window.addEventListener('pagehide', flush)
+    return () => {
+      window.removeEventListener('pagehide', flush)
+      flush()
+    }
+  }, [])
 
   /** Sprawdza jedno pole i aktualizuje tylko jego komunikat. */
   const revalidateField = (form: HTMLFormElement, name: CheckoutField) => {
@@ -207,6 +237,7 @@ function CheckoutForm({ config, lines }: { config: CheckoutConfig; lines: CartLi
   }
 
   const handleBlur = (event: FocusEvent<HTMLFormElement>) => {
+    flushDraft(event.currentTarget)
     const target = event.target as unknown as HTMLInputElement
     if (!(TEXT_FIELDS as readonly string[]).includes(target.name)) return
     // Pustych pól nie wytykamy przy samym przejściu dalej — dopiero przy próbie złożenia zamówienia.
@@ -302,6 +333,7 @@ function CheckoutForm({ config, lines }: { config: CheckoutConfig; lines: CartLi
       noValidate
       onBlur={handleBlur}
       onChange={handleChange}
+      ref={formRef}
       onSubmit={handleSubmit}
     >
       <div className="min-w-0 space-y-14 lg:col-span-7">

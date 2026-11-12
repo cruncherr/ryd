@@ -61,6 +61,23 @@ export function saveDraft(draft: CheckoutDraft): void {
   }
 }
 
+/** Zapisuje bieżącą zawartość formularza zamówienia (bez zgód). */
+export function saveDraftFromForm(form: HTMLFormElement): void {
+  const data = new FormData(form)
+  const text = (name: string): string => {
+    const value = data.get(name)
+    return typeof value === 'string' ? value : ''
+  }
+
+  const draft: CheckoutDraft = { wantsInvoice: data.get('wantsInvoice') === 'on' }
+  for (const name of TEXT_FIELDS) draft[name] = text(name)
+  const shippingId = Number(text('shippingMethodId'))
+  if (Number.isInteger(shippingId) && shippingId > 0) draft.shippingMethodId = shippingId
+  const payment = PAYMENT_METHODS.find((method) => method.value === text('paymentMethod'))
+  if (payment) draft.paymentMethod = payment.value
+  saveDraft(draft)
+}
+
 export function clearDraft(): void {
   try {
     window.sessionStorage.removeItem(DRAFT_KEY)
