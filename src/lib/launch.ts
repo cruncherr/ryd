@@ -24,6 +24,13 @@ type SettingsLike = Partial<Setting> | null | undefined
 
 const filled = (value: unknown): boolean => typeof value === 'string' && value.trim().length > 0
 
+/** Znacznik miejsc do uzupełnienia w szkicach treści (regulamin, polityka prywatności itd.). */
+export const PLACEHOLDER_MARK = '[UZUPEŁNIJ'
+
+export function hasPlaceholder(content: unknown): boolean {
+  return content != null && JSON.stringify(content).includes(PLACEHOLDER_MARK)
+}
+
 export function isEmailConfigured(): boolean {
   return filled(process.env.SMTP_HOST) && filled(process.env.SMTP_FROM)
 }
@@ -60,7 +67,7 @@ export async function getLaunchChecklist(
       depth: 0,
       limit: 200,
       pagination: false,
-      select: { slug: true, title: true, needsReview: true, _status: true },
+      select: { slug: true, title: true, needsReview: true, _status: true, content: true },
     }),
     payload.findGlobal({ slug: 'homepage', depth: 0 }),
   ])
@@ -70,7 +77,11 @@ export async function getLaunchChecklist(
     (slug) => !pages.docs.some((doc) => doc.slug === slug && doc._status === 'published'),
   )
   const pagesToReview = pages.docs.filter((doc) => doc._status === 'published' && doc.needsReview)
-  const pagesReady = missingLegal.length === 0 && pagesToReview.length === 0
+  // Niewypełnione miejsca w szkicach — sklep nie może ruszyć z tekstem „[UZUPEŁNIJ: …]" w regulaminie.
+  const pagesWithPlaceholders = pages.docs.filter(
+    (doc) => doc._status === 'published' && !doc.needsReview && hasPlaceholder(doc.content),
+  )
+  const pagesReady = missingLegal.length === 0 && pagesToReview.length === 0 && pagesWithPlaceholders.length === 0
 
   const anyPayment =
     Boolean(payments?.transferEnabled) ||
@@ -146,7 +157,9 @@ export async function getLaunchChecklist(
             ? `Do sprawdzenia: ${pagesToReview
                 .map((doc) => doc.title)
                 .join(', ')}. Przeczytaj szkice, uzupełnij miejsca oznaczone [UZUPEŁNIJ] (regulamin najlepiej z prawnikiem) i odznacz „Treść przykładowa".`
-            : 'Regulamin, polityka prywatności oraz zwroty i reklamacje są opublikowane i sprawdzone.',
+            : pagesWithPlaceholders.length > 0
+              ? `W treści zostały niewypełnione miejsca [UZUPEŁNIJ]: ${pagesWithPlaceholders.map((doc) => doc.title).join(', ')}. Uzupełnij je albo usuń.`
+              : 'Regulamin, polityka prywatności oraz zwroty i reklamacje są opublikowane i sprawdzone.',
       done: pagesReady,
       blocking: true,
       href: '/admin/collections/pages',

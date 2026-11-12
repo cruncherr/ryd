@@ -137,7 +137,23 @@ async function recordOutcomes(payload: Payload, orderId: number, outcomes: Recor
 
 /* ---------- Załączniki prawne ---------- */
 
-const BOM = '﻿'
+/** Znacznik kodowania na początku pliku — dzięki niemu starsze programy w Windows poprawnie pokażą polskie litery. */
+const BOM = String.fromCharCode(0xfeff)
+
+function sellerBlock(settings: Setting): string {
+  const { company, contact } = settings
+  const address = [company?.street, [company?.postalCode, company?.city].filter(Boolean).join(' ')].filter(Boolean).join(', ')
+  const lines = [
+    company?.legalName,
+    address,
+    company?.nip ? `NIP: ${company.nip}` : '',
+    company?.regon ? `REGON: ${company.regon}` : '',
+    company?.registry,
+    contact?.email ? `E-mail: ${contact.email}` : '',
+    contact?.phone ? `Telefon: ${contact.phone}` : '',
+  ].filter((line): line is string => Boolean(line?.trim()))
+  return lines.length > 0 ? `DANE SPRZEDAWCY\n---------------\n${lines.join('\n')}` : ''
+}
 
 /**
  * Regulamin oraz zasady zwrotów w brzmieniu z dnia zamówienia, dołączane do potwierdzenia
@@ -165,12 +181,14 @@ async function legalAttachments(
       if (!body) return []
 
       const header = `${page.title.toUpperCase()}\n${context.settings.storeName ?? ''} · ${context.siteUrl}/${slug}\nTreść obowiązująca w dniu ${formatOrderDate(new Date())}`
+      // Dokument odsyła do ramki „Dane sprzedawcy" na stronie — w załączniku dopisujemy je wprost.
+      const seller = page.showCompanyDetails ? sellerBlock(context.settings) : ''
       return [
         {
           title: page.title,
           slug,
           filename: `${slug}.txt`,
-          content: `${BOM}${header}\n\n${page.lead ? `${page.lead}\n\n` : ''}${body}\n`,
+          content: `${BOM}${header}\n\n${page.lead ? `${page.lead}\n\n` : ''}${body}\n${seller ? `\n${seller}\n` : ''}`,
           contentType: 'text/plain; charset=utf-8',
         },
       ]

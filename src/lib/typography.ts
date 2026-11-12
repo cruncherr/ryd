@@ -1,4 +1,4 @@
-const NBSP = ' '
+const NBSP = '\u00a0'
 
 /**
  * Polska zasada składu: jednoliterowe spójniki i przyimki (a, i, o, u, w, z) nie zostają
