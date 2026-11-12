@@ -64,6 +64,8 @@ function listLines(list: LexicalNode, depth: number, options: Options): string[]
     const text = inline(own, options).trim()
 
     if (text) {
+      // Edytor zapisuje numer przy każdym punkcie — lista przerwana wyliczeniem liczy dalej (…4, wyliczenie, 5).
+      if (ordered && typeof item.value === 'number') counter = item.value
       const marker = ordered ? `${counter}. ` : '– '
       const prefix = INDENT.repeat(depth)
       const continuation = `${prefix}${' '.repeat(marker.length)}`
@@ -76,15 +78,18 @@ function listLines(list: LexicalNode, depth: number, options: Options): string[]
   return lines
 }
 
-function block(node: LexicalNode, options: Options): string {
+function block(node: LexicalNode, options: Options, previous?: LexicalNode): string {
   switch (node.type) {
     case 'heading': {
       const text = inline(node.children, options).trim()
       if (!text) return ''
       return node.tag === 'h1' || node.tag === 'h2' ? `${text.toUpperCase()}\n${'-'.repeat(Math.min(text.length, 60))}` : text
     }
-    case 'list':
-      return listLines(node, 0, options).join('\n')
+    case 'list': {
+      // Wyliczenie stojące tuż po liście numerowanej jest rozwinięciem jej ostatniego punktu — dostaje wcięcie.
+      const nested = node.listType !== 'number' && previous?.type === 'list' && previous.listType === 'number'
+      return listLines(node, nested ? 1 : 0, options).join('\n')
+    }
     case 'quote':
       return inline(node.children, options)
         .trim()
@@ -106,7 +111,7 @@ export function richTextToPlainText(data: unknown, options: Options = {}): strin
   const root = (data as { root?: LexicalNode } | null | undefined)?.root
   if (!root?.children) return ''
   return root.children
-    .map((node) => block(node, options))
+    .map((node, index, all) => block(node, options, all[index - 1]))
     .filter((text) => text !== '')
     .join('\n\n')
     .replace(/[ \t]+\n/g, '\n')

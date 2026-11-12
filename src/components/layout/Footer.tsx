@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { categoryPath } from '@/lib/catalog'
+import { paymentSummary } from '@/lib/payments/labels'
 import { noOrphans } from '@/lib/typography'
 import type { Category, Setting } from '@/payload-types'
 
@@ -19,18 +20,14 @@ const linkClass = 'link-line text-[0.9375rem]'
 
 export function Footer({ settings, categories }: Props) {
   const storeName = settings.storeName || 'RYD'
-  const { contact, social, company, payments } = settings
+  const { contact, social, company } = settings
   const socials = [
     { label: 'Instagram', url: social?.instagram },
     { label: 'Facebook', url: social?.facebook },
     { label: 'Pinterest', url: social?.pinterest },
   ].filter((item): item is { label: string; url: string } => Boolean(item.url))
 
-  const paymentLabels = [
-    payments?.onlineEnabled ? 'BLIK, szybki przelew, karta' : null,
-    payments?.transferEnabled ? 'przelew tradycyjny' : null,
-    payments?.codEnabled ? 'płatność przy odbiorze' : null,
-  ].filter(Boolean)
+  const paymentLabels = paymentSummary(settings)
 
   const hasAnalytics = Boolean(settings.analytics?.ga4Id || settings.analytics?.metaPixelId)
   const legalLine = [company?.legalName, company?.nip ? `NIP ${company.nip}` : null].filter(Boolean).join(' · ')

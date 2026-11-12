@@ -1,9 +1,10 @@
-import { CreditCard, RotateCcw, Truck } from 'lucide-react'
+import { CreditCard, MessageCircle, RotateCcw, Truck } from 'lucide-react'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
 import { LEGAL_SLUGS } from '@/lib/constants'
 import { formatPLN } from '@/lib/money'
+import { paymentSummary } from '@/lib/payments/labels'
 import type { Setting, ShippingMethod } from '@/payload-types'
 
 function Row({ icon, title, text }: { icon: ReactNode; title: ReactNode; text?: ReactNode }) {
@@ -20,17 +21,20 @@ function Row({ icon, title, text }: { icon: ReactNode; title: ReactNode; text?: 
   )
 }
 
-/** Krótkie odpowiedzi na trzy pytania przed zakupem: dostawa, zwrot, płatność. */
-export function PurchaseInfo({ settings, shippingMethods }: { settings: Setting; shippingMethods: ShippingMethod[] }) {
+type Props = {
+  settings: Setting
+  shippingMethods: ShippingMethod[]
+  /** Końcówka adresu produktu — formularz kontaktowy dopisze, którego mebla dotyczy pytanie. */
+  productSlug?: string
+}
+
+/** Krótkie odpowiedzi na pytania przed zakupem: dostawa, zwrot, płatność, kontakt. */
+export function PurchaseInfo({ settings, shippingMethods, productSlug }: Props) {
   const cheapest = shippingMethods.reduce<number | null>(
     (lowest, method) => (lowest === null || method.price < lowest ? method.price : lowest),
     null,
   )
-  const payments = [
-    settings.payments?.onlineEnabled ? 'BLIK, szybki przelew, karta' : null,
-    settings.payments?.transferEnabled ? 'przelew tradycyjny' : null,
-    settings.payments?.codEnabled ? 'przy odbiorze' : null,
-  ].filter(Boolean)
+  const payments = paymentSummary(settings).map((label) => label.replace('płatność przy odbiorze', 'przy odbiorze'))
 
   return (
     <ul className="mt-8 divide-y divide-line border-y border-line">
@@ -57,6 +61,15 @@ export function PurchaseInfo({ settings, shippingMethods }: { settings: Setting;
       {payments.length > 0 && (
         <Row icon={<CreditCard size={19} strokeWidth={1.5} />} title={`Płatność: ${payments.join(', ')}`} />
       )}
+      <Row
+        icon={<MessageCircle size={19} strokeWidth={1.5} />}
+        text={
+          <Link className="link-line" href={productSlug ? `/kontakt?produkt=${encodeURIComponent(productSlug)}` : '/kontakt'}>
+            Zapytaj o ten model
+          </Link>
+        }
+        title="Masz pytanie? Chętnie doradzimy"
+      />
     </ul>
   )
 }

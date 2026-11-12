@@ -107,7 +107,7 @@ export default async function ProductPage({ params }: PageProps<'/produkt/[slug]
             ]}
           />
         }
-        info={<PurchaseInfo settings={settings} shippingMethods={shippingMethods} />}
+        info={<PurchaseInfo productSlug={product.slug} settings={settings} shippingMethods={shippingMethods} />}
         product={hero}
       />
 

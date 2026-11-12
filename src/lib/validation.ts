@@ -235,13 +235,12 @@ export type ContactValues = {
   email: string
   phone: string
   message: string
-  acceptPrivacy: boolean
 }
 
 export type ContactField = keyof ContactValues
 export type ContactErrors = Partial<Record<ContactField, string>>
 
-export const CONTACT_FIELD_ORDER: ContactField[] = ['name', 'email', 'phone', 'message', 'acceptPrivacy']
+export const CONTACT_FIELD_ORDER: ContactField[] = ['name', 'email', 'phone', 'message']
 
 export const MESSAGE_MAX_LENGTH = 3000
 
@@ -268,11 +267,8 @@ export function validateContact(raw: unknown): { values: ContactValues; errors: 
     errors.message = `Wiadomość może mieć najwyżej ${MESSAGE_MAX_LENGTH} znaków.`
   }
 
-  const acceptPrivacy = asBoolean(input.acceptPrivacy)
-  if (!acceptPrivacy) errors.acceptPrivacy = 'Potwierdź zapoznanie się z informacją o danych osobowych.'
-
   return {
-    values: { name, email, phone: phone || rawPhone, message, acceptPrivacy },
+    values: { name, email, phone: phone || rawPhone, message },
     errors,
   }
 }

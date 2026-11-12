@@ -356,20 +356,23 @@
 
 /*
  * Wejście sekcji przy przewijaniu — tylko na stronach „wystawowych", jednorazowo.
- * Bez JavaScriptu (brak klasy .js na <html>) treść jest po prostu widoczna.
+ * Treść jest chowana wyłącznie wtedy, gdy przeglądarka ma włączony JavaScript (to on ją potem odsłania);
+ * bez niego — oraz w starszych przeglądarkach, które nie znają tego warunku — jest po prostu widoczna.
  */
-.js [data-reveal] {
-  opacity: 0;
-  transform: translateY(14px);
-  transition:
-    opacity 700ms var(--ease-out),
-    transform 700ms var(--ease-out);
-  transition-delay: calc(var(--reveal-index, 0) * 70ms);
-}
+@media (scripting: enabled) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 700ms var(--ease-out),
+      transform 700ms var(--ease-out);
+    transition-delay: calc(var(--reveal-index, 0) * 70ms);
+  }
 
-.js [data-reveal][data-visible] {
-  opacity: 1;
-  transform: none;
+  [data-reveal][data-visible] {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Wejście pierwszego ekranu: kolejne elementy co 70 ms. Animacja CSS — płynna także podczas ładowania strony. */
@@ -405,7 +408,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .js [data-reveal] {
+  [data-reveal] {
     transform: none;
     transition: opacity 300ms ease;
   }
@@ -476,6 +479,16 @@
 
 .prose-ryd ul {
   list-style: disc;
+}
+
+/* Wyliczenie tuż po punkcie numerowanym jest jego rozwinięciem — dostaje dodatkowe wcięcie. */
+.prose-ryd ol + ul {
+  margin-top: 0.6em;
+  padding-left: 3em;
+}
+
+.prose-ryd ol + ul + ol {
+  margin-top: 0.6em;
 }
 
 .prose-ryd ol {

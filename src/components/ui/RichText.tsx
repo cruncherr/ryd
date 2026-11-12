@@ -8,6 +8,7 @@ import {
 import { Fragment, type ReactNode } from 'react'
 
 import { cn } from '@/lib/cn'
+import { headingId } from '@/lib/richtext/headings'
 import { noOrphans } from '@/lib/typography'
 
 // Znaczniki formatowania tekstu w edytorze (bity).
@@ -36,6 +37,14 @@ function withTodoMarks(text: string): ReactNode {
   )
 }
 
+type AnyNode = { type?: string; text?: string; children?: unknown[] }
+
+function plainText(node: unknown): string {
+  const current = node as AnyNode
+  if (current.type === 'text') return current.text ?? ''
+  return (current.children ?? []).map(plainText).join('')
+}
+
 const converters: JSXConvertersFunction = ({ defaultConverters }) => ({
   ...defaultConverters,
   ...LinkJSXConverter({
@@ -47,6 +56,12 @@ const converters: JSXConvertersFunction = ({ defaultConverters }) => ({
       return doc?.relationTo === 'products' ? `/produkt/${slug}` : `/${slug}`
     },
   }),
+  // Nagłówki dostają kotwice, do których prowadzi spis treści i do których można podać odnośnik.
+  heading: ({ node, nodesToJSX }) => {
+    const Tag = node.tag
+    const text = plainText(node)
+    return <Tag id={Tag === 'h2' || Tag === 'h3' ? headingId(text) : undefined}>{nodesToJSX({ nodes: node.children })}</Tag>
+  },
   text: ({ node }) => {
     let content: ReactNode = withTodoMarks(node.text)
     if (node.format & BOLD) content = <strong>{content}</strong>
