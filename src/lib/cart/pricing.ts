@@ -6,6 +6,8 @@ import { effectivePrice, lineTotal, sum } from '@/lib/money'
 import { getProductsByIds } from '@/lib/queries'
 import type { Setting, ShippingMethod } from '@/payload-types'
 
+import type { CartLine } from './store'
+
 /**
  * Jedyne miejsce, w którym powstają kwoty zamówienia. Przeglądarka przysyła wyłącznie
  * identyfikatory i ilości — ceny, nazwy i dostępność zawsze bierzemy z bazy.
@@ -111,6 +113,21 @@ export async function priceCart(input: CartInput): Promise<PricedCart> {
     itemCount: available.reduce((total, line) => total + line.quantity, 0),
     hasUnavailable: lines.some((line) => line.unavailable),
   }
+}
+
+/** Koszyk w postaci, którą przechowuje przeglądarka — z aktualnymi cenami i dostępnością. */
+export function toCartLines(priced: PricedCart): CartLine[] {
+  return priced.lines.map((line) => ({
+    productId: line.productId,
+    variantId: line.variantId,
+    quantity: line.quantity,
+    title: line.title,
+    variantName: line.variantName,
+    slug: line.slug,
+    unitPrice: line.unitPrice,
+    imageUrl: line.imageUrl,
+    unavailable: line.unavailable || undefined,
+  }))
 }
 
 /** Koszt dostawy z uwzględnieniem progu darmowej dostawy. */

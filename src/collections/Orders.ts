@@ -275,6 +275,8 @@ export const Orders: CollectionConfig = {
     { name: 'customerName', type: 'text', label: 'Klient', admin: { hidden: true } },
     { name: 'accessToken', type: 'text', index: true, admin: { hidden: true } },
     { name: 'stripeSessionId', type: 'text', index: true, admin: { hidden: true } },
+    // Identyfikator próby złożenia zamówienia — ponowne kliknięcie „Zamawiam" przy słabym łączu nie tworzy duplikatu.
+    { name: 'requestId', type: 'text', index: true, admin: { hidden: true } },
     { name: 'emailsSent', type: 'json', admin: { hidden: true } },
   ],
   hooks: {

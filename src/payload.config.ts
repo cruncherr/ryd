@@ -10,6 +10,7 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
+import { Counters } from './collections/Counters'
 import { Media } from './collections/Media'
 import { Messages } from './collections/Messages'
 import { Orders } from './collections/Orders'
@@ -50,7 +51,7 @@ export default buildConfig({
       beforeDashboard: ['@/components/admin/BeforeDashboard'],
     },
   },
-  collections: [Products, Categories, ShippingMethods, Orders, Messages, Pages, Media, Users],
+  collections: [Products, Categories, ShippingMethods, Orders, Messages, Pages, Media, Users, Counters],
   globals: [Homepage, Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
