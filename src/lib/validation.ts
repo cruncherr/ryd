@@ -151,7 +151,7 @@ export function validateCheckout(raw: unknown): { values: CheckoutValues; errors
 
   const rawPhone = collapse(input.phone, 30)
   const phone = normalizePhone(rawPhone)
-  if (rawPhone === '') errors.phone = 'Podaj numer telefonu — kurier zadzwoni przed dostawą.'
+  if (rawPhone === '') errors.phone = 'Podaj numer telefonu — przewoźnik zadzwoni przed dostawą.'
   else if (phone === '') errors.phone = 'Sprawdź numer telefonu — polski numer ma 9 cyfr.'
 
   const firstName = collapse(input.firstName, 60)

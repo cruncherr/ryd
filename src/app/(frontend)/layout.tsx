@@ -63,7 +63,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
   const isLive = settings.storeStatus === 'live'
 
   return (
-    <html lang="pl" suppressHydrationWarning>
+    <html data-scroll-behavior="smooth" lang="pl" suppressHydrationWarning>
       <head>
         {/* Znacznik „JavaScript działa" — bez niego treść z animacją wejścia jest po prostu widoczna. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />

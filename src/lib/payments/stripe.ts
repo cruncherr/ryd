@@ -2,6 +2,7 @@ import type { Payload } from 'payload'
 import Stripe from 'stripe'
 
 import { toGrosze } from '@/lib/money'
+import { shippingLabel } from '@/lib/orders/view'
 import type { Order } from '@/payload-types'
 
 /**
@@ -36,7 +37,7 @@ export function paymentLineItems(
   })
 
   const items = order.items.map((item) => line([item.title, item.variantName].filter(Boolean).join(' — '), item.unitPrice, item.quantity))
-  if (order.shippingCost > 0) items.push(line(`Dostawa: ${order.shippingMethodName}`, order.shippingCost))
+  if (order.shippingCost > 0) items.push(line(shippingLabel(order.shippingMethodName), order.shippingCost))
   if (order.paymentFee && order.paymentFee > 0) items.push(line('Opłata za sposób płatności', order.paymentFee))
 
   const itemized = items.reduce((total, item) => total + item.price_data.unit_amount * item.quantity, 0)

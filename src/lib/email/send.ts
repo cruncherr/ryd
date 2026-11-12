@@ -1,4 +1,3 @@
-import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import { mkdir, writeFile } from 'fs/promises'
 import path from 'path'
 import type { Payload } from 'payload'
@@ -6,6 +5,7 @@ import type { Payload } from 'payload'
 import { LEGAL_SLUGS } from '@/lib/constants'
 import { isEmailConfigured } from '@/lib/launch'
 import { formatOrderDate } from '@/lib/orders/view'
+import { richTextToPlainText } from '@/lib/richtext/plaintext'
 import { getSiteUrl } from '@/lib/site'
 import type { Message, Order, Setting } from '@/payload-types'
 
@@ -53,6 +53,9 @@ async function savePreview(envelope: Envelope): Promise<void> {
       `Do: ${envelope.to}\nTemat: ${envelope.subject}\nZałączniki: ${(envelope.attachments ?? []).map((item) => item.filename).join(', ') || 'brak'}\n\n${envelope.text}`,
       'utf8',
     )
+    for (const attachment of envelope.attachments ?? []) {
+      await writeFile(path.join(directory, `${name}-${attachment.filename}`), attachment.content, 'utf8')
+    }
   } catch {
     // Podgląd jest tylko udogodnieniem — jego brak niczego nie blokuje.
   }
@@ -158,7 +161,7 @@ async function legalAttachments(
     return slugs.flatMap((slug) => {
       const page = result.docs.find((doc) => doc.slug === slug)
       if (!page?.content) return []
-      const body = convertLexicalToPlaintext({ data: page.content }).replace(/\n{3,}/g, '\n\n').trim()
+      const body = richTextToPlainText(page.content, { siteUrl: context.siteUrl })
       if (!body) return []
 
       const header = `${page.title.toUpperCase()}\n${context.settings.storeName ?? ''} · ${context.siteUrl}/${slug}\nTreść obowiązująca w dniu ${formatOrderDate(new Date())}`

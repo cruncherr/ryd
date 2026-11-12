@@ -46,7 +46,7 @@ export function paragraph(html: string, options: { soft?: boolean } = {}): strin
 }
 
 export function button(label: string, url: string): string {
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 6px;"><tr><td style="border-radius:999px;background:${COLOR.ink};"><a href="${escapeHtml(url)}" style="display:inline-block;padding:14px 28px;font-family:${SANS};font-size:15px;line-height:20px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:999px;">${escapeHtml(label)}</a></td></tr></table>`
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 18px;"><tr><td style="border-radius:999px;background:${COLOR.ink};"><a href="${escapeHtml(url)}" style="display:inline-block;padding:14px 28px;font-family:${SANS};font-size:15px;line-height:20px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:999px;">${escapeHtml(label)}</a></td></tr></table>`
 }
 
 export function link(label: string, url: string): string {
@@ -148,7 +148,7 @@ export function renderLayout({ subject, preheader, storeName, siteUrl, content, 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${COLOR.paper};">
 <tr><td align="center" class="ryd-outer" style="padding:36px 12px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">
-<tr><td style="padding:0 8px 22px;font-family:${SERIF};font-size:26px;line-height:32px;letter-spacing:0.06em;color:${COLOR.ink};"><a href="${escapeHtml(siteUrl)}" style="color:${COLOR.ink};text-decoration:none;">${escapeHtml(storeName)}</a></td></tr>
+<tr><td style="padding:0 8px 22px;font-family:${SANS};font-size:19px;line-height:28px;font-weight:bold;letter-spacing:0.3em;text-transform:uppercase;color:${COLOR.ink};"><a href="${escapeHtml(siteUrl)}" style="color:${COLOR.ink};text-decoration:none;">${escapeHtml(storeName)}</a></td></tr>
 <tr><td class="ryd-card" style="background:${COLOR.card};border-radius:14px;padding:38px 36px;">
 ${content}
 </td></tr>

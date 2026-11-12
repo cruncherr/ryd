@@ -697,3 +697,120 @@
     animation: fade-only 150ms ease both;
   }
 }
+
+/* ---------- Formularze ---------- */
+
+@utility field-label {
+  display: block;
+  margin-bottom: 0.4375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+/* Pole tekstowe: białe na tle papieru, wyraźna ramka, spokojna zmiana przy wejściu kursorem. */
+@utility field-input {
+  display: block;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.8125rem 1rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-field);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  line-height: 1.5;
+  appearance: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  &::placeholder {
+    color: var(--color-ink-faint);
+    opacity: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-ink-soft);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 3px rgb(28 26 24 / 0.12);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--color-danger);
+  }
+
+  &[aria-invalid='true']:focus-visible {
+    box-shadow: 0 0 0 3px rgb(179 38 30 / 0.16);
+  }
+
+  /* Podpowiedzi przeglądarki (autouzupełnianie) nie zmieniają koloru pola. */
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover {
+    -webkit-text-fill-color: var(--color-ink);
+    box-shadow: 0 0 0 100px var(--color-surface) inset;
+  }
+
+  &:-webkit-autofill:focus-visible {
+    box-shadow:
+      0 0 0 100px var(--color-surface) inset,
+      0 0 0 3px rgb(28 26 24 / 0.12);
+  }
+}
+
+/* Komunikat przy polu: pojawia się łagodnie, bez przesuwania reszty formularza z szarpnięciem. */
+.field-message {
+  margin-top: 0.4375rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 180ms var(--ease-out);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+/* Sekcja rozwijana (np. dane do faktury): wysokość rośnie od zera, treść dochodzi przez przenikanie. */
+.reveal-rows {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 260ms var(--ease-out),
+    opacity 200ms ease,
+    visibility 0s linear 260ms;
+}
+
+.reveal-rows[data-open] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows 260ms var(--ease-out),
+    opacity 240ms ease 40ms,
+    visibility 0s;
+}
+
+.reveal-rows > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field-message,
+  .reveal-rows,
+  .reveal-rows[data-open] {
+    transition-duration: 0.01ms;
+    transition-delay: 0s;
+  }
+}

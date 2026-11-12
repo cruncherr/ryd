@@ -7,6 +7,7 @@ import {
   invoiceLines,
   orderItemImage,
   sellerLine,
+  shippingLabel,
   transferDetails,
 } from '@/lib/orders/view'
 import { formatPhone } from '@/lib/validation'
@@ -69,7 +70,7 @@ function emailItems(order: Order, siteUrl: string): EmailItem[] {
 function totalsRows(order: Order): Array<[string, string]> {
   const rows: Array<[string, string]> = [
     ['Produkty', formatPLN(order.subtotal)],
-    [`Dostawa: ${order.shippingMethodName}`, order.shippingCost > 0 ? formatPLN(order.shippingCost) : 'bezpłatnie'],
+    [shippingLabel(order.shippingMethodName), order.shippingCost > 0 ? formatPLN(order.shippingCost) : 'bezpłatnie'],
   ]
   if (order.paymentFee && order.paymentFee > 0) rows.push(['Płatność przy odbiorze', formatPLN(order.paymentFee)])
   return rows
@@ -186,7 +187,7 @@ export function orderConfirmationEmail(order: Order, context: EmailContext, atta
 
   const content = [
     order.isTest ? testNoticeHtml : '',
-    heading(`Dziękujemy za zamówienie, ${order.firstName}!`),
+    heading('Dziękujemy za zamówienie'),
     paragraph(escapeHtml(intro)),
     payment.html,
     subheading('Zamówione produkty'),
@@ -217,7 +218,7 @@ export function orderConfirmationEmail(order: Order, context: EmailContext, atta
 
   const text = [
     order.isTest ? testNoticeText.trim() : '',
-    `Dziękujemy za zamówienie, ${order.firstName}!`,
+    'Dziękujemy za zamówienie!',
     intro,
     payment.text,
     `ZAMÓWIONE PRODUKTY\n${itemsText(order)}`,
@@ -294,7 +295,7 @@ export function ownerNotificationEmail(order: Order, context: EmailContext): Ema
       order.email,
       phone,
       ...addressLines(order),
-      `Dostawa: ${order.shippingMethodName}`,
+      shippingLabel(order.shippingMethodName),
       `Płatność: ${paymentLabel}`,
       invoice.length > 0 ? `Faktura: ${invoice.join(', ')}` : '',
     ]
@@ -333,7 +334,7 @@ export function paymentReceivedEmail(order: Order, context: EmailContext): Email
 
   const content = [
     order.isTest ? testNoticeHtml : '',
-    heading(`Płatność zaksięgowana, ${order.firstName}`),
+    heading('Płatność zaksięgowana'),
     paragraph(escapeHtml(intro)),
     paragraph(escapeHtml(next), { soft: true }),
     button('Zobacz zamówienie', url),
@@ -351,7 +352,7 @@ export function paymentReceivedEmail(order: Order, context: EmailContext): Email
     }),
     text: [
       order.isTest ? testNoticeText.trim() : '',
-      `Płatność zaksięgowana, ${order.firstName}`,
+      'Płatność zaksięgowana',
       intro,
       next,
       `Zobacz zamówienie: ${url}`,
@@ -385,7 +386,7 @@ export function shippedEmail(order: Order, context: EmailContext): EmailContent 
   const trackingNumber = order.trackingNumber?.trim() || ''
   const phone = formatPhone(order.phone)
 
-  const intro = `Twoje zamówienie nr ${order.orderNumber} zostało przekazane do dostawy (${order.shippingMethodName}).`
+  const intro = `Twoje zamówienie nr ${order.orderNumber} jest już w drodze. Sposób dostawy: ${order.shippingMethodName}.`
   const callNote = phone
     ? `Przewoźnik skontaktuje się z Tobą pod numerem ${phone}, aby umówić termin dostawy.`
     : 'Przewoźnik skontaktuje się z Tobą, aby umówić termin dostawy.'
@@ -394,7 +395,7 @@ export function shippedEmail(order: Order, context: EmailContext): EmailContent 
 
   const content = [
     order.isTest ? testNoticeHtml : '',
-    heading(`${order.firstName}, Twoje zamówienie jest w drodze`),
+    heading('Twoje zamówienie jest w drodze'),
     paragraph(escapeHtml(intro)),
     trackingNumber ? panel(keyValues([['Numer przesyłki', escapeHtml(trackingNumber)]])) : '',
     trackingUrl ? button('Śledź przesyłkę', trackingUrl) : '',
@@ -418,7 +419,7 @@ export function shippedEmail(order: Order, context: EmailContext): EmailContent 
     }),
     text: [
       order.isTest ? testNoticeText.trim() : '',
-      `${order.firstName}, Twoje zamówienie jest w drodze`,
+      'Twoje zamówienie jest w drodze',
       intro,
       trackingNumber ? `Numer przesyłki: ${trackingNumber}` : '',
       trackingUrl ? `Śledzenie przesyłki: ${trackingUrl}` : '',

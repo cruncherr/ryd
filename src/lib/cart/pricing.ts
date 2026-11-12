@@ -1,12 +1,15 @@
 import { z } from 'zod'
 
 import { asMedia, variantImages } from '@/lib/catalog'
-import { CART_LIMITS, type PaymentMethod } from '@/lib/constants'
+import { CART_LIMITS } from '@/lib/constants'
 import { effectivePrice, lineTotal, sum } from '@/lib/money'
 import { getProductsByIds } from '@/lib/queries'
-import type { Setting, ShippingMethod } from '@/payload-types'
+import type { Setting } from '@/payload-types'
 
 import type { CartLine } from './store'
+import type { PaymentOption } from './totals'
+
+export { orderTotal, shippingCostFor, type PaymentOption } from './totals'
 
 /**
  * Jedyne miejsce, w którym powstają kwoty zamówienia. Przeglądarka przysyła wyłącznie
@@ -130,19 +133,6 @@ export function toCartLines(priced: PricedCart): CartLine[] {
   }))
 }
 
-/** Koszt dostawy z uwzględnieniem progu darmowej dostawy. */
-export function shippingCostFor(method: Pick<ShippingMethod, 'price' | 'freeFrom'>, subtotal: number): number {
-  if (typeof method.freeFrom === 'number' && method.freeFrom > 0 && subtotal >= method.freeFrom) return 0
-  return method.price
-}
-
-export type PaymentOption = {
-  value: PaymentMethod
-  label: string
-  description: string
-  fee: number
-}
-
 /**
  * Formy płatności dostępne w zamówieniu — według ustawień sklepu.
  * Płatność online pojawia się tylko wtedy, gdy podłączono operatora płatności.
@@ -176,8 +166,4 @@ export function paymentOptions(settings: Setting, onlineConfigured: boolean): Pa
     })
   }
   return options
-}
-
-export function orderTotal(parts: { subtotal: number; shippingCost: number; paymentFee: number }): number {
-  return sum([parts.subtotal, parts.shippingCost, parts.paymentFee])
 }
