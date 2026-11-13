@@ -74,10 +74,17 @@ export default buildConfig({
     ? nodemailerAdapter({
         defaultFromAddress: process.env.SMTP_FROM || '',
         defaultFromName: process.env.SMTP_FROM_NAME || 'RYD',
+        // Sklep nie sprawdza połączenia z pocztą przy każdym starcie serwera — kłopoty skrzynki
+        // nie mogą spowalniać ani zatrzymywać witryny. Wynik każdej wysyłki widać przy zamówieniu.
+        skipVerify: true,
         transportOptions: {
           host: process.env.SMTP_HOST,
           port: smtpPort,
           secure: smtpPort === 465,
+          // Gdy serwer poczty nie odpowiada, wysyłka ma szybko zakończyć się błędem (można ją ponowić z panelu).
+          connectionTimeout: 10_000,
+          greetingTimeout: 10_000,
+          socketTimeout: 20_000,
           auth:
             process.env.SMTP_USER && process.env.SMTP_PASS
               ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }

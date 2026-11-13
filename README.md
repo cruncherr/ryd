@@ -33,7 +33,7 @@ Sklep można też postawić na dowolnym serwerze z Node.js i PostgreSQL — patr
 
 Nazwy przycisków w serwisie Vercel mogą się z czasem nieznacznie zmieniać — kolejność kroków pozostaje ta sama.
 
-1. **Zaimportuj repozytorium.** W Vercelu wybierz *Add New → Project* i wskaż to repozytorium z GitHuba.
+1. **Zaimportuj repozytorium.** W Vercelu wybierz *Add New → Project* i wskaż to repozytorium z GitHuba. Kod sklepu jest na gałęzi `claude/emilkowalski-ogrngp` — w chwili przekazania to jedyna gałąź repozytorium, więc Vercel użyje jej automatycznie.
 2. **Wpisz ustawienia** (na ekranie konfiguracji projektu albo później w *Settings → Environment Variables*):
 
    | Nazwa | Wartość |
@@ -120,7 +120,9 @@ Wpisz identyfikator **Google Analytics 4** lub **Meta Pixel** w *Ustawienia skle
 - wysyłka e-maili przez serwer SMTP (testowy), załączniki, ponowna wysyłka z panelu;
 - zmiany statusów w panelu i wynikające z nich e-maile;
 - instalacja na pustej bazie oraz kolejne wdrożenie (migracje);
-- 70 testów jednostkowych i 24 testy przeglądarkowe (`pnpm test`, `pnpm test:e2e`).
+- dostępność: automatyczna kontrola reguł WCAG 2.1 A i AA na najważniejszych stronach — bez zastrzeżeń (nie zastępuje to próby z czytnikiem ekranu);
+- szybkość na symulowanym wolnym telefonie: główna treść stron z ofertą pojawia się w 1–1,6 s, układ nie „skacze” w trakcie ładowania;
+- 70 testów jednostkowych i 40 testów przeglądarkowych (`pnpm test`, `pnpm test:e2e`).
 
 **Niesprawdzone — zrób to przed startem:**
 

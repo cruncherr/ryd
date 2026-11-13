@@ -19,7 +19,9 @@ export function CartPageView() {
   const hasUnavailable = lines.some((line) => line.unavailable)
 
   return (
-    <div className="shell pt-8 pb-20 md:pt-12 md:pb-28">
+    // Koszyk wczytuje się z pamięci przeglądarki chwilę po otwarciu strony. Wysokość co najmniej jednego ekranu
+    // sprawia, że stopka w tym czasie nie „skacze” — niezależnie od tego, czy koszyk okaże się pusty, czy pełny.
+    <div className="shell min-h-svh pt-8 pb-20 md:pt-12 md:pb-28">
       <h1 className="display-1 text-[clamp(2.75rem,1.6rem+4.2vw,5rem)]">Koszyk</h1>
 
       {!hydrated ? (

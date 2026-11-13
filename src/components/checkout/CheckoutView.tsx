@@ -658,7 +658,8 @@ export function CheckoutView({ config }: { config: CheckoutConfig }) {
   useCartSync(hydrated)
 
   return (
-    <div className="shell pt-8 pb-20 md:pt-12 md:pb-28">
+    // Wysokość co najmniej jednego ekranu: stopka nie przeskakuje, gdy koszyk wczytuje się z pamięci przeglądarki.
+    <div className="shell min-h-svh pt-8 pb-20 md:pt-12 md:pb-28">
       <h1 className="display-1 text-[clamp(2.75rem,1.6rem+4.2vw,5rem)]">Zamówienie</h1>
 
       {!hydrated ? (
