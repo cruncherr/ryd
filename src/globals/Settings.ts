@@ -1,6 +1,6 @@
 import type { GlobalConfig, PayloadRequest } from 'payload'
 
-import { anyone, isAdmin } from '@/access'
+import { anyone, isAdmin, isAdminField } from '@/access'
 import { amountField } from '@/fields/amount'
 import { revalidateGlobalAfterChange } from '@/hooks/revalidate'
 import { blockingProblems, getLaunchChecklist } from '@/lib/launch'
@@ -230,6 +230,8 @@ export const Settings: GlobalConfig = {
                       name: 'notificationEmail',
                       type: 'email',
                       label: 'E-mail do powiadomień o zamówieniach',
+                      // Adres wewnętrzny — widoczny tylko w panelu, nie w publicznych danych sklepu.
+                      access: { read: isAdminField },
                       admin: { width: '70%', description: 'Na ten adres sklep wysyła każde nowe zamówienie.' },
                     },
                   ],
