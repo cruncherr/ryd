@@ -257,19 +257,22 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
     context,
   })
 
-  // --- Konto administratora (opcjonalnie, ze zmiennych środowiskowych) ------
-  const adminEmail = process.env.ADMIN_EMAIL
-  const adminPassword = process.env.ADMIN_PASSWORD
-  if (adminEmail && adminPassword) {
-    const users = await payload.count({ collection: 'users' })
-    if (users.totalDocs === 0) {
-      await payload.create({
-        collection: 'users',
-        data: { email: adminEmail, password: adminPassword, name: 'Administrator' },
-        context,
-      })
-    }
-  }
-
   return { status: 'done', created }
+}
+
+/**
+ * Zakłada pierwsze konto administratora z danych podanych w ustawieniach hostingu
+ * (ADMIN_EMAIL i ADMIN_PASSWORD). Robi to tylko wtedy, gdy w panelu nie ma jeszcze żadnego konta —
+ * dzięki temu nikt obcy nie zdąży zająć panelu przed właścicielem, a istniejące konta są nietykalne.
+ */
+export async function ensureAdmin(payload: Payload): Promise<'created' | 'exists' | 'not-configured'> {
+  const email = process.env.ADMIN_EMAIL?.trim()
+  const password = process.env.ADMIN_PASSWORD
+  if (!email || !password) return 'not-configured'
+
+  const users = await payload.count({ collection: 'users' })
+  if (users.totalDocs > 0) return 'exists'
+
+  await payload.create({ collection: 'users', data: { email, password, name: 'Administrator' }, context })
+  return 'created'
 }

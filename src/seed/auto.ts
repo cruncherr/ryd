@@ -7,7 +7,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { seed } from './seed'
+import { ensureAdmin, seed } from './seed'
 
 try {
   const payload = await getPayload({ config })
@@ -17,6 +17,17 @@ try {
       ? `Dane startowe: pominięto (${result.reason})`
       : `Dane startowe wgrane: ${JSON.stringify(result.created)}`,
   )
+
+  const admin = await ensureAdmin(payload)
+  if (admin === 'created') payload.logger.info('Konto administratora zostało utworzone (ADMIN_EMAIL).')
+  if (admin === 'not-configured') {
+    const users = await payload.count({ collection: 'users' })
+    if (users.totalDocs === 0) {
+      payload.logger.warn(
+        'UWAGA: w panelu nie ma jeszcze konta administratora. Wejdź od razu na /admin i załóż je — do tego czasu może to zrobić każdy, kto zna adres sklepu.',
+      )
+    }
+  }
 } catch (error) {
   console.error('Dane startowe: nie udało się ich wgrać podczas wdrożenia.', error)
 }
