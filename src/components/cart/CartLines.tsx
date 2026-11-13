@@ -43,7 +43,7 @@ function Line({ line, onNavigate }: { line: CartLine; onNavigate?: () => void })
         <div className="flex gap-4 border-b border-line py-5">
           <Link
             aria-hidden="true"
-            className="relative block aspect-[4/3] w-24 shrink-0 overflow-hidden rounded-lg bg-stage sm:w-28"
+            className="relative block aspect-[4/3] w-24 shrink-0 self-start overflow-hidden rounded-lg bg-stage sm:w-28"
             href={`/produkt/${line.slug}`}
             onClick={onNavigate}
             tabIndex={-1}
@@ -54,10 +54,11 @@ function Line({ line, onNavigate }: { line: CartLine; onNavigate?: () => void })
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <Link className="font-medium" href={`/produkt/${line.slug}`} onClick={onNavigate}>
+                {/* Bardzo długa nazwa zajmuje najwyżej trzy wiersze — pełna jest na stronie produktu. */}
+                <Link className="line-clamp-3 font-medium" href={`/produkt/${line.slug}`} onClick={onNavigate} title={line.title}>
                   {line.title}
                 </Link>
-                {line.variantName && <p className="mt-0.5 text-sm text-ink-soft">{line.variantName}</p>}
+                {line.variantName && <p className="mt-0.5 line-clamp-2 text-sm text-ink-soft">{line.variantName}</p>}
               </div>
               <p className="tabular shrink-0 font-medium">
                 {line.unavailable ? '—' : formatPLN(line.unitPrice * line.quantity)}

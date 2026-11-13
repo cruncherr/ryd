@@ -119,6 +119,8 @@
     font-size: 1rem;
     line-height: 1.6;
     font-feature-settings: 'cv11', 'ss03';
+    /* Bardzo długie słowo (np. adres e-mail albo wklejony ciąg znaków) łamie się, zamiast rozpychać stronę. */
+    overflow-wrap: break-word;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;

@@ -12,6 +12,7 @@ import {
 } from '@/lib/catalog'
 import { cn } from '@/lib/cn'
 import { discountPercent } from '@/lib/money'
+import { noOrphans } from '@/lib/typography'
 import type { Product } from '@/payload-types'
 
 type Props = {
@@ -68,12 +69,13 @@ export function ProductCard({ product, sizes, eager = false, headingLevel: Headi
         )}
       </div>
 
-      <div className="mt-5 flex items-start justify-between gap-5">
-        <div className="min-w-0">
-          <Heading className="display-4">
+      {/* Długa nazwa i długa cena nie ściskają się nawzajem: gdy brakuje miejsca, cena przechodzi pod nazwę. */}
+      <div className="mt-5 flex flex-wrap items-start justify-between gap-x-5 gap-y-2">
+        <div className="min-w-0 flex-1 basis-48">
+          <Heading className="display-4 line-clamp-3">
             {/* Link rozciągnięty na całą kartę: klikalne jest zdjęcie i opis. */}
             <Link className="outline-none after:absolute after:inset-0 after:rounded-[var(--radius-panel)] focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-ink" href={productPath(product)}>
-              {product.title}
+              {noOrphans(product.title)}
             </Link>
           </Heading>
           <div className="mt-2 flex items-center gap-2.5 text-sm text-ink-soft">

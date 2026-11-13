@@ -214,8 +214,10 @@ function ItemList({ order }: { order: Order }) {
               {image && <Image alt="" className="packshot" fill sizes="80px" src={image} />}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="leading-snug font-medium">{item.title}</p>
-              <p className="mt-0.5 text-sm text-ink-soft">{[item.variantName, `${item.quantity} szt.`].filter(Boolean).join(' · ')}</p>
+              <p className="line-clamp-3 leading-snug font-medium" title={item.title}>
+                {item.title}
+              </p>
+              <p className="mt-0.5 line-clamp-2 text-sm text-ink-soft">{[item.variantName, `${item.quantity} szt.`].filter(Boolean).join(' · ')}</p>
             </div>
             <p className="tabular shrink-0 font-medium">{formatPLN(item.lineTotal)}</p>
           </li>

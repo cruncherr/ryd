@@ -127,7 +127,15 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
         <div className="min-w-0 lg:col-span-5">
           <div className="lg:sticky lg:top-24">
             {breadcrumbs}
-            <h1 className="display-2 mt-4 text-[clamp(2rem,1.5rem+2vw,3.125rem)]">{noOrphans(product.title)}</h1>
+            {/* Bardzo długa nazwa dostaje mniejszy stopień pisma, żeby nie zajęła całego ekranu. */}
+            <h1
+              className={cn(
+                'display-2 mt-4',
+                product.title.length > 56 ? 'text-[clamp(1.625rem,1.3rem+1.3vw,2.375rem)]' : 'text-[clamp(2rem,1.5rem+2vw,3.125rem)]',
+              )}
+            >
+              {noOrphans(product.title)}
+            </h1>
             {product.shortDescription && (
               <p className="mt-4 max-w-[46ch] text-[1.0625rem] text-ink-soft">{noOrphans(product.shortDescription)}</p>
             )}

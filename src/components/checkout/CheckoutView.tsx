@@ -122,8 +122,10 @@ function SummaryLines({ lines }: { lines: CartLine[] }) {
             {line.imageUrl && <Image alt="" className="packshot" fill sizes="80px" src={line.imageUrl} />}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="leading-snug font-medium">{line.title}</p>
-            <p className="mt-0.5 text-sm text-ink-soft">
+            <p className="line-clamp-3 leading-snug font-medium" title={line.title}>
+              {line.title}
+            </p>
+            <p className="mt-0.5 line-clamp-2 text-sm text-ink-soft">
               {[line.variantName, `${line.quantity} szt.`].filter(Boolean).join(' · ')}
             </p>
             {line.unavailable && <p className="mt-1 text-sm text-danger">Produkt niedostępny</p>}

@@ -6,17 +6,18 @@ export type Crumb = { label: string; href?: string }
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
     <nav aria-label="Ścieżka nawigacji">
-      <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem] text-ink-soft">
+      <ol className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem] text-ink-soft">
         {items.map((item, index) => {
           const isLast = index === items.length - 1
           return (
-            <li className="flex items-center gap-2" key={`${item.label}-${index}`}>
+            <li className={isLast ? 'flex min-w-0 items-center gap-2' : 'flex items-center gap-2'} key={`${item.label}-${index}`}>
               {item.href && !isLast ? (
                 <Link className="link-line" href={item.href}>
                   {item.label}
                 </Link>
               ) : (
-                <span aria-current={isLast ? 'page' : undefined} className={isLast ? 'text-ink' : undefined}>
+                // Ostatni element (bieżąca strona) przy bardzo długiej nazwie kończy się wielokropkiem.
+                <span aria-current={isLast ? 'page' : undefined} className={isLast ? 'truncate text-ink' : undefined} title={isLast ? item.label : undefined}>
                   {item.label}
                 </span>
               )}
