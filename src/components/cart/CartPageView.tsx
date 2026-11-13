@@ -26,9 +26,9 @@ export function CartPageView() {
         <div aria-hidden="true" className="mt-12 h-40 rounded-[var(--radius-panel)] bg-stage/60" />
       ) : lines.length === 0 ? (
         <div className="mt-12 max-w-xl">
-          <p className="lead">Koszyk jest pusty. Dodaj sofę, która wpadła Ci w oko — poczeka tu na Ciebie.</p>
+          <p className="lead">Koszyk jest pusty. Dodaj mebel, który wpadł Ci w oko — poczeka tu na Ciebie.</p>
           <Link className={buttonClass({ size: 'lg', className: 'mt-8' })} href="/sklep">
-            Zobacz sofy
+            Zobacz meble
           </Link>
         </div>
       ) : (

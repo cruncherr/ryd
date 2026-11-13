@@ -668,9 +668,9 @@ export function CheckoutView({ config }: { config: CheckoutConfig }) {
         </div>
       ) : lines.length === 0 ? (
         <div className="mt-12 max-w-xl">
-          <p className="lead">Twój koszyk jest pusty. Wybierz sofę, a wrócimy tu, żeby dokończyć zamówienie.</p>
+          <p className="lead">Twój koszyk jest pusty. Wybierz mebel, a wrócimy tu, żeby dokończyć zamówienie.</p>
           <Link className={buttonClass({ size: 'lg', className: 'mt-8' })} href="/sklep">
-            Zobacz sofy
+            Zobacz meble
           </Link>
         </div>
       ) : (

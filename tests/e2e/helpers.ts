@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright'
 import { expect, type Page } from '@playwright/test'
 
 /** Błędy JavaScript na stronie — test kończy się niepowodzeniem, jeśli jakiś się pojawi. */
@@ -54,4 +55,19 @@ export async function fillCheckout(page: Page, customer: Customer): Promise<void
   await page.getByLabel('Ulica, numer domu i mieszkania').fill(customer.street)
   await page.getByLabel('Kod pocztowy').pressSequentially(customer.postalCode)
   await page.getByLabel('Miejscowość').fill(customer.city)
+}
+
+/**
+ * Automatyczna kontrola dostępności bieżącej strony (reguły WCAG 2.1 A i AA): kontrast,
+ * etykiety pól, nazwy przycisków, poprawność atrybutów ARIA.
+ */
+export async function expectAccessible(page: Page, label: string): Promise<void> {
+  const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()
+  const summary = results.violations.map((violation) => ({
+    rule: violation.id,
+    impact: violation.impact,
+    help: violation.help,
+    nodes: violation.nodes.slice(0, 4).map((node) => node.target.join(' ')),
+  }))
+  expect(summary, `Problemy z dostępnością na stronie: ${label}`).toEqual([])
 }

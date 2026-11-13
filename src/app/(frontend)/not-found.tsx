@@ -17,7 +17,7 @@ export default function NotFound() {
       </p>
       <div className="mt-9 flex flex-wrap gap-3">
         <ButtonLink href="/sklep" size="lg">
-          Zobacz sofy
+          Zobacz meble
         </ButtonLink>
         <ButtonLink href="/" size="lg" variant="secondary">
           Strona główna

@@ -74,9 +74,9 @@ export function CartDrawer() {
             {lines.length === 0 ? (
               <Drawer.Content className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
                 <p className="display-3">Koszyk jest pusty</p>
-                <p className="mt-3 max-w-[30ch] text-ink-soft">Dodaj sofę, która wpadła Ci w oko — poczeka tu na Ciebie.</p>
+                <p className="mt-3 max-w-[30ch] text-ink-soft">Dodaj mebel, który wpadł Ci w oko — poczeka tu na Ciebie.</p>
                 <Link className={buttonClass({ className: 'mt-8' })} href="/sklep" onClick={close}>
-                  Zobacz sofy
+                  Zobacz meble
                 </Link>
               </Drawer.Content>
             ) : (

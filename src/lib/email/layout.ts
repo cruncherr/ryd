@@ -9,7 +9,7 @@ const COLOR = {
   card: '#ffffff',
   ink: '#1c1a18',
   soft: '#5c574f',
-  faint: '#8b857b',
+  faint: '#6d675d',
   line: '#e6e1d8',
   notice: '#f6ecd0',
   accent: '#a34e2b',

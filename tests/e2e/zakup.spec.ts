@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { addToCart, collectPageErrors, fillCheckout, openFirstProduct, testCustomer } from './helpers'
+import { addToCart, collectPageErrors, expectAccessible, fillCheckout, openFirstProduct, testCustomer } from './helpers'
 
 test.describe('zakup', () => {
   test('klient kupuje produkt z płatnością przelewem', async ({ page }, testInfo) => {
@@ -58,6 +58,7 @@ test.describe('zakup', () => {
     await expect(summary).toContainText('Zamówienie z testu automatycznego.')
     await expect(page.getByRole('heading', { name: 'Dane do przelewu' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Co dalej' })).toBeVisible()
+    await expectAccessible(page, 'potwierdzenie zamówienia')
 
     // Po zakupie koszyk jest pusty, a formularz nie pamięta już danych.
     await expect.poll(async () => page.evaluate(() => JSON.parse(localStorage.getItem('ryd-koszyk') ?? '{}')?.state?.lines?.length ?? 0)).toBe(0)

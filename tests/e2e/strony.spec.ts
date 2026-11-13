@@ -30,7 +30,7 @@ test.describe('witryna', () => {
     const response = await page.goto('/tej-strony-nie-ma')
     expect(response?.status()).toBe(404)
     await expect(page.getByRole('heading', { level: 1, name: 'Tej strony już tu nie ma' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Zobacz sofy' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Zobacz meble' })).toBeVisible()
     expect((await page.goto('/a/b/c'))?.status()).toBe(404)
   })
 

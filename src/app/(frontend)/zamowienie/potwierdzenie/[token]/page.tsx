@@ -140,12 +140,17 @@ function Notice({ tone = 'neutral', children }: { tone?: 'neutral' | 'warning' |
 function TransferRow({ label, value, copyValue }: { label: string; value: string; copyValue?: string }) {
   if (!value) return null
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-line py-3.5 last:border-b-0">
-      <div className="min-w-0">
-        <dt className="text-[0.8125rem] text-ink-soft">{label}</dt>
-        <dd className="tabular mt-0.5 font-medium break-words">{value}</dd>
-      </div>
-      {copyValue && <CopyButton label={label} value={copyValue} />}
+    // Wiersz listy „nazwa — wartość”; przycisk kopiowania należy do wartości i stoi po prawej, wyśrodkowany w pionie.
+    <div className={cn('relative border-b border-line py-3.5 last:border-b-0', copyValue && 'pr-28')}>
+      <dt className="text-[0.8125rem] text-ink-soft">{label}</dt>
+      <dd className="mt-0.5">
+        <span className="tabular font-medium break-words">{value}</span>
+        {copyValue && (
+          <span className="absolute top-1/2 right-0 -translate-y-1/2">
+            <CopyButton label={label} value={copyValue} />
+          </span>
+        )}
+      </dd>
     </div>
   )
 }
