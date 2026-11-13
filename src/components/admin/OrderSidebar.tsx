@@ -1,5 +1,7 @@
 import type { UIFieldServerProps } from 'payload'
 
+import { ResendEmailsButton } from './ResendEmailsButton'
+
 import './dashboard.css'
 
 /**
@@ -24,7 +26,7 @@ const dateFormat = new Intl.DateTimeFormat('pl-PL', { dateStyle: 'medium', timeS
 
 type LogEntry = { status?: string; at?: string }
 
-export default function OrderSidebar({ data }: UIFieldServerProps) {
+export default function OrderSidebar({ data, id }: UIFieldServerProps) {
   const token = typeof data?.accessToken === 'string' ? data.accessToken : null
   const log = data?.emailsSent && typeof data.emailsSent === 'object' && !Array.isArray(data.emailsSent) ? (data.emailsSent as Record<string, LogEntry>) : {}
   const entries = Object.keys(EMAIL_LABELS)
@@ -60,6 +62,10 @@ export default function OrderSidebar({ data }: UIFieldServerProps) {
             )
           })}
         </ul>
+      )}
+      {/* Ponowna wysyłka ma sens tylko wtedy, gdy potwierdzenie albo powiadomienie nie wyszło. */}
+      {id !== undefined && ['confirmation', 'owner'].some((key) => log[key]?.status && log[key]?.status !== 'sent') && (
+        <ResendEmailsButton orderId={id} />
       )}
     </div>
   )

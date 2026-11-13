@@ -291,4 +291,22 @@ export const Orders: CollectionConfig = {
     beforeChange: [fillCustomerName],
     afterChange: [notifyOnStatusChange],
   },
+  endpoints: [
+    {
+      // Przycisk „Wyślij ponownie” w panelu: ponawia potwierdzenie dla klienta i powiadomienie dla sklepu,
+      // jeśli wcześniej nie wyszły (np. poczta była chwilowo niedostępna). Wysłane wiadomości nie idą drugi raz.
+      path: '/:id/resend-emails',
+      method: 'post',
+      handler: async (req) => {
+        if (!req.user) return Response.json({ message: 'Brak uprawnień.' }, { status: 401 })
+        const id = Number(req.routeParams?.id)
+        if (!Number.isInteger(id) || id <= 0) return Response.json({ message: 'Nieprawidłowe zamówienie.' }, { status: 400 })
+
+        const { sendOrderPlacedEmails } = await import('@/lib/email/send')
+        await sendOrderPlacedEmails(req.payload, id)
+        const order = await req.payload.findByID({ collection: 'orders', id, depth: 0 })
+        return Response.json({ emailsSent: order.emailsSent ?? {} })
+      },
+    },
+  ],
 }

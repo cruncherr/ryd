@@ -266,3 +266,39 @@
 .ryd-order-side__status.is-error {
   color: var(--theme-error-600, #b3261e);
 }
+
+.ryd-order-side__resend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.875rem;
+}
+
+.ryd-order-side__button {
+  padding: 0.4375rem 0.875rem;
+  border: 1px solid var(--theme-elevation-400);
+  border-radius: var(--style-radius-m, 4px);
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ryd-order-side__button:hover:not(:disabled) {
+  border-color: var(--theme-text);
+}
+
+.ryd-order-side__button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.ryd-order-side__note {
+  color: var(--theme-elevation-500);
+}
+
+.ryd-order-side__note.is-error {
+  color: var(--theme-error-600, #b3261e);
+}
