@@ -6,7 +6,16 @@ import { fileURLToPath } from 'url'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Sklep za serwerem pośredniczącym, który nie przekazuje publicznego adresu (tunel, podgląd, nietypowy hosting):
+// lista adresów, z których wolno wysyłać formularze, np. „sklep.pl,*.sklep.pl”. Domyślnie pusta — wtedy
+// formularze przyjmowane są wyłącznie spod własnego adresu sklepu.
+const allowedFormOrigins = (process.env.SERVER_ACTIONS_ALLOWED_ORIGINS ?? '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
 const nextConfig: NextConfig = {
+  ...(allowedFormOrigins.length > 0 ? { experimental: { serverActions: { allowedOrigins: allowedFormOrigins } } } : {}),
   images: {
     formats: ['image/avif', 'image/webp'],
     qualities: [60, 75, 85],
