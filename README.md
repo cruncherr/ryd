@@ -201,6 +201,25 @@ Kilka zasad, na których opiera się sklep:
 - **Uruchomienie sklepu** blokuje walidacja pola „Stan sklepu” (`src/lib/launch.ts`).
 - **Ruch i dotyk**: animacje tylko `transform`/`opacity`, krótkie, z wariantem dla „ograniczonego ruchu”; efekty najechania tylko na urządzeniach ze wskaźnikiem.
 
+### Serwer VPS w home.pl (lub innym dostawcy)
+
+Zwykły hosting WWW home.pl (pod strony i WordPressa) **nie nadaje się** — sklep potrzebuje Node.js i PostgreSQL. Potrzebny jest **serwer VPS** z Ubuntu 22.04 lub 24.04 (wystarczą 2 GB RAM i 2 rdzenie; 4 GB daje zapas).
+
+1. Kup w home.pl serwer VPS z Ubuntu i zanotuj jego adres IP oraz hasło do konta `root`.
+2. W panelu home.pl, w ustawieniach domeny (DNS), ustaw rekord **A** dla domeny i dla `www` na adres IP serwera.
+3. Połącz się z serwerem (Windows: program PowerShell, Mac: Terminal): `ssh root@ADRES_IP`.
+4. Wklej i uruchom:
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/cruncherr/ryd/claude/emilkowalski-ogrngp/deploy/serwer/instaluj.sh -o instaluj.sh && bash instaluj.sh
+   ```
+
+   Jeśli repozytorium jest prywatne, skopiuj plik `deploy/serwer/instaluj.sh` na serwer ręcznie (albo wklej jego treść do pliku), a skrypt zapyta o token GitHub z prawem odczytu.
+5. Skrypt zapyta o domenę oraz login i hasło do panelu, a potem sam zainstaluje Node.js, bazę danych, sklep, certyfikat HTTPS i codzienną kopię zapasową (`/var/backups/ryd`). Trwa to kilka–kilkanaście minut.
+6. Uzupełnij dane poczty (skrzynka z home.pl: serwer, port 465, login, hasło, adres nadawcy) w pliku `/etc/ryd.env` i uruchom `systemctl restart ryd`.
+
+Aktualizacja do nowszej wersji sklepu: uruchom `bash instaluj.sh` ponownie. Dziennik sklepu: `journalctl -u ryd -f`.
+
 ### Inny hosting niż Vercel
 
 Wystarczy serwer z Node.js 22 i PostgreSQL:
