@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { BRAND_NAME, Logo } from '@/components/brand/Logo'
 import type { Setting } from '@/payload-types'
 
 import { CartButton } from './CartButton'
@@ -8,7 +9,7 @@ import { MobileMenu } from './MobileMenu'
 import { NavLink } from './NavLink'
 
 export function Header({ settings }: { settings: Setting }) {
-  const storeName = settings.storeName || 'RYD'
+  const storeName = settings.storeName || BRAND_NAME
   const items = (settings.headerNav ?? []).map((item) => ({ label: item.label, url: item.url }))
 
   return (
@@ -19,7 +20,7 @@ export function Header({ settings }: { settings: Setting }) {
           className="-my-3 justify-self-start py-3 text-[1.3125rem] leading-none font-semibold tracking-[0.2em] uppercase"
           href="/"
         >
-          {storeName}
+          <Logo className="block h-[0.9rem] w-auto text-brand md:h-4" name={storeName} />
         </Link>
 
         <nav aria-label="Główna" className="hidden md:block">

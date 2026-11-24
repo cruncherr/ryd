@@ -19,7 +19,7 @@ const capitalize = (text: string): string => (text ? text.charAt(0).toUpperCase(
  */
 export async function GET(): Promise<Response> {
   const [settings, fonts] = await Promise.all([getSettings(), loadBrandFonts()])
-  const storeName = settings.storeName?.trim() || 'RYD'
+  const storeName = settings.storeName?.trim() || 'VELURO'
   // Hasło sklepu; gdy go nie ma — tytuł strony bez nazwy sklepu na początku.
   const fromTitle = (settings.seo?.title ?? '').replace(/^.*?\s[—–-]\s/, '')
   const tagline = capitalize((settings.tagline?.trim() || fromTitle.trim() || 'Meble tapicerowane').slice(0, 90))

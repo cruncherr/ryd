@@ -73,7 +73,7 @@ export default buildConfig({
   email: smtpConfigured
     ? nodemailerAdapter({
         defaultFromAddress: process.env.SMTP_FROM || '',
-        defaultFromName: process.env.SMTP_FROM_NAME || 'RYD',
+        defaultFromName: process.env.SMTP_FROM_NAME || 'VELURO',
         // Sklep nie sprawdza połączenia z pocztą przy każdym starcie serwera — kłopoty skrzynki
         // nie mogą spowalniać ani zatrzymywać witryny. Wynik każdej wysyłki widać przy zamówieniu.
         skipVerify: true,

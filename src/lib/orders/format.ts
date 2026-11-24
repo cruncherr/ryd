@@ -1,5 +1,5 @@
 /**
- * Numer zamówienia widoczny dla klienta, np. „RYD-1001”: początek z ustawień sklepu i kolejna liczba.
+ * Numer zamówienia widoczny dla klienta, np. „VEL-1001”: początek z ustawień sklepu i kolejna liczba.
  */
 
 /** Pierwsze zamówienie w sklepie dostaje ten numer — czterocyfrowy wygląda poważniej niż „1”. */

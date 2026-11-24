@@ -33,7 +33,7 @@ type Envelope = EmailContent & {
   to: string
   replyTo?: string
   attachments?: Attachment[]
-  /** Krótka nazwa do podglądu i dziennika, np. „potwierdzenie-RYD-1001”. */
+  /** Krótka nazwa do podglądu i dziennika, np. „potwierdzenie-VEL-1001”. */
   label: string
 }
 
@@ -73,7 +73,7 @@ async function deliver(payload: Payload, settings: Setting, envelope: Envelope):
 
   try {
     await payload.sendEmail({
-      from: { name: settings.storeName?.trim() || process.env.SMTP_FROM_NAME || 'RYD', address: process.env.SMTP_FROM || '' },
+      from: { name: settings.storeName?.trim() || process.env.SMTP_FROM_NAME || 'VELURO', address: process.env.SMTP_FROM || '' },
       to: envelope.to,
       replyTo: envelope.replyTo || undefined,
       subject: envelope.subject,

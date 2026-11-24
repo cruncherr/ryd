@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { BRAND_NAME, isBrandName, Logo } from '@/components/brand/Logo'
 import { categoryPath } from '@/lib/catalog'
 import { paymentSummary } from '@/lib/payments/labels'
 import { noOrphans } from '@/lib/typography'
@@ -19,7 +20,7 @@ function FooterHeading({ children }: { children: string }) {
 const linkClass = 'link-line text-[0.9375rem]'
 
 export function Footer({ settings, categories }: Props) {
-  const storeName = settings.storeName || 'RYD'
+  const storeName = settings.storeName || BRAND_NAME
   const { contact, social, company } = settings
   const socials = [
     { label: 'Instagram', url: social?.instagram },
@@ -36,7 +37,10 @@ export function Footer({ settings, categories }: Props) {
     <footer className="border-t border-line">
       <div className="shell grid gap-12 py-16 md:grid-cols-[1.4fr_1fr_1fr_1.2fr] md:gap-10 md:py-20">
         <div className="max-w-sm">
-          <p className="text-[1.3125rem] leading-none font-semibold tracking-[0.2em] uppercase">{storeName}</p>
+          <p className="text-[1.3125rem] leading-none font-semibold tracking-[0.2em] uppercase">
+            <Logo className="block h-4 w-auto text-brand" name={storeName} />
+            {isBrandName(storeName) && <span className="sr-only">{storeName}</span>}
+          </p>
           {settings.footerText && <p className="mt-5 text-[0.9375rem] text-ink-soft">{noOrphans(settings.footerText)}</p>}
           {socials.length > 0 && (
             <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">

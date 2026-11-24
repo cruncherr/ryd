@@ -29,7 +29,7 @@ export default async function BeforeDashboard({ payload }: { payload: Payload })
     <div className="ryd-dash">
       <header className="ryd-dash__header">
         <div>
-          <h2 className="ryd-dash__title">{settings.storeName || 'RYD'} — panel sklepu</h2>
+          <h2 className="ryd-dash__title">{settings.storeName || 'VELURO'} — panel sklepu</h2>
           <p className="ryd-dash__lead">
             {isLive
               ? 'Sklep jest uruchomiony i przyjmuje zamówienia.'

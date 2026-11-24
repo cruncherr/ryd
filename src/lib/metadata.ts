@@ -33,7 +33,7 @@ type PageMetadataInput = {
 
 export async function pageMetadata({ title, description, path, image, type = 'website' }: PageMetadataInput): Promise<Metadata> {
   const settings = await getSettings()
-  const storeName = settings.storeName || 'RYD'
+  const storeName = settings.storeName || 'VELURO'
   const summary = description?.trim() || undefined
 
   return {

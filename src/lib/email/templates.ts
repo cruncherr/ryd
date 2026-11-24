@@ -47,7 +47,7 @@ export type EmailContext = {
   siteUrl: string
 }
 
-const storeNameOf = (settings: Setting): string => settings.storeName?.trim() || 'RYD'
+const storeNameOf = (settings: Setting): string => settings.storeName?.trim() || 'VELURO'
 
 const absolute = (siteUrl: string, path: string | null): string | null => {
   if (!path) return null

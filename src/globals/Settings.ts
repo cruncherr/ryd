@@ -49,7 +49,7 @@ export const Settings: GlobalConfig = {
                   type: 'text',
                   label: 'Nazwa sklepu',
                   required: true,
-                  defaultValue: 'RYD',
+                  defaultValue: 'VELURO',
                   admin: { width: '40%', description: 'Wyświetlana jako logo w nagłówku i w e-mailach.' },
                 },
                 {
@@ -222,9 +222,9 @@ export const Settings: GlobalConfig = {
                       name: 'prefix',
                       type: 'text',
                       label: 'Początek numeru zamówienia',
-                      defaultValue: 'RYD',
+                      defaultValue: 'VEL',
                       maxLength: 8,
-                      admin: { width: '30%', description: 'Np. RYD da numery RYD-1001, RYD-1002…' },
+                      admin: { width: '30%', description: 'Np. VEL da numery VEL-1001, VEL-1002…' },
                     },
                     {
                       name: 'notificationEmail',

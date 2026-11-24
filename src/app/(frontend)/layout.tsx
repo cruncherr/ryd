@@ -31,7 +31,7 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings()
-  const storeName = settings.storeName || 'RYD'
+  const storeName = settings.storeName || 'VELURO'
   const title = settings.seo?.title || [storeName, settings.tagline].filter(Boolean).join(' — ')
   const description = settings.seo?.description || undefined
   const isLive = settings.storeStatus === 'live'

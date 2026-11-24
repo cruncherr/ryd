@@ -52,6 +52,8 @@
 
 @theme {
   --color-paper: #f6f3ee;
+  /* Zieleń ze znaku marki VELURO */
+  --color-brand: #0b281e;
   --color-stage: #ebe6de;
   --color-surface: #ffffff;
   --color-ink: #1c1a18;

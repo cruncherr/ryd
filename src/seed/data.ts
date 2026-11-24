@@ -278,7 +278,7 @@ export const PAGES = [
   {
     title: 'O nas',
     slug: 'o-nas',
-    lead: 'RYD to meble tapicerowane wybierane tak, jak sami chcielibyśmy z nich korzystać.',
+    lead: 'VELURO to meble tapicerowane wybierane tak, jak sami chcielibyśmy z nich korzystać.',
     file: 'o-nas.md',
     showCompanyDetails: false,
   },
@@ -382,7 +382,7 @@ export const HOMEPAGE = {
 }
 
 export const SETTINGS = {
-  storeName: 'RYD',
+  storeName: 'VELURO',
   tagline: 'Meble tapicerowane',
   headerNav: [
     { label: 'Sofy', url: '/sklep' },
@@ -398,7 +398,7 @@ export const SETTINGS = {
   ],
   footerText: 'Meble tapicerowane wykonane starannie, z myślą o codziennym wypoczynku.',
   seo: {
-    title: 'RYD — sofy rozkładane i meble tapicerowane',
+    title: 'VELURO — sofy rozkładane i meble tapicerowane',
     description:
       'Sofy rozkładane z funkcją spania: sprężyste wypełnienie, staranne wykonanie i tkaniny przyjemne w dotyku. Dostawa na terenie całej Polski.',
     imageFile: 'lund-01',

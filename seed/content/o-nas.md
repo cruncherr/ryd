@@ -1,6 +1,6 @@
 ## Wygoda na co dzień
 
-Sofa to mebel, z którego korzysta się codziennie: rano z kawą, wieczorem przy filmie, czasem jako łóżko dla gości. Dlatego w RYD wybieramy modele, które są przede wszystkim wygodne i solidnie wykonane.
+Sofa to mebel, z którego korzysta się codziennie: rano z kawą, wieczorem przy filmie, czasem jako łóżko dla gości. Dlatego w VELURO wybieramy modele, które są przede wszystkim wygodne i solidnie wykonane.
 
 ## Na co zwracamy uwagę
 
