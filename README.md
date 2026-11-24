@@ -47,7 +47,7 @@ Nazwy przycisków w serwisie Vercel mogą się z czasem nieznacznie zmieniać �
 3. **Dodaj bazę danych i magazyn zdjęć.** W projekcie otwórz *Storage* i dodaj bazę **Postgres (Neon)** oraz magazyn **Blob**, podłączając oba do tego projektu. Vercel sam ustawi potrzebne adresy i klucze.
 
    > Jeśli Vercel uruchomił pierwsze wdrożenie od razu po imporcie, zakończy się ono błędem — sklep nie miał jeszcze bazy. To normalne i niczego nie psuje.
-4. **Wdróż** (*Deployments → Redeploy*, jeśli pierwsze wdrożenie się nie powiodło). Wdrożenie tworzy tabele w bazie, wgrywa dane startowe (3 sofy, zdjęcia, szkice stron) i zakłada Twoje konto administratora.
+4. **Wdróż** (*Deployments → Redeploy*, jeśli pierwsze wdrożenie się nie powiodło). Wdrożenie tworzy tabele w bazie, wgrywa dane startowe (3 sofy i narożnik, zdjęcia, szkice stron) i zakłada Twoje konto administratora.
 5. **Zaloguj się** pod adresem `https://twoj-adres/admin`, zmień hasło (ikona konta w prawym górnym rogu), a potem usuń `ADMIN_PASSWORD` z ustawień Vercela.
 
    > Jeśli nie podasz `ADMIN_EMAIL` i `ADMIN_PASSWORD`, pierwsze konto zakłada się na stronie `/admin` — i może to zrobić **każdy**, kto wejdzie tam przed Tobą. Dlatego zalecamy podanie ich przed wdrożeniem.

@@ -194,6 +194,58 @@ Rozkładanie zajmuje chwilę — siedzisko wysuwa się do przodu, a oparcie kła
     ],
     care: CARE,
   },
+  {
+    title: 'Narożnik rozkładany Oslo',
+    slug: 'naroznik-rozkladany-oslo',
+    shortDescription:
+      'Narożnik z szezlongiem, funkcją spania i dwoma pojemnikami na pościel. Miękkie poduchy oparcia i smukłe czarne nóżki.',
+    price: 4890,
+    leadTime: 'Realizacja zamówienia: 3–5 tygodni',
+    sortOrder: 40,
+    variant: {
+      name: 'Grafitowy',
+      fabric: 'Welur',
+      swatchColor: '#33394A',
+      images: [
+        { file: 'oslo-01', alt: 'Narożnik Oslo w kolorze grafitowym z szezlongiem po prawej, widok pod kątem' },
+        { file: 'oslo-02', alt: 'Narożnik Oslo w kolorze grafitowym, widok z boku od strony podłokietnika' },
+        { file: 'oslo-03', alt: 'Narożnik Oslo z poduchami oparcia, widok z góry' },
+        { file: 'oslo-04', alt: 'Narożnik Oslo bez poduch oparcia, widok z góry' },
+        { file: 'oslo-05', alt: 'Narożnik Oslo rozłożony do spania, widok z góry' },
+        { file: 'oslo-06', alt: 'Narożnik Oslo z otwartymi pojemnikami na pościel pod siedziskiem i w szezlongu' },
+        { file: 'oslo-07', alt: 'Zbliżenie siedziska i szezlonga narożnika Oslo z wypustką na krawędziach' },
+      ],
+    },
+    functionViews: [
+      { label: 'Narożnik', caption: 'Szezlong po prawej, trzy miękkie poduchy oparcia.', file: 'oslo-01' },
+      { label: 'Łóżko', caption: 'Siedzisko wysuwa się i tworzy z szezlongiem duże miejsce do spania.', file: 'oslo-05' },
+      { label: 'Pojemniki', caption: 'Pościel chowasz pod siedziskiem, a drobiazgi w szezlongu.', file: 'oslo-06' },
+    ],
+    features: [
+      {
+        title: 'Duże miejsce do spania',
+        text: 'Po rozłożeniu siedzisko i szezlong tworzą jedną szeroką powierzchnię.',
+      },
+      {
+        title: 'Dwa pojemniki',
+        text: 'Jeden pod siedziskiem, drugi w szezlongu — klapa unosi się na podnośnikach.',
+      },
+      {
+        title: 'Miękkie oparcie',
+        text: 'Trzy luźne poduchy z wypustką — możesz je ułożyć tak, jak Ci wygodnie.',
+      },
+    ],
+    description: `Oslo to narożnik na co dzień i dla gości: szezlong do wyciągnięcia nóg, trzy miękkie poduchy oparcia i smukłe boki z wypustką. Czarne metalowe nóżki unoszą bryłę, dzięki czemu wygląda lekko.
+
+Na noc siedzisko wysuwa się do przodu i razem z szezlongiem tworzy duże miejsce do spania. Pościel schowasz w pojemniku pod siedziskiem, a koce i poduszki — w szezlongu, którego klapa unosi się na podnośnikach.`,
+    specs: [
+      { label: 'Funkcja spania', value: 'tak' },
+      { label: 'Pojemnik na pościel', value: 'tak, pod siedziskiem i w szezlongu' },
+      { label: 'Szezlong', value: 'po prawej stronie (jak na zdjęciach)' },
+      { label: 'Kolor nóżek', value: 'czarny metal' },
+    ],
+    care: CARE,
+  },
 ]
 
 export const CATEGORY = {
