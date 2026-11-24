@@ -16,6 +16,8 @@ import {
 } from './data'
 
 const SEED_DIR = path.resolve(process.cwd(), 'seed')
+// Każde wywołanie dostaje własną kopię: Payload i wtyczka magazynu zdjęć zapisują w kontekście znaczniki
+// (np. skipCloudStorage po wgraniu pliku), więc wspólny obiekt sprawiłby, że kolejne zdjęcia nie trafią do magazynu.
 const context = { skipRevalidate: true }
 
 export type SeedResult =
@@ -61,7 +63,7 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
       collection: 'media',
       data: { alt: image.alt },
       filePath: path.join(SEED_DIR, 'media', filename),
-      context,
+      context: { ...context },
     })
     created.media = (created.media ?? 0) + 1
     mediaIds.set(image.file, doc.id)
@@ -87,7 +89,7 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
     const category = await payload.create({
       collection: 'categories',
       data: { ...CATEGORY, sortOrder: 10 },
-      context,
+      context: { ...context },
     })
     categoryId = category.id
     created.categories = 1
@@ -147,7 +149,7 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
         sampleData: true,
         _status: 'published',
       },
-      context,
+      context: { ...context },
     })
     productIds.set(product.slug, doc.id)
     created.products = (created.products ?? 0) + 1
@@ -160,7 +162,7 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
       await payload.create({
         collection: 'shipping-methods',
         data: { ...method, active: true, sampleData: true },
-        context,
+        context: { ...context },
       })
       created.shipping = (created.shipping ?? 0) + 1
     }
@@ -190,7 +192,7 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
         needsReview: true,
         _status: 'published',
       },
-      context,
+      context: { ...context },
     })
     created.pages = (created.pages ?? 0) + 1
   }
@@ -234,7 +236,7 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
         story: HOMEPAGE.story,
         contact: HOMEPAGE.contact,
       },
-      context,
+      context: { ...context },
     })
   }
 
@@ -254,7 +256,7 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
       },
       seededAt: new Date().toISOString(),
     },
-    context,
+    context: { ...context },
   })
 
   return { status: 'done', created }
@@ -273,6 +275,6 @@ export async function ensureAdmin(payload: Payload): Promise<'created' | 'exists
   const users = await payload.count({ collection: 'users' })
   if (users.totalDocs > 0) return 'exists'
 
-  await payload.create({ collection: 'users', data: { email, password, name: 'Administrator' }, context })
+  await payload.create({ collection: 'users', data: { email, password, name: 'Administrator' }, context: { ...context } })
   return 'created'
 }
