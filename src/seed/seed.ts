@@ -6,11 +6,16 @@ import path from 'node:path'
 
 import {
   CATEGORY,
+  CONFIGURATORS,
+  CORNER_CATEGORY,
   DETAIL_IMAGES,
+  FABRICS,
   HOMEPAGE,
+  HOMEPAGE_V2,
   PAGES,
   PRODUCTS,
   SETTINGS,
+  SETTINGS_V2,
   SHIPPING,
   type SeedImage,
 } from './data'
@@ -260,6 +265,132 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
   })
 
   return { status: 'done', created }
+}
+
+/**
+ * Uzupełnienia danych startowych dla sklepów, które wystartowały przed pojawieniem się konfiguratora:
+ * biblioteka tkanin, wymiary i nóżki modeli, kategoria narożników, nowe sekcje strony głównej.
+ *
+ * Zasada: zmieniamy wyłącznie treści przykładowe, których właściciel jeszcze nie sprawdził
+ * (produkt z zaznaczonym „Dane przykładowe”, strona główna z „Teksty przykładowe”) i tylko wtedy,
+ * gdy dane miejsce jest puste. Uruchamiane przy każdym wdrożeniu — za drugim razem nie robi nic.
+ */
+export async function upgradeSeed(payload: Payload): Promise<string[]> {
+  const done: string[] = []
+
+  // --- Tkaniny ---------------------------------------------------------------
+  const fabricCount = await payload.count({ collection: 'fabrics' })
+  if (fabricCount.totalDocs === 0) {
+    for (const [index, fabric] of FABRICS.entries()) {
+      await payload.create({
+        collection: 'fabrics',
+        data: { ...fabric, active: true, sortOrder: (index + 1) * 10, sampleData: true },
+        context: { ...context },
+      })
+    }
+    done.push(`tkaniny: ${FABRICS.length}`)
+  }
+  const fabricDocs = await payload.find({ collection: 'fabrics', depth: 0, limit: 200, pagination: false })
+  const fabricByName = new Map(fabricDocs.docs.map((fabric) => [fabric.name, fabric]))
+
+  // --- Kategoria narożników --------------------------------------------------
+  const corners = await payload.find({
+    collection: 'categories',
+    where: { slug: { equals: CORNER_CATEGORY.slug } },
+    limit: 1,
+    depth: 0,
+  })
+  let cornerCategoryId = corners.docs[0]?.id
+  const needsCorners = Object.values(CONFIGURATORS).some((config) => config.category === CORNER_CATEGORY.slug)
+  if (!cornerCategoryId && needsCorners) {
+    const created = await payload.create({
+      collection: 'categories',
+      data: { ...CORNER_CATEGORY, sortOrder: 20 },
+      context: { ...context },
+    })
+    cornerCategoryId = created.id
+    done.push('kategoria: Narożniki')
+  }
+
+  // --- Konfiguracja produktów ------------------------------------------------
+  for (const [slug, config] of Object.entries(CONFIGURATORS)) {
+    const found = await payload.find({ collection: 'products', where: { slug: { equals: slug } }, limit: 1, depth: 0 })
+    const product = found.docs[0]
+    if (!product || !product.sampleData) continue
+    if ((product.sizes?.length ?? 0) > 0 || (product.fabrics?.length ?? 0) > 0 || (product.legs?.length ?? 0) > 0) continue
+
+    const photoFabric = fabricByName.get(config.photo.fabric)
+    const fabricIds = config.fabrics.flatMap((name) => {
+      const fabric = fabricByName.get(name)
+      return fabric ? [fabric.id] : []
+    })
+    const variants = (product.variants ?? []).map((variant, index) =>
+      index === 0 && photoFabric
+        ? { ...variant, name: config.photo.color, fabric: photoFabric.name, fabricLink: photoFabric.id }
+        : variant,
+    )
+    // Wybór nóżek i strony szezlonga jest teraz w konfiguratorze — w danych technicznych byłby sprzeczny.
+    const specs = (product.specs ?? [])
+      .filter((spec) => !(config.legs.length > 1 && spec.label === 'Kolor nóżek'))
+      .map((spec) =>
+        config.sideChoice && spec.label === 'Szezlong' ? { ...spec, value: 'po lewej lub po prawej stronie — do wyboru' } : spec,
+      )
+
+    await payload.update({
+      collection: 'products',
+      id: product.id,
+      data: {
+        sizes: config.sizes,
+        fabrics: fabricIds,
+        legs: config.legs,
+        sideChoice: config.sideChoice ?? false,
+        defaultSide: config.defaultSide ?? 'right',
+        variants,
+        specs,
+        ...(config.category === CORNER_CATEGORY.slug && cornerCategoryId ? { category: cornerCategoryId } : {}),
+        _status: 'published',
+      },
+      context: { ...context },
+    })
+    done.push(`konfigurator: ${slug}`)
+  }
+
+  // --- Strona główna -----------------------------------------------------------
+  const homepage = await payload.findGlobal({ slug: 'homepage', depth: 0 })
+  if (homepage.needsReview && !homepage.steps?.title) {
+    await payload.updateGlobal({
+      slug: 'homepage',
+      data: {
+        hero: { ...homepage.hero, ...HOMEPAGE_V2.hero },
+        usps: HOMEPAGE_V2.usps,
+        collection: HOMEPAGE_V2.collection,
+        categories: HOMEPAGE_V2.categories,
+        steps: HOMEPAGE_V2.steps,
+        fabrics: HOMEPAGE_V2.fabrics,
+      },
+      context: { ...context },
+    })
+    done.push('strona główna: nowe sekcje')
+  }
+
+  // --- Menu i pasek informacji -------------------------------------------------
+  const settings = await payload.findGlobal({ slug: 'settings', depth: 0 })
+  const oldNav = SETTINGS.headerNav.map((item) => `${item.label}>${item.url}`).join('|')
+  const currentNav = (settings.headerNav ?? []).map((item) => `${item.label}>${item.url}`).join('|')
+  const navIsDefault = currentNav === oldNav || currentNav === ''
+  if (navIsDefault || !settings.announcement) {
+    await payload.updateGlobal({
+      slug: 'settings',
+      data: {
+        ...(navIsDefault ? { headerNav: SETTINGS_V2.headerNav } : {}),
+        ...(!settings.announcement ? { announcement: SETTINGS_V2.announcement } : {}),
+      },
+      context: { ...context },
+    })
+    done.push('menu i pasek informacji')
+  }
+
+  return done
 }
 
 /**

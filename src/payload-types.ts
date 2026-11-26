@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     products: Product;
+    fabrics: Fabric;
     categories: Category;
     'shipping-methods': ShippingMethod;
     orders: Order;
@@ -84,6 +85,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     products: ProductsSelect<false> | ProductsSelect<true>;
+    fabrics: FabricsSelect<false> | FabricsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     'shipping-methods': ShippingMethodsSelect<false> | ShippingMethodsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
@@ -176,6 +178,10 @@ export interface Product {
     fabric?: string | null;
     swatchColor: string;
     /**
+     * Opcjonalnie. Gdy wskażesz tkaninę, a nazwa koloru będzie taka sama jak w Tkaninach, klient zobaczy te zdjęcia po wybraniu tego koloru w konfiguratorze.
+     */
+    fabricLink?: (number | null) | Fabric;
+    /**
      * Kolejność zdjęć możesz zmieniać, przeciągając je. Pierwsze zdjęcie jest główne, drugie pojawia się po najechaniu na produkt.
      */
     images: (number | Media)[];
@@ -197,6 +203,49 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Każdy wymiar ma własne wymiary i dopłatę do ceny podstawowej (ujemna = taniej). Na start zaznaczony jest wymiar z dopłatą 0. Bez wymiarów sklep pokaże dane z zakładki „Opis i wymiary”.
+   */
+  sizes?:
+    | {
+        label: string;
+        /**
+         * Np. 400 albo −300.
+         */
+        priceDelta: number;
+        width: number;
+        depth: number;
+        height?: number | null;
+        sleepWidth?: number | null;
+        sleepLength?: number | null;
+        /**
+         * Tylko narożniki — głębokość części bez szezlonga.
+         */
+        bodyDepth?: number | null;
+        chaiseWidth?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tkaniny z próbnika (Sklep → Tkaniny), w których szyjesz ten model. Zostaw puste, a klient wybierze tylko spośród kolorów z zakładki „Zdjęcia i kolory”.
+   */
+  fabrics?: (number | Fabric)[] | null;
+  /**
+   * Pierwsza pozycja jest wybrana na start — najlepiej ta ze zdjęć. Bez pozycji wybór nóżek się nie pojawia.
+   */
+  legs?:
+    | {
+        name: string;
+        swatchColor: string;
+        priceDelta?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  sideChoice?: boolean | null;
+  /**
+   * Patrząc na mebel od przodu.
+   */
+  defaultSide?: ('left' | 'right') | null;
   /**
    * Trzy–cztery powody, dla których warto wybrać ten mebel.
    */
@@ -332,6 +381,56 @@ export interface Category {
   createdAt: string;
 }
 /**
+ * Tkaniny i kolory do wyboru w konfiguratorze oraz w próbniku. W produkcie (zakładka „Konfiguracja”) zaznaczasz, które tkaniny pasują do danego modelu.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fabrics".
+ */
+export interface Fabric {
+  id: number;
+  name: string;
+  type: 'velvet' | 'boucle' | 'chenille' | 'corduroy' | 'weave' | 'leather';
+  /**
+   * Np. 10 — mebel w tej tkaninie jest o 10% droższy. 0 = w cenie.
+   */
+  surchargePercent: number;
+  /**
+   * Jedno–dwa zdania: jaka jest w dotyku, do jakiego domu pasuje.
+   */
+  description?: string | null;
+  /**
+   * Zaznacz tylko to, co potwierdza karta techniczna tkaniny.
+   */
+  features?: ('easy_clean' | 'water_repellent' | 'pet_friendly' | 'durable' | 'soft')[] | null;
+  composition?: string | null;
+  martindale?: number | null;
+  /**
+   * Kolejność jest kolejnością w sklepie. Jeśli masz zdjęcia mebla w danym kolorze, dodaj je w produkcie (Zdjęcia i kolory) pod tą samą nazwą koloru — sklep pokaże je po wyborze koloru.
+   */
+  colors: {
+    name: string;
+    code?: string | null;
+    swatchColor: string;
+    available?: boolean | null;
+    /**
+     * Pole opcjonalne. Bez zdjęcia sklep rysuje próbkę z koloru i rodzaju tkaniny.
+     */
+    image?: (number | null) | Media;
+    id?: string | null;
+  }[];
+  active?: boolean | null;
+  /**
+   * Mniejsza liczba = wyżej na liście.
+   */
+  sortOrder?: number | null;
+  /**
+   * Zaznaczone przy tkaninach przygotowanych automatycznie. Odznacz, gdy wpiszesz prawdziwe nazwy, kolory i dopłaty.
+   */
+  sampleData?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Biblioteka zdjęć sklepu. Najlepiej wyglądają zdjęcia produktów na białym tle, w proporcji 4:3, o szerokości co najmniej 2000 px.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -421,6 +520,16 @@ export interface Order {
     quantity: number;
     lineTotal: number;
     /**
+     * Wymiar, tkanina, kolor, nóżki i strona — dokładnie tak, jak klient je wybrał.
+     */
+    configuration?:
+      | {
+          label: string;
+          value: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
      * Powiązanie z produktem w ofercie (może zniknąć, jeśli produkt zostanie usunięty).
      */
     product?: (number | null) | Product;
@@ -484,7 +593,7 @@ export interface Order {
   createdAt: string;
 }
 /**
- * Zapytania wysłane przez formularz kontaktowy na stronie.
+ * Zapytania z formularza kontaktowego i zamówienia bezpłatnych próbek tkanin.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "messages".
@@ -494,6 +603,9 @@ export interface Message {
   name: string;
   email: string;
   phone?: string | null;
+  kind: 'contact' | 'samples';
+  samples?: string | null;
+  address?: string | null;
   message: string;
   source?: string | null;
   handled?: boolean | null;
@@ -625,6 +737,10 @@ export interface PayloadLockedDocument {
         value: number | Product;
       } | null)
     | ({
+        relationTo: 'fabrics';
+        value: number | Fabric;
+      } | null)
+    | ({
         relationTo: 'categories';
         value: number | Category;
       } | null)
@@ -717,6 +833,7 @@ export interface ProductsSelect<T extends boolean = true> {
         name?: T;
         fabric?: T;
         swatchColor?: T;
+        fabricLink?: T;
         images?: T;
         sku?: T;
         available?: T;
@@ -730,6 +847,31 @@ export interface ProductsSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  sizes?:
+    | T
+    | {
+        label?: T;
+        priceDelta?: T;
+        width?: T;
+        depth?: T;
+        height?: T;
+        sleepWidth?: T;
+        sleepLength?: T;
+        bodyDepth?: T;
+        chaiseWidth?: T;
+        id?: T;
+      };
+  fabrics?: T;
+  legs?:
+    | T
+    | {
+        name?: T;
+        swatchColor?: T;
+        priceDelta?: T;
+        id?: T;
+      };
+  sideChoice?: T;
+  defaultSide?: T;
   features?:
     | T
     | {
@@ -786,6 +928,34 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fabrics_select".
+ */
+export interface FabricsSelect<T extends boolean = true> {
+  name?: T;
+  type?: T;
+  surchargePercent?: T;
+  description?: T;
+  features?: T;
+  composition?: T;
+  martindale?: T;
+  colors?:
+    | T
+    | {
+        name?: T;
+        code?: T;
+        swatchColor?: T;
+        available?: T;
+        image?: T;
+        id?: T;
+      };
+  active?: T;
+  sortOrder?: T;
+  sampleData?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
@@ -831,6 +1001,13 @@ export interface OrdersSelect<T extends boolean = true> {
         unitPrice?: T;
         quantity?: T;
         lineTotal?: T;
+        configuration?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+            };
         product?: T;
         image?: T;
         id?: T;
@@ -883,6 +1060,9 @@ export interface MessagesSelect<T extends boolean = true> {
   name?: T;
   email?: T;
   phone?: T;
+  kind?: T;
+  samples?: T;
+  address?: T;
   message?: T;
   source?: T;
   handled?: T;
@@ -1070,6 +1250,52 @@ export interface Homepage {
     title?: string | null;
     text?: string | null;
   };
+  /**
+   * Kafelki tworzą się same z kategorii, które mają produkty, oraz z próbnika tkanin. Tu ustawiasz tylko nagłówek.
+   */
+  categories?: {
+    /**
+     * Małe słowo nad nagłówkiem. Pole opcjonalne.
+     */
+    eyebrow?: string | null;
+    /**
+     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
+     */
+    title?: string | null;
+    text?: string | null;
+  };
+  steps?: {
+    /**
+     * Małe słowo nad nagłówkiem. Pole opcjonalne.
+     */
+    eyebrow?: string | null;
+    /**
+     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
+     */
+    title?: string | null;
+    text?: string | null;
+    items?:
+      | {
+          title: string;
+          text?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Tkaniny i kolory pobierane są z Sklep → Tkaniny.
+   */
+  fabrics?: {
+    /**
+     * Małe słowo nad nagłówkiem. Pole opcjonalne.
+     */
+    eyebrow?: string | null;
+    /**
+     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
+     */
+    title?: string | null;
+    text?: string | null;
+  };
   functions?: {
     /**
      * Małe słowo nad nagłówkiem. Pole opcjonalne.
@@ -1187,7 +1413,7 @@ export interface Setting {
   };
   orders?: {
     /**
-     * Np. RYD da numery RYD-1001, RYD-1002…
+     * Np. VEL da numery VEL-1001, VEL-1002…
      */
     prefix?: string | null;
     /**
@@ -1208,6 +1434,14 @@ export interface Setting {
      * Działa po podłączeniu konta Stripe w ustawieniach hostingu (klucze STRIPE_SECRET_KEY i STRIPE_WEBHOOK_SECRET). Bez kluczy ta opcja nie pojawi się w zamówieniu.
      */
     onlineEnabled?: boolean | null;
+  };
+  /**
+   * Klient zaznacza kolory w próbniku (strona /tkaniny) i zostawia adres. Zamówienie próbek trafia do Sprzedaż → Wiadomości.
+   */
+  samples?: {
+    enabled?: boolean | null;
+    max?: number | null;
+    note?: string | null;
   };
   /**
    * Jeśli nie jesteś płatnikiem VAT, zmień np. na „Sprzedawca zwolniony z VAT”.
@@ -1276,6 +1510,34 @@ export interface HomepageSelect<T extends boolean = true> {
         id?: T;
       };
   collection?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        text?: T;
+      };
+  categories?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        text?: T;
+      };
+  steps?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        text?: T;
+        items?:
+          | T
+          | {
+              title?: T;
+              text?: T;
+              id?: T;
+            };
+      };
+  fabrics?:
     | T
     | {
         eyebrow?: T;
@@ -1381,6 +1643,13 @@ export interface SettingsSelect<T extends boolean = true> {
         codEnabled?: T;
         codFee?: T;
         onlineEnabled?: T;
+      };
+  samples?:
+    | T
+    | {
+        enabled?: T;
+        max?: T;
+        note?: T;
       };
   priceNote?: T;
   headerNav?:

@@ -116,6 +116,57 @@ export const Homepage: GlobalConfig = {
           ],
         },
         {
+          label: 'Kategorie',
+          fields: [
+            {
+              name: 'categories',
+              type: 'group',
+              label: 'Kafelki kategorii',
+              admin: {
+                description: 'Kafelki tworzą się same z kategorii, które mają produkty, oraz z próbnika tkanin. Tu ustawiasz tylko nagłówek.',
+              },
+              fields: heading('np. Czego szukasz?'),
+            },
+          ],
+        },
+        {
+          label: 'Jak to działa',
+          fields: [
+            {
+              name: 'steps',
+              type: 'group',
+              label: 'Konfiguracja krok po kroku',
+              fields: [
+                ...heading('np. Twoja sofa w trzech krokach'),
+                {
+                  name: 'items',
+                  type: 'array',
+                  label: 'Kroki',
+                  labels: { singular: 'Krok', plural: 'Kroki' },
+                  maxRows: 4,
+                  admin: { components: { RowLabel: '@/components/admin/RowLabels#TitleRowLabel' } },
+                  fields: [
+                    { name: 'title', type: 'text', label: 'Tytuł', required: true, maxLength: 48 },
+                    { name: 'text', type: 'textarea', label: 'Opis', maxLength: 220 },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Tkaniny',
+          fields: [
+            {
+              name: 'fabrics',
+              type: 'group',
+              label: 'Próbnik tkanin na stronie głównej',
+              admin: { description: 'Tkaniny i kolory pobierane są z Sklep → Tkaniny.' },
+              fields: heading('np. Dotknij, zanim wybierzesz'),
+            },
+          ],
+        },
+        {
           label: 'Pokaz funkcji',
           fields: [
             {

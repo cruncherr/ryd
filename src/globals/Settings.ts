@@ -293,6 +293,45 @@ export const Settings: GlobalConfig = {
               ],
             },
             {
+              name: 'samples',
+              type: 'group',
+              label: 'Próbki tkanin',
+              admin: {
+                description: 'Klient zaznacza kolory w próbniku (strona /tkaniny) i zostawia adres. Zamówienie próbek trafia do Sprzedaż → Wiadomości.',
+              },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'enabled',
+                      type: 'checkbox',
+                      label: 'Przyjmuję zamówienia próbek',
+                      defaultValue: true,
+                      admin: { width: '50%', style: { alignSelf: 'flex-end' } },
+                    },
+                    {
+                      name: 'max',
+                      type: 'number',
+                      label: 'Najwięcej próbek w jednym zamówieniu',
+                      defaultValue: 6,
+                      min: 1,
+                      max: 20,
+                      admin: { width: '50%', condition: (_, siblingData) => Boolean(siblingData?.enabled) },
+                    },
+                  ],
+                },
+                {
+                  name: 'note',
+                  type: 'text',
+                  label: 'Informacja dla klienta',
+                  maxLength: 160,
+                  defaultValue: 'Próbki wysyłamy bezpłatnie listem — zwykle w ciągu 2–3 dni roboczych.',
+                  admin: { condition: (_, siblingData) => Boolean(siblingData?.enabled) },
+                },
+              ],
+            },
+            {
               name: 'priceNote',
               type: 'text',
               label: 'Dopisek przy cenie',

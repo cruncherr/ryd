@@ -3,6 +3,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+import { lineKey, type LineConfig } from '@/lib/configurator'
 import { CART_LIMITS } from '@/lib/constants'
 
 /**
@@ -11,9 +12,13 @@ import { CART_LIMITS } from '@/lib/constants'
  * przelicza koszyk na nowo z bazy, zanim przyjmie zamówienie.
  */
 export type CartLine = {
+  /** Produkt + zdjęcia + konfiguracja — dwie różne konfiguracje tego samego mebla to dwie pozycje. */
+  key: string
   productId: number
   /** Identyfikator koloru (wiersza wariantu) produktu. */
   variantId: string
+  /** Wybór z konfiguratora: wymiar, tkanina, kolor, nóżki, strona. */
+  config?: LineConfig
   quantity: number
   title: string
   variantName: string
@@ -29,9 +34,9 @@ type CartState = {
   isOpen: boolean
   /** Czy koszyk został już wczytany z pamięci przeglądarki. */
   hydrated: boolean
-  add: (line: Omit<CartLine, 'quantity'>, quantity?: number) => void
-  setQuantity: (productId: number, variantId: string, quantity: number) => void
-  remove: (productId: number, variantId: string) => void
+  add: (line: Omit<CartLine, 'quantity' | 'key'>, quantity?: number) => void
+  setQuantity: (key: string, quantity: number) => void
+  remove: (key: string) => void
   clear: () => void
   /** Podmienia dane pozycji na aktualne z serwera (ceny, nazwy, dostępność). */
   sync: (lines: CartLine[]) => void
@@ -40,8 +45,6 @@ type CartState = {
   setOpen: (open: boolean) => void
 }
 
-const sameLine = (line: CartLine, productId: number, variantId: string) =>
-  line.productId === productId && line.variantId === variantId
 
 const clampQuantity = (quantity: number) =>
   Math.max(1, Math.min(CART_LIMITS.maxQuantityPerLine, Math.round(quantity)))
@@ -54,27 +57,23 @@ export const useCart = create<CartState>()(
       hydrated: false,
       add: (line, quantity = 1) =>
         set((state) => {
-          const existing = state.lines.find((item) => sameLine(item, line.productId, line.variantId))
+          const key = lineKey(line.productId, line.variantId, line.config)
+          const existing = state.lines.find((item) => item.key === key)
           if (existing) {
             return {
               lines: state.lines.map((item) =>
-                sameLine(item, line.productId, line.variantId)
-                  ? { ...item, ...line, quantity: clampQuantity(item.quantity + quantity) }
-                  : item,
+                item.key === key ? { ...item, ...line, key, quantity: clampQuantity(item.quantity + quantity) } : item,
               ),
             }
           }
           if (state.lines.length >= CART_LIMITS.maxLines) return state
-          return { lines: [...state.lines, { ...line, quantity: clampQuantity(quantity) }] }
+          return { lines: [...state.lines, { ...line, key, quantity: clampQuantity(quantity) }] }
         }),
-      setQuantity: (productId, variantId, quantity) =>
+      setQuantity: (key, quantity) =>
         set((state) => ({
-          lines: state.lines.map((item) =>
-            sameLine(item, productId, variantId) ? { ...item, quantity: clampQuantity(quantity) } : item,
-          ),
+          lines: state.lines.map((item) => (item.key === key ? { ...item, quantity: clampQuantity(quantity) } : item)),
         })),
-      remove: (productId, variantId) =>
-        set((state) => ({ lines: state.lines.filter((item) => !sameLine(item, productId, variantId)) })),
+      remove: (key) => set((state) => ({ lines: state.lines.filter((item) => item.key !== key) })),
       clear: () => set({ lines: [] }),
       sync: (lines) => set({ lines }),
       open: () => set({ isOpen: true }),
@@ -83,8 +82,15 @@ export const useCart = create<CartState>()(
     }),
     {
       name: 'ryd-koszyk',
-      version: 1,
+      version: 2,
       partialize: (state) => ({ lines: state.lines }),
+      // Koszyk zapisany przed pojawieniem się konfiguratora: każda pozycja dostaje swój klucz.
+      migrate: (persisted) => {
+        const lines = (persisted as { lines?: Array<Omit<CartLine, 'key'> & { key?: string }> } | null)?.lines ?? []
+        return {
+          lines: lines.map((line) => ({ ...line, key: line.key ?? lineKey(line.productId, line.variantId, line.config) })),
+        }
+      },
       // Wczytujemy ręcznie po stronie przeglądarki, żeby serwer i klient zaczynały od tego samego (pustego) stanu.
       skipHydration: true,
       onRehydrateStorage: () => () => {

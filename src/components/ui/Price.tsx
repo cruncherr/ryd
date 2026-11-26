@@ -7,10 +7,12 @@ type Props = {
   /** `card` — zwięźle na liście produktów; `full` — na stronie produktu, z informacją o najniższej cenie. */
   mode?: 'card' | 'full'
   note?: string | null
+  /** Np. „od” — gdy cena zależy od wybranego wymiaru lub tkaniny. */
+  prefix?: string
   className?: string
 }
 
-export function Price({ price, mode = 'card', note, className }: Props) {
+export function Price({ price, mode = 'card', note, prefix, className }: Props) {
   const onSale = price.regular !== null
 
   if (mode === 'card') {
@@ -22,8 +24,9 @@ export function Price({ price, mode = 'card', note, className }: Props) {
             {formatPLN(price.regular ?? 0)}
           </s>
         )}
-        <span className={cn('font-medium', onSale && 'text-accent')}>
+        <span className={cn('font-medium whitespace-nowrap', onSale && 'text-accent')}>
           {onSale && <span className="sr-only">Cena promocyjna: </span>}
+          {prefix && <span className="mr-1 text-[0.8125rem] font-normal text-ink-soft">{prefix}</span>}
           {formatPLN(price.current)}
         </span>
       </p>

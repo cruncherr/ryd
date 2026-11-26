@@ -437,24 +437,25 @@ export function shippedEmail(order: Order, context: EmailContext): EmailContent 
 /* ---------- Wiadomość z formularza kontaktowego (dla sprzedawcy) ---------- */
 
 export function contactMessageEmail(
-  message: Pick<Message, 'name' | 'email' | 'phone' | 'message' | 'source'> & { id?: number },
+  message: Pick<Message, 'name' | 'email' | 'phone' | 'message' | 'source'> & { id?: number; kind?: Message['kind'] | null },
   context: EmailContext,
 ): EmailContent {
   const { settings, siteUrl } = context
   const storeName = storeNameOf(settings)
-  const subject = `Wiadomość ze sklepu od: ${message.name}`
+  const isSamples = message.kind === 'samples'
+  const subject = isSamples ? `Zamówienie próbek tkanin: ${message.name}` : `Wiadomość ze sklepu od: ${message.name}`
   const phone = formatPhone(message.phone)
   const adminUrl = message.id ? `${siteUrl}/admin/collections/messages/${message.id}` : `${siteUrl}/admin/collections/messages`
 
   const content = [
-    heading('Nowa wiadomość ze sklepu'),
+    heading(isSamples ? 'Nowe zamówienie próbek tkanin' : 'Nowa wiadomość ze sklepu'),
     keyValues([
       ['Od', escapeHtml(message.name)],
       ['E-mail', link(message.email, `mailto:${message.email}`)],
       ['Telefon', phone ? link(phone, `tel:${message.phone}`) : ''],
       ['Dotyczy', escapeHtml(message.source ?? '')],
     ]),
-    subheading('Treść'),
+    subheading(isSamples ? 'Próbki i adres' : 'Treść'),
     panel(escapeMultiline(message.message)),
     button('Otwórz w panelu', adminUrl),
   ].join('\n')
@@ -470,7 +471,7 @@ export function contactMessageEmail(
       footerLines: [`Wiadomość z formularza kontaktowego sklepu ${storeName}. Odpowiedź trafi bezpośrednio do nadawcy.`],
     }),
     text: [
-      'Nowa wiadomość ze sklepu',
+      isSamples ? 'Nowe zamówienie próbek tkanin' : 'Nowa wiadomość ze sklepu',
       [`Od: ${message.name}`, `E-mail: ${message.email}`, phone ? `Telefon: ${phone}` : '', message.source ? `Dotyczy: ${message.source}` : '']
         .filter(Boolean)
         .join('\n'),

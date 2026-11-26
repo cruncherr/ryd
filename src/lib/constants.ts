@@ -60,3 +60,34 @@ export const CART_LIMITS = {
   maxQuantityPerLine: 10,
   maxLines: 20,
 } as const
+
+/** Rodzaje tkanin w próbniku — od nich zależy też faktura próbki rysowanej w sklepie. */
+export const FABRIC_TYPES = [
+  { value: 'velvet', label: 'Welur' },
+  { value: 'boucle', label: 'Bouclé' },
+  { value: 'chenille', label: 'Szenil' },
+  { value: 'corduroy', label: 'Sztruks' },
+  { value: 'weave', label: 'Plecionka' },
+  { value: 'leather', label: 'Skóra ekologiczna' },
+] as const
+
+export type FabricType = (typeof FABRIC_TYPES)[number]['value']
+
+/** Właściwości tkaniny pokazywane klientowi jako krótkie etykiety. */
+export const FABRIC_FEATURES = [
+  { value: 'easy_clean', label: 'Łatwe czyszczenie wodą' },
+  { value: 'water_repellent', label: 'Hydrofobowa' },
+  { value: 'pet_friendly', label: 'Przyjazna zwierzętom' },
+  { value: 'durable', label: 'Bardzo odporna na ścieranie' },
+  { value: 'soft', label: 'Wyjątkowo miękka' },
+] as const
+
+export type FabricFeature = (typeof FABRIC_FEATURES)[number]['value']
+
+/** Strona szezlonga lub narożnika — tak, jak widzi ją osoba stojąca przed meblem. */
+export const SIDES = [
+  { value: 'left', label: 'Lewa' },
+  { value: 'right', label: 'Prawa' },
+] as const
+
+export type Side = (typeof SIDES)[number]['value']

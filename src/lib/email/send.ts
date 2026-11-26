@@ -274,7 +274,7 @@ export async function sendShippedEmail(payload: Payload, orderId: number): Promi
 
 export async function sendContactNotification(
   payload: Payload,
-  message: Pick<Message, 'id' | 'name' | 'email' | 'phone' | 'message' | 'source'>,
+  message: Pick<Message, 'id' | 'name' | 'email' | 'phone' | 'message' | 'source' | 'kind'>,
 ): Promise<EmailOutcome> {
   const context = await loadContext(payload)
   const { settings } = context

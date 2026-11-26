@@ -8,8 +8,8 @@ export const Messages: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Sprzedaż',
-    defaultColumns: ['name', 'email', 'createdAt', 'handled'],
-    description: 'Zapytania wysłane przez formularz kontaktowy na stronie.',
+    defaultColumns: ['name', 'kind', 'email', 'createdAt', 'handled'],
+    description: 'Zapytania z formularza kontaktowego i zamówienia bezpłatnych próbek tkanin.',
   },
   defaultSort: '-createdAt',
   // Wiadomości zapisuje wyłącznie serwer sklepu (formularz kontaktowy), nigdy przeglądarka klienta.
@@ -27,6 +27,30 @@ export const Messages: CollectionConfig = {
         { name: 'email', type: 'email', label: 'E-mail', required: true },
         { name: 'phone', type: 'text', label: 'Telefon' },
       ],
+    },
+    {
+      name: 'kind',
+      type: 'select',
+      label: 'Rodzaj',
+      required: true,
+      defaultValue: 'contact',
+      options: [
+        { value: 'contact', label: 'Pytanie' },
+        { value: 'samples', label: 'Próbki tkanin' },
+      ],
+      admin: { position: 'sidebar' },
+    },
+    {
+      name: 'samples',
+      type: 'textarea',
+      label: 'Zamówione próbki',
+      admin: { readOnly: true, condition: (data) => data?.kind === 'samples' },
+    },
+    {
+      name: 'address',
+      type: 'textarea',
+      label: 'Adres do wysyłki próbek',
+      admin: { readOnly: true, condition: (data) => data?.kind === 'samples' },
     },
     {
       name: 'message',

@@ -51,7 +51,7 @@ export async function getLaunchChecklist(
   const payments = settings?.payments
   const manufacturer = settings?.manufacturer
 
-  const [publishedProducts, sampleProducts, shippingMethods, sampleShipping, pages, homepage] = await Promise.all([
+  const [publishedProducts, sampleProducts, shippingMethods, sampleShipping, pages, homepage, sampleFabrics] = await Promise.all([
     payload.count({ collection: 'products', where: { _status: { equals: 'published' } } }),
     payload.count({
       collection: 'products',
@@ -70,6 +70,10 @@ export async function getLaunchChecklist(
       select: { slug: true, title: true, needsReview: true, _status: true, content: true },
     }),
     payload.findGlobal({ slug: 'homepage', depth: 0 }),
+    payload.count({
+      collection: 'fabrics',
+      where: { and: [{ active: { equals: true } }, { sampleData: { equals: true } }] },
+    }),
   ])
 
   const legalSlugs = [LEGAL_SLUGS.terms, LEGAL_SLUGS.privacy, LEGAL_SLUGS.returns] as string[]
@@ -125,6 +129,17 @@ export async function getLaunchChecklist(
       done: publishedProducts.totalDocs > 0 && sampleProducts.totalDocs === 0,
       blocking: true,
       href: '/admin/collections/products',
+    },
+    {
+      id: 'fabrics',
+      label: 'Tkaniny i dopłaty sprawdzone',
+      hint:
+        sampleFabrics.totalDocs > 0
+          ? `Tkanin z danymi przykładowymi: ${sampleFabrics.totalDocs}. Wpisz nazwy, kolory, właściwości i dopłaty, które naprawdę oferujesz, i odznacz „Dane przykładowe”.`
+          : 'Tkaniny w próbniku mają prawdziwe nazwy, kolory i dopłaty.',
+      done: sampleFabrics.totalDocs === 0,
+      blocking: true,
+      href: '/admin/collections/fabrics',
     },
     {
       id: 'shipping',

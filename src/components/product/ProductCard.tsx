@@ -10,8 +10,11 @@ import {
   productPath,
   secondaryImage,
 } from '@/lib/catalog'
+import { FabricSwatch } from '@/components/fabric/FabricSwatch'
 import { cn } from '@/lib/cn'
+import { configOptions, lowestConfiguredPrice, priceVaries } from '@/lib/configurator'
 import { discountPercent } from '@/lib/money'
+import { plural } from '@/lib/typography'
 import { noOrphans } from '@/lib/typography'
 import type { Product } from '@/payload-types'
 
@@ -27,8 +30,21 @@ type Props = {
 export function ProductCard({ product, sizes, eager = false, headingLevel: Heading = 'h3', className }: Props) {
   const first = primaryImage(product)
   const second = secondaryImage(product)
-  const price = priceView(product)
+  const basePrice = priceView(product)
+  const options = configOptions(product)
+  const varies = priceVaries(options)
+  // Gdy cena zależy od wymiaru lub tkaniny, karta pokazuje najniższą możliwą — „od … zł”.
+  const price = varies
+    ? {
+        current: lowestConfiguredPrice(basePrice.current, options),
+        regular: basePrice.regular !== null ? lowestConfiguredPrice(basePrice.regular, options) : null,
+        lowest30: null,
+      }
+    : basePrice
   const variants = availableVariants(product)
+  const fabricColors = options.fabrics.flatMap((fabric) =>
+    fabric.colors.filter((color) => color.available).map((color) => ({ ...color, type: fabric.type, key: `${fabric.id}-${color.id}` })),
+  )
   const unavailable = product.availability === 'unavailable'
   const badge = unavailable
     ? 'Chwilowo niedostępny'
@@ -78,24 +94,38 @@ export function ProductCard({ product, sizes, eager = false, headingLevel: Headi
               {noOrphans(product.title)}
             </Link>
           </Heading>
-          <div className="mt-2 flex items-center gap-2.5 text-sm text-ink-soft">
-            <span aria-hidden="true" className="flex gap-1">
-              {variants.slice(0, 5).map((variant) => (
-                <span
-                  className="size-3.5 rounded-full ring-1 ring-black/10"
-                  key={variant.id ?? variant.name}
-                  style={{ backgroundColor: variant.swatchColor }}
-                />
-              ))}
-            </span>
-            <span className="truncate">
-              {variants.length === 1
-                ? variants[0]?.name
-                : `${variants.length} ${variants.length < 5 ? 'kolory' : 'kolorów'}`}
-            </span>
-          </div>
+          {fabricColors.length > 0 ? (
+            <div className="mt-2 flex items-center gap-2.5 text-sm text-ink-soft">
+              <span aria-hidden="true" className="flex -space-x-1">
+                {fabricColors.slice(0, 6).map((color) => (
+                  <FabricSwatch className="size-4 rounded-full ring-2 ring-paper" color={color.swatchColor} key={color.key} type={color.type} />
+                ))}
+              </span>
+              <span className="truncate">
+                {fabricColors.length} {plural(fabricColors.length, 'kolor', 'kolory', 'kolorów')}
+                {options.sizes.length > 1 ? ` · ${options.sizes.length} ${plural(options.sizes.length, 'wymiar', 'wymiary', 'wymiarów')}` : ''}
+              </span>
+            </div>
+          ) : (
+            <div className="mt-2 flex items-center gap-2.5 text-sm text-ink-soft">
+              <span aria-hidden="true" className="flex gap-1">
+                {variants.slice(0, 5).map((variant) => (
+                  <span
+                    className="size-3.5 rounded-full ring-1 ring-black/10"
+                    key={variant.id ?? variant.name}
+                    style={{ backgroundColor: variant.swatchColor }}
+                  />
+                ))}
+              </span>
+              <span className="truncate">
+                {variants.length === 1
+                  ? variants[0]?.name
+                  : `${variants.length} ${variants.length < 5 ? 'kolory' : 'kolorów'}`}
+              </span>
+            </div>
+          )}
         </div>
-        <Price className="shrink-0 pt-0.5 text-[1.0625rem]" price={price} />
+        <Price className="shrink-0 pt-0.5 text-[1.0625rem]" prefix={varies ? 'od' : undefined} price={price} />
       </div>
     </article>
   )

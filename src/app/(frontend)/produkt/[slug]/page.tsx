@@ -19,6 +19,7 @@ import {
   variantImages,
 } from '@/lib/catalog'
 import { cn } from '@/lib/cn'
+import { configOptions, hasConfigurator } from '@/lib/configurator'
 import { AVAILABILITY, labelOf } from '@/lib/constants'
 import { mediaShareImage, pageMetadata } from '@/lib/metadata'
 import { getProductBySlug, getProducts, getSettings, getShippingMethods } from '@/lib/queries'
@@ -58,6 +59,7 @@ export default async function ProductPage({ params }: PageProps<'/produkt/[slug]
   const views = functionViews(product)
   const related = allProducts.filter((item) => item.id !== product.id).slice(0, 3)
   const features = (product.features ?? []).filter((feature) => feature.title)
+  const options = configOptions(product)
 
   const hero: ProductHeroData = {
     id: product.id,
@@ -75,6 +77,7 @@ export default async function ProductPage({ params }: PageProps<'/produkt/[slug]
         id: variant.id ?? String(index),
         name: variant.name,
         fabric: variant.fabric ?? null,
+        fabricLinkId: typeof variant.fabricLink === 'object' ? (variant.fabricLink?.id ?? null) : (variant.fabricLink ?? null),
         swatchColor: variant.swatchColor,
         available: variant.available !== false,
         images: images.map((image, imageIndex) => ({
@@ -85,6 +88,9 @@ export default async function ProductPage({ params }: PageProps<'/produkt/[slug]
         thumbUrl: images[0]?.sizes?.thumbnail?.url ?? images[0]?.url ?? null,
       }
     }),
+    options,
+    configurable: hasConfigurator(options),
+    samplesEnabled: settings.samples?.enabled !== false,
   }
 
   return (
@@ -152,7 +158,8 @@ export default async function ProductPage({ params }: PageProps<'/produkt/[slug]
           <div className="lg:col-span-4">
             <h2 className="display-2">Szczegóły</h2>
           </div>
-          <div className="lg:col-span-8">
+          {/* min-w-0: szeroka tabela wymiarów przewija się w swoim polu, zamiast rozpychać stronę na telefonie. */}
+          <div className="min-w-0 lg:col-span-8">
             <ProductDetails product={product} settings={settings} shippingMethods={shippingMethods} />
           </div>
         </div>

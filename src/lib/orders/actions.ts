@@ -154,6 +154,7 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
         items: priced.lines.map((line) => ({
           title: line.title,
           variantName: line.variantName,
+          configuration: line.configuration,
           sku: line.sku,
           unitPrice: line.unitPrice,
           quantity: line.quantity,

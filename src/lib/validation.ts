@@ -272,3 +272,52 @@ export function validateContact(raw: unknown): { values: ContactValues; errors: 
     errors,
   }
 }
+
+/* ---------- Zamówienie próbek tkanin ---------- */
+
+export type SamplesValues = {
+  name: string
+  email: string
+  phone: string
+  street: string
+  postalCode: string
+  city: string
+}
+
+export type SamplesField = keyof SamplesValues
+export type SamplesErrors = Partial<Record<SamplesField, string>>
+
+export const SAMPLES_FIELD_ORDER: SamplesField[] = ['name', 'email', 'phone', 'street', 'postalCode', 'city']
+
+export function validateSamples(raw: unknown): { values: SamplesValues; errors: SamplesErrors } {
+  const input = isRecord(raw) ? raw : {}
+  const errors: SamplesErrors = {}
+
+  const name = collapse(input.name, 120)
+  if (name.length < 3) errors.name = 'Podaj imię i nazwisko — tak zaadresujemy kopertę.'
+
+  const email = normalizeEmail(input.email)
+  if (email === '') errors.email = 'Podaj adres e-mail — potwierdzimy wysyłkę próbek.'
+  else if (!isValidEmail(email)) errors.email = 'Sprawdź adres e-mail — wygląda na niepełny.'
+
+  const rawPhone = collapse(input.phone, 30)
+  const phone = normalizePhone(rawPhone)
+  if (rawPhone !== '' && phone === '') errors.phone = 'Sprawdź numer telefonu — polski numer ma 9 cyfr.'
+
+  const street = collapse(input.street, 120)
+  if (street.length < 3) errors.street = 'Podaj ulicę i numer domu.'
+  else if (!/\d/.test(street)) errors.street = 'Dodaj numer domu (i mieszkania, jeśli jest).'
+
+  const rawPostalCode = collapse(input.postalCode, 12)
+  const postalCode = normalizePostalCode(rawPostalCode)
+  if (rawPostalCode === '') errors.postalCode = 'Podaj kod pocztowy.'
+  else if (postalCode === '') errors.postalCode = 'Kod pocztowy ma format 00-000.'
+
+  const city = collapse(input.city, 80)
+  if (city.length < 2) errors.city = 'Podaj miejscowość.'
+
+  return {
+    values: { name, email, phone: phone || rawPhone, street, postalCode: postalCode || rawPostalCode, city },
+    errors,
+  }
+}

@@ -32,14 +32,14 @@ export function useCartSync(active: boolean): void {
     if (lines.length === 0) return
 
     running.current = true
-    const sent = lines.map(({ productId, variantId, quantity }) => ({ productId, variantId, quantity }))
+    const sent = lines.map(({ productId, variantId, quantity, config }) => ({ productId, variantId, quantity, config }))
 
     refreshCart(sent)
       .then((fresh) => {
         // Jeśli klient zdążył coś zmienić w koszyku, zachowujemy jego ilości i usunięcia.
         const current = useCart.getState().lines
         const merged = current.flatMap((line) => {
-          const match = fresh.find((item) => item.productId === line.productId && item.variantId === line.variantId)
+          const match = fresh.find((item) => item.key === line.key)
           return match ? [{ ...match, quantity: line.quantity }] : [line]
         })
         sync(merged)

@@ -46,6 +46,7 @@ export async function sendContactMessage(input: unknown): Promise<ContactResult>
         phone: values.phone || null,
         message: values.message,
         source: source || 'Formularz kontaktowy',
+        kind: 'contact',
       },
     })
 

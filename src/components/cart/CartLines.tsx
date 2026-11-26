@@ -24,12 +24,12 @@ function Line({ line, onNavigate }: { line: CartLine; onNavigate?: () => void })
   const handleRemove = () => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce) {
-      remove(line.productId, line.variantId)
+      remove(line.key)
       return
     }
     // Pozycja najpierw się zwija, dopiero potem znika — lista nie „przeskakuje”.
     setRemoving(true)
-    window.setTimeout(() => remove(line.productId, line.variantId), 220)
+    window.setTimeout(() => remove(line.key), 220)
   }
 
   return (
@@ -78,7 +78,7 @@ function Line({ line, onNavigate }: { line: CartLine; onNavigate?: () => void })
                     aria-label={`Zmniejsz ilość: ${line.title}`}
                     className="grid size-10 place-items-center rounded-full transition-transform duration-150 ease-out active:scale-90 disabled:opacity-35"
                     disabled={line.quantity <= 1}
-                    onClick={() => setQuantity(line.productId, line.variantId, line.quantity - 1)}
+                    onClick={() => setQuantity(line.key, line.quantity - 1)}
                     type="button"
                   >
                     <Minus aria-hidden="true" size={14} strokeWidth={1.75} />
@@ -91,7 +91,7 @@ function Line({ line, onNavigate }: { line: CartLine; onNavigate?: () => void })
                     aria-label={`Zwiększ ilość: ${line.title}`}
                     className="grid size-10 place-items-center rounded-full transition-transform duration-150 ease-out active:scale-90 disabled:opacity-35"
                     disabled={line.quantity >= CART_LIMITS.maxQuantityPerLine}
-                    onClick={() => setQuantity(line.productId, line.variantId, line.quantity + 1)}
+                    onClick={() => setQuantity(line.key, line.quantity + 1)}
                     type="button"
                   >
                     <Plus aria-hidden="true" size={14} strokeWidth={1.75} />
@@ -115,7 +115,7 @@ export function CartLines({ onNavigate, className }: Props) {
   return (
     <ul className={className}>
       {lines.map((line) => (
-        <Line key={`${line.productId}:${line.variantId}`} line={line} onNavigate={onNavigate} />
+        <Line key={line.key} line={line} onNavigate={onNavigate} />
       ))}
     </ul>
   )

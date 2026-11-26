@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, BedDouble, Check, Layers, MessageCircle, Ruler, RotateCcw, ShieldCheck, Truck, type LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 
 import { FunctionViewer } from '@/components/product/FunctionViewer'
@@ -13,6 +13,19 @@ import { cn } from '@/lib/cn'
 import { noOrphans } from '@/lib/typography'
 import type { Homepage, Product, Setting } from '@/payload-types'
 
+/** Ikona dobierana do treści atutu — właściciel wpisuje tylko tekst. */
+function uspIcon(title: string): LucideIcon {
+  const text = title.toLocaleLowerCase('pl')
+  if (/próbk|tkanin|kolor/.test(text)) return Layers
+  if (/spani|łóżk/.test(text)) return BedDouble
+  if (/zwrot/.test(text)) return RotateCcw
+  if (/dostaw|wniesi|transport/.test(text)) return Truck
+  if (/gwaranc|jakoś/.test(text)) return ShieldCheck
+  if (/wymiar|zamówieni|szyt|miar/.test(text)) return Ruler
+  if (/pomoc|dorad|kontakt/.test(text)) return MessageCircle
+  return Check
+}
+
 /** Krótkie obietnice pod pierwszym ekranem. */
 export function Usps({ items }: { items: Homepage['usps'] }) {
   if (!items?.length) return null
@@ -20,12 +33,20 @@ export function Usps({ items }: { items: Homepage['usps'] }) {
   return (
     <section aria-label="Dlaczego warto" className="shell">
       <ul className="grid grid-cols-2 gap-x-6 gap-y-8 border-b border-line py-10 md:grid-cols-4 md:gap-x-10 md:py-12">
-        {items.map((item) => (
-          <li key={item.id ?? item.title}>
-            <p className="font-medium">{item.title}</p>
-            {item.text && <p className="mt-1 text-sm text-ink-soft">{noOrphans(item.text)}</p>}
-          </li>
-        ))}
+        {items.map((item) => {
+          const Icon = uspIcon(item.title)
+          return (
+            <li className="flex flex-col gap-3 sm:flex-row sm:gap-4" key={item.id ?? item.title}>
+              <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-brand/[0.07] text-brand">
+                <Icon size={19} strokeWidth={1.5} />
+              </span>
+              <div>
+                <p className="font-medium leading-snug">{item.title}</p>
+                {item.text && <p className="mt-1 text-sm text-ink-soft">{noOrphans(item.text)}</p>}
+              </div>
+            </li>
+          )
+        })}
       </ul>
     </section>
   )
@@ -59,17 +80,24 @@ export function Collection({ content, products }: { content: Homepage['collectio
       <div
         className={cn(
           'mt-12 grid gap-x-6 gap-y-12 md:mt-16',
-          products.length === 1 ? 'md:grid-cols-1' : products.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3',
+          products.length === 1
+            ? 'md:grid-cols-1'
+            : products.length === 2 || products.length === 4
+              ? 'md:grid-cols-2 xl:grid-cols-4'
+              : 'md:grid-cols-2 lg:grid-cols-3',
+          products.length === 2 && 'xl:grid-cols-2',
         )}
       >
-        {products.slice(0, 6).map((product, index) => (
-          <Reveal index={index % 3} key={product.id}>
+        {products.slice(0, 8).map((product, index) => (
+          <Reveal index={index % 4} key={product.id}>
             <ProductCard
               product={product}
               sizes={
                 products.length === 1
                   ? '(min-width: 1360px) 1250px, 92vw'
-                  : '(min-width: 1024px) 31vw, (min-width: 768px) 46vw, 92vw'
+                  : products.length === 4
+                    ? '(min-width: 1280px) 23vw, (min-width: 768px) 46vw, 92vw'
+                    : '(min-width: 1024px) 31vw, (min-width: 768px) 46vw, 92vw'
               }
             />
           </Reveal>

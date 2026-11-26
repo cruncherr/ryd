@@ -7,7 +7,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { ensureAdmin, seed } from './seed'
+import { ensureAdmin, seed, upgradeSeed } from './seed'
 
 try {
   const payload = await getPayload({ config })
@@ -17,6 +17,9 @@ try {
       ? `Dane startowe: pominięto (${result.reason})`
       : `Dane startowe wgrane: ${JSON.stringify(result.created)}`,
   )
+
+  const upgraded = await upgradeSeed(payload)
+  if (upgraded.length > 0) payload.logger.info(`Dane startowe uzupełnione: ${upgraded.join(', ')}`)
 
   const admin = await ensureAdmin(payload)
   if (admin === 'created') payload.logger.info('Konto administratora zostało utworzone (ADMIN_EMAIL).')

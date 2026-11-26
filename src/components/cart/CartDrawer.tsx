@@ -1,10 +1,10 @@
 'use client'
 
 import { Drawer } from '@base-ui/react/drawer'
-import NumberFlow from '@number-flow/react'
 import { X } from 'lucide-react'
 import Link from 'next/link'
 
+import { AnimatedPrice } from '@/components/ui/AnimatedPrice'
 import { buttonClass } from '@/components/ui/Button'
 import { cartCount, cartSubtotal, useCart } from '@/lib/cart/store'
 import { cn } from '@/lib/cn'
@@ -13,24 +13,7 @@ import { plural } from '@/lib/typography'
 
 import { CartLines } from './CartLines'
 
-/** Kwota, której cyfry płynnie się przewijają przy zmianie ilości. */
-export function AnimatedPrice({ value, className }: { value: number; className?: string }) {
-  const hasGrosze = Math.round(value * 100) % 100 !== 0
-  return (
-    <NumberFlow
-      className={cn('tabular', className)}
-      format={{
-        style: 'currency',
-        currency: 'PLN',
-        useGrouping: 'always',
-        minimumFractionDigits: hasGrosze ? 2 : 0,
-        maximumFractionDigits: hasGrosze ? 2 : 0,
-      }}
-      locales="pl-PL"
-      value={value}
-    />
-  )
-}
+export { AnimatedPrice }
 
 /**
  * Koszyk w szufladzie: z prawej strony na komputerze, od dołu na telefonie

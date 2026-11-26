@@ -117,7 +117,7 @@ function SummaryLines({ lines }: { lines: CartLine[] }) {
   return (
     <ul className="max-h-[22rem] overflow-y-auto overscroll-contain border-y border-line lg:max-h-[min(22rem,36vh)]">
       {lines.map((line) => (
-        <li className="flex items-center gap-4 border-b border-line py-4 last:border-b-0" key={`${line.productId}:${line.variantId}`}>
+        <li className="flex items-center gap-4 border-b border-line py-4 last:border-b-0" key={line.key}>
           <div className="relative aspect-[4/3] w-20 shrink-0 overflow-hidden rounded-lg bg-stage">
             {line.imageUrl && <Image alt="" className="packshot" fill sizes="80px" src={line.imageUrl} />}
           </div>
@@ -271,7 +271,7 @@ function CheckoutForm({ config, lines }: { config: CheckoutConfig; lines: CartLi
       try {
         result = await placeOrder({
           form: values,
-          cart: lines.map(({ productId, variantId, quantity }) => ({ productId, variantId, quantity })),
+          cart: lines.map(({ productId, variantId, quantity, config }) => ({ productId, variantId, quantity, config })),
           expectedTotal: total,
           requestId,
           website: honeypot,

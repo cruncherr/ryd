@@ -1,7 +1,7 @@
 import { cache } from 'react'
 
 import { getPayloadClient } from '@/lib/payload'
-import type { Category, Homepage, Page, Product, Setting, ShippingMethod } from '@/payload-types'
+import type { Category, Fabric, Homepage, Page, Product, Setting, ShippingMethod } from '@/payload-types'
 
 /**
  * Zapytania sklepu do bazy. Każde korzysta z publicznych uprawnień (overrideAccess: false),
@@ -168,4 +168,32 @@ export const getPublishedPageSlugs = cache(async (): Promise<Array<{ slug: strin
     where: { _status: { equals: 'published' } },
   })
   return result.docs.map((doc) => ({ slug: doc.slug, updatedAt: doc.updatedAt }))
+})
+
+/** Tkaniny z próbnika widoczne w sklepie, w kolejności z panelu. */
+export const getFabrics = cache(async (): Promise<Fabric[]> => {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'fabrics',
+    depth: 1,
+    limit: 100,
+    pagination: false,
+    overrideAccess: false,
+    sort: ['sortOrder', 'name'],
+    where: { active: { equals: true } },
+  })
+  return result.docs
+})
+
+/** Dostępne kolory z próbnika jako małe próbki (kafelki zachęcające do zamówienia próbek). */
+export const getSwatches = cache(async (): Promise<Array<{ key: string; color: string; type: Fabric['type'] }>> => {
+  const settings = await getSettings()
+  if (settings.samples?.enabled === false) return []
+  const fabrics = await getFabrics()
+  return fabrics.flatMap((fabric) =>
+    (fabric.colors ?? [])
+      .filter((color) => color.available !== false)
+      .slice(0, 2)
+      .map((color, index) => ({ key: `${fabric.id}-${color.id ?? index}`, color: color.swatchColor, type: fabric.type })),
+  )
 })

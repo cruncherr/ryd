@@ -70,6 +70,11 @@ export function Footer({ settings, categories }: Props) {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link className={linkClass} href="/tkaniny">
+                Próbnik tkanin
+              </Link>
+            </li>
           </ul>
         </nav>
 

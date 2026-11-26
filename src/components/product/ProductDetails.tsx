@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { Accordion, type AccordionItem } from '@/components/ui/Accordion'
 import { RichText, hasRichText } from '@/components/ui/RichText'
+import { configOptions, type SizeOption } from '@/lib/configurator'
 import { LEGAL_SLUGS } from '@/lib/constants'
 import { formatPLN } from '@/lib/money'
 import { noOrphans } from '@/lib/typography'
@@ -19,6 +20,56 @@ function DefinitionRows({ rows }: { rows: Array<{ label: string; value: string }
         </div>
       ))}
     </dl>
+  )
+}
+
+/** Wszystkie wymiary modelu w jednej tabeli — łatwo porównać, który zmieści się w salonie. */
+function SizesTable({ sizes }: { sizes: SizeOption[] }) {
+  const hasHeight = sizes.some((size) => size.height)
+  const hasSleep = sizes.some((size) => size.sleepWidth && size.sleepLength)
+  const num = (value: number | null) => (value ? String(value).replace('.', ',') : '—')
+  return (
+    // Na wąskim telefonie tabelę można przewinąć w bok — także klawiaturą (pole przyjmuje fokus).
+    <div aria-label="Tabela wymiarów" className="-mx-1 overflow-x-auto px-1" role="region" tabIndex={0}>
+      <table className="tabular w-full min-w-[20rem] text-left text-sm sm:text-[0.9375rem]">
+        <thead>
+          <tr className="border-b border-line text-sm text-ink-soft">
+            <th className="py-3 pr-3 font-normal sm:pr-4" scope="col">
+              Wersja
+            </th>
+            <th className="py-3 pr-3 font-normal sm:pr-4" scope="col">
+              Szer. × gł.
+            </th>
+            {hasHeight && (
+              <th className="py-3 pr-3 font-normal sm:pr-4" scope="col">
+                Wys.
+              </th>
+            )}
+            {hasSleep && (
+              <th className="py-3 font-normal" scope="col">
+                Spanie
+              </th>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {sizes.map((size) => (
+            <tr className="border-b border-line last:border-b-0" key={size.id}>
+              <th className="py-3 pr-3 font-medium sm:pr-4" scope="row">
+                {size.label}
+              </th>
+              <td className="py-3 pr-3 whitespace-nowrap sm:pr-4">
+                {num(size.width)} × {num(size.depth)} cm
+              </td>
+              {hasHeight && <td className="py-3 pr-3 whitespace-nowrap sm:pr-4">{size.height ? `${num(size.height)} cm` : '—'}</td>}
+              {hasSleep && (
+                <td className="py-3 whitespace-nowrap">{size.sleepWidth && size.sleepLength ? `${num(size.sleepWidth)} × ${num(size.sleepLength)} cm` : '—'}</td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
@@ -102,8 +153,12 @@ export function ProductDetails({ product, settings, shippingMethods }: Props) {
     open.push('opis')
   }
 
+  const sizes = configOptions(product).sizes
   const dimensions = dimensionRows(product.dimensions)
-  if (dimensions.length > 0) {
+  if (sizes.length > 0) {
+    items.push({ value: 'wymiary', title: 'Wymiary', content: <SizesTable sizes={sizes} /> })
+    open.push('wymiary')
+  } else if (dimensions.length > 0) {
     items.push({ value: 'wymiary', title: 'Wymiary', content: <DefinitionRows rows={dimensions} /> })
     open.push('wymiary')
   }

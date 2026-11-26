@@ -10,7 +10,8 @@ Ten plik ma dwie części: [dla właściciela sklepu](#dla-właściciela-sklepu)
 
 ### Co dostajesz
 
-- **Witryna**: strona główna, lista produktów, strona produktu z galerią, kolorami i pokazem funkcji, koszyk, formularz zamówienia, strona potwierdzenia (działa też jako „stan zamówienia”), kontakt, strony informacyjne.
+- **Witryna**: strona główna, lista produktów, strona produktu z galerią, konfiguratorem i pokazem funkcji, próbnik tkanin z zamawianiem bezpłatnych próbek, koszyk, formularz zamówienia, strona potwierdzenia (działa też jako „stan zamówienia”), kontakt, strony informacyjne.
+- **Konfigurator**: klient wybiera wymiar (z rysunkiem i wymiarami), tkaninę i kolor, nóżki oraz stronę szezlonga; cena przelicza się na bieżąco, a pełna konfiguracja trafia do zamówienia, e-maili i panelu.
 - **Zamówienia**: przelew tradycyjny, płatność przy odbiorze, opcjonalnie płatność online (BLIK, szybki przelew, karta — przez Stripe). Ceny zawsze liczy serwer, nigdy przeglądarka klienta.
 - **E-maile**: potwierdzenie dla klienta (z regulaminem i zasadami zwrotów w załączniku), powiadomienie dla Ciebie, „płatność zaksięgowana”, „zamówienie wysłane”.
 - **Panel administracyjny** (`/admin`): produkty, zdjęcia, zamówienia, wiadomości od klientów, strony, ustawienia. Pulpit pokazuje listę kontrolną — co jeszcze trzeba zrobić przed startem.
@@ -88,7 +89,14 @@ Zamówienia testowe możesz usunąć w panelu. Numeracja nie wraca do początku 
 - *Dostępność → Chwilowo niedostępny* wyłącza możliwość zakupu, ale zostawia produkt w ofercie.
 - Zdjęcia najlepiej na białym tle, w poziomie, min. 2000 px szerokości — sklep sam przygotuje mniejsze wersje.
 
-**Wiadomości** (*Sprzedaż → Wiadomości*) — zapytania z formularza kontaktowego. Odpowiadasz zwykłym e-mailem (odpowiedź na powiadomienie trafia prosto do klienta).
+**Konfigurator i tkaniny**
+
+- *Sklep → Tkaniny* to próbnik: tkanina, jej kolory, właściwości i **dopłata w procentach** ceny mebla (0 = w cenie). Dane startowe są przykładowe — wpisz tkaniny, które naprawdę oferujesz, i odznacz „Dane przykładowe”.
+- W produkcie, w zakładce *Konfiguracja*: wymiary (każdy z dopłatą, także ujemną), tkaniny do wyboru, nóżki z dopłatą i wybór strony szezlonga. Na start zaznaczony jest wymiar z dopłatą 0 i kolor ze zdjęć.
+- Masz zdjęcia mebla w innym kolorze? Dodaj je w *Zdjęcia i kolory* jako nowy kolor, wskaż tkaninę z próbnika i nazwij kolor tak samo jak w Tkaninach — sklep pokaże je po wybraniu tego koloru.
+- Ceny konfiguracji liczy serwer: wymiar + procent za tkaninę (od ceny wymiaru, zaokrąglony do złotówki) + nóżki.
+
+**Wiadomości** (*Sprzedaż → Wiadomości*) — zapytania z formularza kontaktowego i zamówienia bezpłatnych próbek tkanin (rodzaj „Próbki tkanin”, z listą kolorów i adresem). Ustawienia próbek (włączenie, limit, tekst dla klienta) są w *Ustawieniach sklepu*. Odpowiadasz zwykłym e-mailem (odpowiedź na powiadomienie trafia prosto do klienta).
 
 **Treści** — strony informacyjne, teksty strony głównej, menu i stopka (*Ustawienia sklepu → Menu i stopka*). Stronę „Kontakt” możesz dostosować, tworząc w *Stronach* stronę o adresie `kontakt`.
 

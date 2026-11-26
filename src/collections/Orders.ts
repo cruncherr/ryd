@@ -92,7 +92,7 @@ export const Orders: CollectionConfig = {
                   type: 'row',
                   fields: [
                     { name: 'title', type: 'text', label: 'Produkt', required: true, admin: { width: '40%' } },
-                    { name: 'variantName', type: 'text', label: 'Kolor', admin: { width: '30%' } },
+                    { name: 'variantName', type: 'text', label: 'Wariant', admin: { width: '30%' } },
                     { name: 'sku', type: 'text', label: 'Symbol (SKU)', admin: { width: '30%' } },
                   ],
                 },
@@ -102,6 +102,25 @@ export const Orders: CollectionConfig = {
                     amountField({ name: 'unitPrice', label: 'Cena za sztukę (zł)', required: true, width: '34%' }),
                     { name: 'quantity', type: 'number', label: 'Ilość', required: true, min: 1, admin: { width: '33%' } },
                     amountField({ name: 'lineTotal', label: 'Wartość (zł)', required: true, width: '33%' }),
+                  ],
+                },
+                {
+                  name: 'configuration',
+                  type: 'array',
+                  label: 'Konfiguracja wybrana przez klienta',
+                  labels: { singular: 'Opcja', plural: 'Opcje' },
+                  admin: {
+                    description: 'Wymiar, tkanina, kolor, nóżki i strona — dokładnie tak, jak klient je wybrał.',
+                    components: { RowLabel: '@/components/admin/RowLabels#SpecRowLabel' },
+                  },
+                  fields: [
+                    {
+                      type: 'row',
+                      fields: [
+                        { name: 'label', type: 'text', label: 'Opcja', required: true, admin: { width: '35%' } },
+                        { name: 'value', type: 'text', label: 'Wybór', required: true, admin: { width: '65%' } },
+                      ],
+                    },
                   ],
                 },
                 {

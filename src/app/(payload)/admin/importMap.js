@@ -1,6 +1,8 @@
 import { default as default_2d3b6dcbebce75fc2ef5ac094f4218f0 } from '@/components/admin/ColorField'
 import { VariantRowLabel as VariantRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { FunctionViewRowLabel as FunctionViewRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
+import { SizeRowLabel as SizeRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
+import { OptionRowLabel as OptionRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { TitleRowLabel as TitleRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -27,6 +29,7 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { SpecRowLabel as SpecRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { FabricColorRowLabel as FabricColorRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { OrderItemRowLabel as OrderItemRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { default as default_68cb5732f6bc7c014dfa2820e3e9c596 } from '@/components/admin/OrderSidebar'
 import { NavRowLabel as NavRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
@@ -41,6 +44,8 @@ export const importMap = {
   "@/components/admin/ColorField#default": default_2d3b6dcbebce75fc2ef5ac094f4218f0,
   "@/components/admin/RowLabels#VariantRowLabel": VariantRowLabel_602181e9d445b98d48bce238807017cb,
   "@/components/admin/RowLabels#FunctionViewRowLabel": FunctionViewRowLabel_602181e9d445b98d48bce238807017cb,
+  "@/components/admin/RowLabels#SizeRowLabel": SizeRowLabel_602181e9d445b98d48bce238807017cb,
+  "@/components/admin/RowLabels#OptionRowLabel": OptionRowLabel_602181e9d445b98d48bce238807017cb,
   "@/components/admin/RowLabels#TitleRowLabel": TitleRowLabel_602181e9d445b98d48bce238807017cb,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -67,6 +72,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/RowLabels#SpecRowLabel": SpecRowLabel_602181e9d445b98d48bce238807017cb,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
+  "@/components/admin/RowLabels#FabricColorRowLabel": FabricColorRowLabel_602181e9d445b98d48bce238807017cb,
   "@/components/admin/RowLabels#OrderItemRowLabel": OrderItemRowLabel_602181e9d445b98d48bce238807017cb,
   "@/components/admin/OrderSidebar#default": default_68cb5732f6bc7c014dfa2820e3e9c596,
   "@/components/admin/RowLabels#NavRowLabel": NavRowLabel_602181e9d445b98d48bce238807017cb,

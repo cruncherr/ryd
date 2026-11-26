@@ -3,11 +3,12 @@ import type { ComponentProps, ReactNode } from 'react'
 
 import { cn } from '@/lib/cn'
 
-type Variant = 'primary' | 'secondary' | 'light' | 'outline-light'
+type Variant = 'primary' | 'brand' | 'secondary' | 'light' | 'outline-light'
 type Size = 'sm' | 'md' | 'lg'
 
 const VARIANTS: Record<Variant, string> = {
   primary: 'bg-ink text-paper hover:bg-black',
+  brand: 'bg-brand text-paper hover:bg-[#123a2c]',
   secondary: 'border border-line-strong text-ink hover:border-ink',
   light: 'bg-paper text-ink hover:bg-white',
   'outline-light': 'border border-paper/40 text-paper hover:border-paper',

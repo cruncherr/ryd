@@ -404,3 +404,250 @@ export const SETTINGS = {
     imageFile: 'lund-01',
   },
 }
+
+/* ---------- Konfigurator (dane przykładowe — do sprawdzenia w panelu) ---------- */
+
+export type SeedFabric = {
+  name: string
+  type: 'velvet' | 'boucle' | 'chenille' | 'corduroy' | 'weave' | 'leather'
+  surchargePercent: number
+  description: string
+  features: Array<'easy_clean' | 'water_repellent' | 'pet_friendly' | 'durable' | 'soft'>
+  composition: string
+  martindale: number
+  colors: Array<{ name: string; swatchColor: string }>
+}
+
+export const FABRICS: SeedFabric[] = [
+  {
+    name: 'Welur hydrofobowy',
+    type: 'velvet',
+    surchargePercent: 0,
+    description: 'Miękki, gładki welur z delikatnym połyskiem. Plamy z napojów zbierają się na powierzchni — wystarczy woda.',
+    features: ['water_repellent', 'easy_clean', 'pet_friendly'],
+    composition: '100% poliester',
+    martindale: 100000,
+    colors: [
+      { name: 'Granat', swatchColor: '#1A3F74' },
+      { name: 'Grafit', swatchColor: '#363B47' },
+      { name: 'Butelkowa zieleń', swatchColor: '#1E4A3B' },
+      { name: 'Szary perłowy', swatchColor: '#9C9B97' },
+      { name: 'Beż', swatchColor: '#C9B79C' },
+      { name: 'Musztarda', swatchColor: '#BF8A2E' },
+      { name: 'Terakota', swatchColor: '#A65B3C' },
+      { name: 'Pudrowy róż', swatchColor: '#C8A19D' },
+    ],
+  },
+  {
+    name: 'Szenil',
+    type: 'chenille',
+    surchargePercent: 0,
+    description: 'Mięsista tkanina o melanżowej strukturze. Ciepła w dotyku i bardzo wytrzymała na co dzień.',
+    features: ['soft', 'easy_clean'],
+    composition: '88% poliester, 12% bawełna',
+    martindale: 60000,
+    colors: [
+      { name: 'Grafit melanż', swatchColor: '#5A5D61' },
+      { name: 'Piaskowy', swatchColor: '#C7B496' },
+      { name: 'Szałwia', swatchColor: '#8D9A83' },
+      { name: 'Popiel', swatchColor: '#A8A49D' },
+      { name: 'Ceglasty', swatchColor: '#9B5741' },
+    ],
+  },
+  {
+    name: 'Bouclé',
+    type: 'boucle',
+    surchargePercent: 12,
+    description: 'Tkanina z drobnych pętelek — przytulna, z wyraźną fakturą. Najlepiej wygląda w jasnych, naturalnych kolorach.',
+    features: ['soft'],
+    composition: '100% poliester',
+    martindale: 40000,
+    colors: [
+      { name: 'Mleczny', swatchColor: '#EAE3D6' },
+      { name: 'Owsiany', swatchColor: '#D4C5AB' },
+      { name: 'Kamienny', swatchColor: '#A39C90' },
+      { name: 'Czekoladowy', swatchColor: '#5B4637' },
+    ],
+  },
+  {
+    name: 'Sztruks',
+    type: 'corduroy',
+    surchargePercent: 8,
+    description: 'Miękki sztruks w szeroki prążek. Dodaje meblowi charakteru i ładnie odbija światło.',
+    features: ['durable'],
+    composition: '100% poliester',
+    martindale: 50000,
+    colors: [
+      { name: 'Karmel', swatchColor: '#A8743F' },
+      { name: 'Oliwka', swatchColor: '#6B6B40' },
+      { name: 'Kość słoniowa', swatchColor: '#E2D9C6' },
+      { name: 'Atrament', swatchColor: '#253552' },
+    ],
+  },
+  {
+    name: 'Plecionka',
+    type: 'weave',
+    surchargePercent: 0,
+    description: 'Matowa tkanina o wyraźnym splocie. Odporna na ścieranie i pazurki — dobra do domu z dziećmi i zwierzętami.',
+    features: ['durable', 'pet_friendly'],
+    composition: '100% poliester',
+    martindale: 80000,
+    colors: [
+      { name: 'Jasnoszary', swatchColor: '#B8B6B1' },
+      { name: 'Ciemnoszary', swatchColor: '#5D5D5D' },
+      { name: 'Beżowy melanż', swatchColor: '#BCAD95' },
+    ],
+  },
+]
+
+type SeedSize = {
+  label: string
+  priceDelta: number
+  width: number
+  depth: number
+  height: number
+  sleepWidth: number
+  sleepLength: number
+  bodyDepth?: number
+  chaiseWidth?: number
+}
+
+export type SeedConfigurator = {
+  sizes: SeedSize[]
+  /** Nazwy tkanin z FABRICS, w kolejności wyświetlania. */
+  fabrics: string[]
+  legs: Array<{ name: string; swatchColor: string; priceDelta: number }>
+  sideChoice?: boolean
+  defaultSide?: 'left' | 'right'
+  /** Tkanina i kolor, w których mebel jest na zdjęciach. */
+  photo: { fabric: string; color: string }
+  /** Kategoria inna niż domyślna (slug). */
+  category?: string
+}
+
+const LEGS_BLACK = [
+  { name: 'Czarny metal', swatchColor: '#1E1E1E', priceDelta: 0 },
+  { name: 'Dąb naturalny', swatchColor: '#B88A58', priceDelta: 190 },
+  { name: 'Złoty mosiądz', swatchColor: '#B4925A', priceDelta: 290 },
+]
+
+export const CONFIGURATORS: Record<string, SeedConfigurator> = {
+  'sofa-rozkladana-bergen': {
+    sizes: [
+      { label: '2-osobowa', priceDelta: -600, width: 182, depth: 98, height: 92, sleepWidth: 120, sleepLength: 195 },
+      { label: '3-osobowa', priceDelta: 0, width: 222, depth: 98, height: 92, sleepWidth: 150, sleepLength: 195 },
+      { label: '3-osobowa XL', priceDelta: 500, width: 246, depth: 98, height: 92, sleepWidth: 170, sleepLength: 195 },
+    ],
+    fabrics: ['Szenil', 'Welur hydrofobowy', 'Plecionka', 'Bouclé'],
+    legs: [],
+    photo: { fabric: 'Szenil', color: 'Grafit melanż' },
+  },
+  'sofa-rozkladana-lund': {
+    sizes: [
+      { label: '2-osobowa', priceDelta: -500, width: 176, depth: 96, height: 88, sleepWidth: 125, sleepLength: 195 },
+      { label: '3-osobowa', priceDelta: 0, width: 214, depth: 96, height: 88, sleepWidth: 155, sleepLength: 195 },
+      { label: '3-osobowa XL', priceDelta: 450, width: 236, depth: 96, height: 88, sleepWidth: 175, sleepLength: 195 },
+    ],
+    fabrics: ['Welur hydrofobowy', 'Szenil', 'Sztruks', 'Bouclé', 'Plecionka'],
+    legs: LEGS_BLACK,
+    photo: { fabric: 'Welur hydrofobowy', color: 'Granat' },
+  },
+  'sofa-rozkladana-visby': {
+    sizes: [
+      { label: '2-osobowa', priceDelta: -400, width: 172, depth: 92, height: 86, sleepWidth: 120, sleepLength: 190 },
+      { label: '3-osobowa', priceDelta: 0, width: 208, depth: 92, height: 86, sleepWidth: 145, sleepLength: 190 },
+      { label: '3-osobowa XL', priceDelta: 400, width: 228, depth: 92, height: 86, sleepWidth: 165, sleepLength: 190 },
+    ],
+    fabrics: ['Welur hydrofobowy', 'Szenil', 'Sztruks', 'Bouclé', 'Plecionka'],
+    legs: [
+      { name: 'Jasny buk', swatchColor: '#D3B48C', priceDelta: 0 },
+      { name: 'Czarny metal', swatchColor: '#1E1E1E', priceDelta: 0 },
+      { name: 'Orzech', swatchColor: '#6A4A34', priceDelta: 190 },
+    ],
+    photo: { fabric: 'Welur hydrofobowy', color: 'Granat' },
+  },
+  'naroznik-rozkladany-oslo': {
+    sizes: [
+      { label: 'Narożnik 250', priceDelta: -400, width: 250, depth: 160, height: 88, sleepWidth: 145, sleepLength: 200, bodyDepth: 95, chaiseWidth: 90 },
+      { label: 'Narożnik 275', priceDelta: 0, width: 275, depth: 170, height: 88, sleepWidth: 155, sleepLength: 210, bodyDepth: 95, chaiseWidth: 95 },
+      { label: 'Narożnik 300', priceDelta: 600, width: 300, depth: 180, height: 88, sleepWidth: 165, sleepLength: 220, bodyDepth: 98, chaiseWidth: 100 },
+    ],
+    fabrics: ['Welur hydrofobowy', 'Szenil', 'Sztruks', 'Bouclé', 'Plecionka'],
+    legs: LEGS_BLACK,
+    sideChoice: true,
+    defaultSide: 'right',
+    photo: { fabric: 'Welur hydrofobowy', color: 'Grafit' },
+    category: 'narozniki',
+  },
+}
+
+export const CORNER_CATEGORY = {
+  title: 'Narożniki',
+  slug: 'narozniki',
+  description:
+    'Narożniki rozkładane z szezlongiem i pojemnikami na pościel. Stronę szezlonga, wymiar i tkaninę wybierasz przy zamówieniu.',
+}
+
+/** Nowe sekcje strony głównej i odświeżone teksty — wgrywane, dopóki teksty są oznaczone „do sprawdzenia”. */
+export const HOMEPAGE_V2 = {
+  hero: {
+    eyebrow: 'Sofy i narożniki szyte na zamówienie',
+    title: 'Twój wymiar. Twoja tkanina. *Twoja sofa.*',
+    text: 'Wybierz model, a potem dopasuj wymiar, tkaninę i nóżki. Cenę widzisz od razu, a mebel szyjemy specjalnie dla Ciebie.',
+    primaryLabel: 'Skonfiguruj sofę',
+    primaryUrl: '/sklep',
+    secondaryLabel: 'Zamów próbki tkanin',
+    secondaryUrl: '/tkaniny',
+  },
+  usps: [
+    { title: 'Szyte na zamówienie', text: 'Wymiar, tkanina i nóżki według Twojego wyboru' },
+    { title: 'Bezpłatne próbki tkanin', text: 'Zobacz kolor na żywo, zanim zamówisz' },
+    { title: 'Funkcja spania', text: 'W każdym modelu: na co dzień sofa, w razie potrzeby łóżko' },
+    { title: '14 dni na zwrot', text: 'Na zasadach opisanych w regulaminie' },
+  ],
+  collection: {
+    eyebrow: 'Modele',
+    title: 'Wybierz model, *resztę* dopasujesz',
+    text: 'Każdy w kilku wymiarach i wielu kolorach tkanin. Cena zmienia się na bieżąco, gdy konfigurujesz.',
+  },
+  categories: {
+    eyebrow: 'Kategorie',
+    title: 'Czego szukasz?',
+    text: '',
+  },
+  steps: {
+    eyebrow: 'Jak to działa',
+    title: 'Twoja sofa w *trzech* krokach',
+    text: 'Wszystko wybierasz na stronie, a cenę widzisz od razu — bez wizyty w salonie i bez czekania na wycenę.',
+    items: [
+      {
+        title: 'Wybierz model i wymiar',
+        text: 'Każdy model ma kilka szerokości. Rysunek z wymiarami pomoże sprawdzić, czy zmieści się w Twoim salonie.',
+      },
+      {
+        title: 'Dobierz tkaninę i kolor',
+        text: 'Welur, szenil, bouclé, sztruks albo plecionka. Zamów bezpłatne próbki i zobacz kolor w swoim wnętrzu.',
+      },
+      {
+        title: 'Szyjemy i dostarczamy',
+        text: 'Mebel powstaje na Twoje zamówienie. Termin dostawy potwierdzimy telefonicznie.',
+      },
+    ],
+  },
+  fabrics: {
+    eyebrow: 'Próbnik tkanin',
+    title: 'Dotknij, *zanim* wybierzesz',
+    text: 'Kolor na ekranie to nie to samo co tkanina pod dłonią. Zaznacz kilka próbek — wyślemy je bezpłatnie.',
+  },
+}
+
+export const SETTINGS_V2 = {
+  announcement: 'Szyjemy na zamówienie · Bezpłatne próbki tkanin · Dostawa w całej Polsce',
+  headerNav: [
+    { label: 'Sofy', url: '/sklep/sofy' },
+    { label: 'Narożniki', url: '/sklep/narozniki' },
+    { label: 'Tkaniny', url: '/tkaniny' },
+    { label: 'O nas', url: '/o-nas' },
+    { label: 'Kontakt', url: '/kontakt' },
+  ],
+}

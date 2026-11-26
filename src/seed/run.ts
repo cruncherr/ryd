@@ -5,7 +5,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { ensureAdmin, seed } from './seed'
+import { ensureAdmin, seed, upgradeSeed } from './seed'
 
 const payload = await getPayload({ config })
 
@@ -16,6 +16,8 @@ try {
   } else {
     payload.logger.info(`Dane startowe wgrane: ${JSON.stringify(result.created)}`)
   }
+  const upgraded = await upgradeSeed(payload)
+  if (upgraded.length > 0) payload.logger.info(`Dane startowe uzupełnione: ${upgraded.join(', ')}`)
   if ((await ensureAdmin(payload)) === 'created') payload.logger.info('Konto administratora zostało utworzone (ADMIN_EMAIL).')
   process.exit(0)
 } catch (error) {

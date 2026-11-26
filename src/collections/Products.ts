@@ -4,8 +4,8 @@ import { isAdmin, nobodyField, publishedOrAdmin } from '@/access'
 import { amountField } from '@/fields/amount'
 import { polishSlugField } from '@/fields/slug'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
-import { AVAILABILITY } from '@/lib/constants'
-import { effectivePrice } from '@/lib/money'
+import { AVAILABILITY, SIDES } from '@/lib/constants'
+import { effectivePrice, isValidAmount } from '@/lib/money'
 import { appendPriceHistory, type PriceHistoryEntry } from '@/lib/priceHistory'
 
 /**
@@ -202,6 +202,16 @@ export const Products: CollectionConfig = {
                   ],
                 },
                 {
+                  name: 'fabricLink',
+                  type: 'relationship',
+                  relationTo: 'fabrics',
+                  label: 'Tkanina z próbnika',
+                  admin: {
+                    description:
+                      'Opcjonalnie. Gdy wskażesz tkaninę, a nazwa koloru będzie taka sama jak w Tkaninach, klient zobaczy te zdjęcia po wybraniu tego koloru w konfiguratorze.',
+                  },
+                },
+                {
                   name: 'images',
                   type: 'upload',
                   relationTo: 'media',
@@ -281,6 +291,159 @@ export const Products: CollectionConfig = {
                   relationTo: 'media',
                   required: true,
                   label: 'Zdjęcie',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Konfiguracja',
+          description:
+            'Co klient dopasowuje sam: wymiar, tkaninę z kolorem, nóżki i stronę szezlonga. Cena w sklepie przelicza się na bieżąco, a ostateczną kwotę zawsze liczy serwer.',
+          fields: [
+            {
+              name: 'sizes',
+              type: 'array',
+              label: 'Wymiary do wyboru',
+              labels: { singular: 'Wymiar', plural: 'Wymiary' },
+              maxRows: 6,
+              admin: {
+                description:
+                  'Każdy wymiar ma własne wymiary i dopłatę do ceny podstawowej (ujemna = taniej). Na start zaznaczony jest wymiar z dopłatą 0. Bez wymiarów sklep pokaże dane z zakładki „Opis i wymiary”.',
+                initCollapsed: true,
+                components: { RowLabel: '@/components/admin/RowLabels#SizeRowLabel' },
+              },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'label',
+                      type: 'text',
+                      label: 'Nazwa wymiaru',
+                      required: true,
+                      maxLength: 40,
+                      admin: { placeholder: 'np. 3-osobowa', width: '60%' },
+                    },
+                    {
+                      name: 'priceDelta',
+                      type: 'number',
+                      label: 'Dopłata (zł)',
+                      required: true,
+                      defaultValue: 0,
+                      admin: { width: '40%', step: 10, description: 'Np. 400 albo −300.' },
+                      validate: (value: unknown, { data }: { data: unknown }) => {
+                        if (typeof value !== 'number' || !Number.isFinite(value) || !isValidAmount(Math.abs(value))) {
+                          return 'Podaj kwotę w złotych, np. 400 albo −300.'
+                        }
+                        const price = (data as { price?: unknown })?.price
+                        if (typeof price === 'number' && price + value <= 0) {
+                          return 'Po odjęciu tej kwoty cena byłaby ujemna albo zerowa.'
+                        }
+                        return true
+                      },
+                    },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'width', type: 'number', label: 'Szerokość (cm)', required: true, min: 1, admin: { width: '33%' } },
+                    { name: 'depth', type: 'number', label: 'Głębokość (cm)', required: true, min: 1, admin: { width: '33%' } },
+                    { name: 'height', type: 'number', label: 'Wysokość (cm)', min: 1, admin: { width: '33%' } },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'sleepWidth', type: 'number', label: 'Spanie — szerokość (cm)', min: 1, admin: { width: '50%' } },
+                    { name: 'sleepLength', type: 'number', label: 'Spanie — długość (cm)', min: 1, admin: { width: '50%' } },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'bodyDepth',
+                      type: 'number',
+                      label: 'Narożnik: głębokość siedziska (cm)',
+                      min: 1,
+                      admin: { width: '50%', description: 'Tylko narożniki — głębokość części bez szezlonga.' },
+                    },
+                    {
+                      name: 'chaiseWidth',
+                      type: 'number',
+                      label: 'Narożnik: szerokość szezlonga (cm)',
+                      min: 1,
+                      admin: { width: '50%' },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              name: 'fabrics',
+              type: 'relationship',
+              relationTo: 'fabrics',
+              hasMany: true,
+              label: 'Tkaniny do wyboru',
+              admin: {
+                description:
+                  'Tkaniny z próbnika (Sklep → Tkaniny), w których szyjesz ten model. Zostaw puste, a klient wybierze tylko spośród kolorów z zakładki „Zdjęcia i kolory”.',
+              },
+            },
+            {
+              name: 'legs',
+              type: 'array',
+              label: 'Nóżki do wyboru',
+              labels: { singular: 'Rodzaj nóżek', plural: 'Rodzaje nóżek' },
+              maxRows: 6,
+              admin: {
+                description: 'Pierwsza pozycja jest wybrana na start — najlepiej ta ze zdjęć. Bez pozycji wybór nóżek się nie pojawia.',
+                initCollapsed: true,
+                components: { RowLabel: '@/components/admin/RowLabels#OptionRowLabel' },
+              },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'name', type: 'text', label: 'Nazwa', required: true, maxLength: 40, admin: { placeholder: 'np. Czarny metal', width: '45%' } },
+                    {
+                      name: 'swatchColor',
+                      type: 'text',
+                      label: 'Kolor',
+                      required: true,
+                      defaultValue: '#1C1A18',
+                      admin: { width: '25%', components: { Field: '@/components/admin/ColorField' } },
+                      validate: (value: unknown) =>
+                        typeof value === 'string' && HEX_COLOR.test(value) ? true : 'Podaj kolor w zapisie #RRGGBB.',
+                    },
+                    amountField({ name: 'priceDelta', label: 'Dopłata (zł)', defaultValue: 0, width: '30%' }),
+                  ],
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'sideChoice',
+                  type: 'checkbox',
+                  label: 'Klient wybiera stronę szezlonga (lewa / prawa)',
+                  defaultValue: false,
+                  admin: { width: '55%', style: { alignSelf: 'flex-end' } },
+                },
+                {
+                  name: 'defaultSide',
+                  type: 'select',
+                  label: 'Strona szezlonga na zdjęciach',
+                  defaultValue: 'right',
+                  options: SIDES.map(({ value, label }) => ({ value, label })),
+                  admin: {
+                    width: '45%',
+                    condition: (_data, siblingData) => Boolean(siblingData?.sideChoice),
+                    description: 'Patrząc na mebel od przodu.',
+                  },
                 },
               ],
             },

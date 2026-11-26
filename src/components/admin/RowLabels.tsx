@@ -65,3 +65,44 @@ export function OrderItemRowLabel() {
     </Label>
   )
 }
+
+export function FabricColorRowLabel() {
+  const { data, rowNumber } = useRowLabel<{ name?: string; code?: string; swatchColor?: string; available?: boolean }>()
+  return (
+    <Label>
+      {data?.swatchColor && (
+        <span
+          aria-hidden="true"
+          style={{
+            display: 'inline-block',
+            width: 12,
+            height: 12,
+            borderRadius: 999,
+            background: data.swatchColor,
+            marginRight: 8,
+            verticalAlign: '-1px',
+            boxShadow: 'inset 0 0 0 1px rgb(0 0 0 / 0.15)',
+          }}
+        />
+      )}
+      {data?.name || `Kolor ${pad(rowNumber)}`}
+      {data?.code ? ` · ${data.code}` : ''}
+      {data?.available === false ? ' · wyłączony' : ''}
+    </Label>
+  )
+}
+
+export function SizeRowLabel() {
+  const { data, rowNumber } = useRowLabel<{ label?: string; width?: number; depth?: number; priceDelta?: number }>()
+  if (!data?.label) return <Label>{`Wymiar ${pad(rowNumber)}`}</Label>
+  const size = data.width && data.depth ? ` · ${data.width} × ${data.depth} cm` : ''
+  const delta = typeof data.priceDelta === 'number' && data.priceDelta !== 0 ? ` · ${data.priceDelta > 0 ? '+' : '−'}${Math.abs(data.priceDelta)} zł` : ''
+  return <Label>{`${data.label}${size}${delta}`}</Label>
+}
+
+export function OptionRowLabel() {
+  const { data, rowNumber } = useRowLabel<{ name?: string; priceDelta?: number }>()
+  if (!data?.name) return <Label>{`Opcja ${pad(rowNumber)}`}</Label>
+  const delta = typeof data.priceDelta === 'number' && data.priceDelta !== 0 ? ` · +${data.priceDelta} zł` : ''
+  return <Label>{`${data.name}${delta}`}</Label>
+}

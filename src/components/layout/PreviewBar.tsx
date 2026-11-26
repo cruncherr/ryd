@@ -11,11 +11,3 @@ export function PreviewBar() {
     </div>
   )
 }
-
-export function AnnouncementBar({ text }: { text: string }) {
-  return (
-    <div className="bg-ink text-paper">
-      <p className="shell py-2 text-center text-[0.8125rem] leading-snug font-medium">{text}</p>
-    </div>
-  )
-}

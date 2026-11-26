@@ -5,7 +5,7 @@ import { ProductListing } from '@/components/product/ProductListing'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { categoryPath } from '@/lib/catalog'
 import { pageMetadata } from '@/lib/metadata'
-import { getCategories, getCategoryBySlug, getProducts, parseSort } from '@/lib/queries'
+import { getCategories, getCategoryBySlug, getProducts, getSwatches, parseSort } from '@/lib/queries'
 import { breadcrumbJsonLd, productListJsonLd } from '@/lib/seo'
 
 export async function generateMetadata({ params }: PageProps<'/sklep/[kategoria]'>): Promise<Metadata> {
@@ -22,7 +22,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<'
   if (!category) notFound()
 
   const sort = parseSort((await searchParams).sortuj)
-  const [products, categories] = await Promise.all([getProducts({ categoryId: category.id, sort }), getCategories()])
+  const [products, categories, swatches] = await Promise.all([getProducts({ categoryId: category.id, sort }), getCategories(), getSwatches()])
 
   return (
     <>
@@ -41,6 +41,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<'
         description={category.description}
         products={products}
         sort={sort}
+        swatches={swatches}
         title={category.title}
       />
     </>
