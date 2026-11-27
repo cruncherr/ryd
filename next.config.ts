@@ -34,6 +34,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    const database = process.env.DATABASE_URI || process.env.DATABASE_URL || process.env.POSTGRES_URL
+    const needsSetup = process.env.NODE_ENV === 'development' && (!process.env.PAYLOAD_SECRET?.trim() || !database?.trim())
+    return {
+      beforeFiles: needsSetup ? [{ source: '/((?!_next/|__nextjs|fonts/).*)', destination: '/preview-setup' }] : [],
+      afterFiles: [],
+      fallback: [],
+    }
+  },
   async headers() {
     return [
       {
