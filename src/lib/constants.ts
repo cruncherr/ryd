@@ -76,10 +76,13 @@ export type FabricType = (typeof FABRIC_TYPES)[number]['value']
 /** Właściwości tkaniny pokazywane klientowi jako krótkie etykiety. */
 export const FABRIC_FEATURES = [
   { value: 'easy_clean', label: 'Łatwe czyszczenie wodą' },
-  { value: 'water_repellent', label: 'Hydrofobowa' },
-  { value: 'pet_friendly', label: 'Przyjazna zwierzętom' },
+  { value: 'water_repellent', label: 'Odporna na płyny' },
+  { value: 'pet_friendly', label: 'Odporna na pazurki' },
   { value: 'durable', label: 'Bardzo odporna na ścieranie' },
   { value: 'soft', label: 'Wyjątkowo miękka' },
+  { value: 'fire_retardant', label: 'Trudnozapalna' },
+  { value: 'oeko_tex', label: 'Certyfikat OEKO-TEX' },
+  { value: 'recycled', label: 'Z recyklingu' },
 ] as const
 
 export type FabricFeature = (typeof FABRIC_FEATURES)[number]['value']

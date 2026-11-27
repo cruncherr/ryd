@@ -129,12 +129,24 @@ export function SamplePicker({ fabrics, preselected, samplesEnabled, max, note, 
                   ))}
                 </ul>
               )}
-              {(fabric.composition || fabric.martindale) && (
+              {(fabric.composition || fabric.martindale || fabric.supplier || fabric.weight) && (
                 <dl className="mt-5 grid gap-1.5 text-sm">
+                  {fabric.supplier && (
+                    <div className="flex gap-2">
+                      <dt className="text-ink-soft">Dostawca:</dt>
+                      <dd>{fabric.supplier}</dd>
+                    </div>
+                  )}
                   {fabric.composition && (
                     <div className="flex gap-2">
                       <dt className="text-ink-soft">Skład:</dt>
                       <dd>{fabric.composition}</dd>
+                    </div>
+                  )}
+                  {fabric.weight && (
+                    <div className="flex gap-2">
+                      <dt className="text-ink-soft">Gramatura:</dt>
+                      <dd className="tabular">{fabric.weight}</dd>
                     </div>
                   )}
                   {fabric.martindale && (
@@ -144,6 +156,16 @@ export function SamplePicker({ fabrics, preselected, samplesEnabled, max, note, 
                     </div>
                   )}
                 </dl>
+              )}
+              {fabric.datasheetUrl && (
+                <a
+                  className="link-line mt-4 inline-block text-sm font-medium"
+                  href={fabric.datasheetUrl}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Karta techniczna (PDF)
+                </a>
               )}
             </div>
 

@@ -32,9 +32,12 @@ const options: ConfigOptions = {
       features: [],
       composition: null,
       martindale: null,
+      supplier: null,
+      weight: null,
+      datasheetUrl: null,
       colors: [
-        { id: 'granat', name: 'Granat', code: null, swatchColor: '#1A3F74', available: true, imageUrl: null },
-        { id: 'roz', name: 'Pudrowy róż', code: '12', swatchColor: '#C8A19D', available: false, imageUrl: null },
+        { id: 'granat', name: 'Granat', code: null, swatchColor: '#1A3F74', available: true, imageUrl: null, photoUrl: null },
+        { id: 'roz', name: 'Pudrowy róż', code: '12', swatchColor: '#C8A19D', available: false, imageUrl: null, photoUrl: null },
       ],
     },
     {
@@ -47,7 +50,10 @@ const options: ConfigOptions = {
       features: [],
       composition: null,
       martindale: null,
-      colors: [{ id: 'mleczny', name: 'Mleczny', code: null, swatchColor: '#EAE3D6', available: true, imageUrl: null }],
+      supplier: null,
+      weight: null,
+      datasheetUrl: null,
+      colors: [{ id: 'mleczny', name: 'Mleczny', code: null, swatchColor: '#EAE3D6', available: true, imageUrl: null, photoUrl: null }],
     },
   ],
   legs: [

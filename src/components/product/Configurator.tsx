@@ -132,7 +132,7 @@ export function Configurator({ options, resolved, basePrice, onChange, samplesEn
           title="Tkanina i kolor"
           value={
             <>
-              {resolved.fabric.name}, <span className="text-ink">{resolved.color.name}</span>
+              {resolved.fabric.name} <span className="text-ink">{resolved.color.name}</span>
             </>
           }
         >
@@ -154,7 +154,7 @@ export function Configurator({ options, resolved, basePrice, onChange, samplesEn
                   />
                   <span className="text-sm font-medium whitespace-nowrap">{fabric.name}</span>
                   <span className="tabular text-[0.8125rem] whitespace-nowrap text-ink-soft">
-                    {signed(surcharge)}
+                    {fabric.typeLabel.toLowerCase()} · {signed(surcharge)}
                   </span>
                 </label>
               )
@@ -164,6 +164,13 @@ export function Configurator({ options, resolved, basePrice, onChange, samplesEn
           {(resolved.fabric.description || resolved.fabric.features.length > 0) && (
             <div className="mt-4">
               {resolved.fabric.description && <p className="max-w-[52ch] text-sm text-ink-soft">{resolved.fabric.description}</p>}
+              {(resolved.fabric.supplier || resolved.fabric.weight || resolved.fabric.composition) && (
+                <p className="mt-1.5 text-[0.8125rem] text-ink-faint">
+                  {[resolved.fabric.supplier && `Tkanina ${resolved.fabric.supplier}`, resolved.fabric.composition, resolved.fabric.weight]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+              )}
               {resolved.fabric.features.length > 0 && (
                 <ul className="mt-2.5 flex flex-wrap gap-1.5">
                   {resolved.fabric.features.map((feature) => (
@@ -184,7 +191,11 @@ export function Configurator({ options, resolved, basePrice, onChange, samplesEn
 
           <div className="mt-5 flex flex-wrap gap-x-3.5 gap-y-3.5" role="presentation">
             {resolved.fabric.colors.map((color) => (
-              <label className="swatch-choice" key={color.id} title={color.available ? color.name : `${color.name} — niedostępny`}>
+              <label
+                className="swatch-choice"
+                key={color.id}
+                title={`${resolved.fabric!.name} ${color.name}${color.available ? '' : ' — niedostępny'}`}
+              >
                 <input
                   checked={color.id === resolved.color?.id}
                   className="peer sr-only"
@@ -196,7 +207,7 @@ export function Configurator({ options, resolved, basePrice, onChange, samplesEn
                 />
                 <FabricSwatch className="size-11" color={color.swatchColor} imageUrl={color.imageUrl} type={resolved.fabric!.type} />
                 <span className="sr-only">
-                  {color.name}
+                  {resolved.fabric!.name} {color.name}
                   {color.available ? '' : ' (niedostępny)'}
                 </span>
               </label>

@@ -18,7 +18,7 @@ test.describe('konfigurator', () => {
     const withSize = Number((await priceText()) ?? 0)
 
     // Tkanina z dopłatą procentową podnosi cenę jeszcze bardziej.
-    await page.locator('label.choice', { hasText: 'Bouclé' }).click()
+    await page.locator('label.choice', { hasText: 'Baloo' }).click()
     await expect.poll(async () => Number((await priceText()) ?? 0)).toBeGreaterThan(withSize)
     await page.locator('label.choice', { hasText: 'Po lewej' }).click()
     const finalPrice = Number((await priceText()) ?? 0)
@@ -26,7 +26,7 @@ test.describe('konfigurator', () => {
     await page.getByRole('button', { name: 'Dodaj do koszyka' }).first().click()
     const drawer = page.getByRole('dialog')
     await expect(drawer).toContainText('Narożnik 300')
-    await expect(drawer).toContainText('Bouclé')
+    await expect(drawer).toContainText('Baloo')
     await expect(drawer).toContainText('szezlong po lewej')
 
     // Serwer liczy kwotę sam — zamówienie przechodzi tylko wtedy, gdy zgadza się z tym, co widział klient.
@@ -40,7 +40,7 @@ test.describe('konfigurator', () => {
 
     const summary = page.getByRole('complementary', { name: 'Podsumowanie zamówienia' })
     await expect(summary).toContainText('Narożnik 300')
-    await expect(summary).toContainText('Bouclé')
+    await expect(summary).toContainText('Baloo')
     await expect(summary).toContainText(new Intl.NumberFormat('pl-PL', { useGrouping: 'always' } as Intl.NumberFormatOptions).format(finalPrice).replace(/\s/g, ' '))
     expect(errors).toEqual([])
   })

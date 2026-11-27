@@ -36,7 +36,10 @@ export type FabricColorOption = {
   code: string | null
   swatchColor: string
   available: boolean
+  /** Próbka faktury (kwadratowe zbliżenie) — kółka kolorów i próbnik. */
   imageUrl: string | null
+  /** Większe zdjęcie tkaniny — duży podgląd. */
+  photoUrl: string | null
 }
 
 export type FabricOption = {
@@ -49,6 +52,9 @@ export type FabricOption = {
   features: Array<{ value: FabricFeature; label: string }>
   composition: string | null
   martindale: number | null
+  supplier: string | null
+  weight: string | null
+  datasheetUrl: string | null
   colors: FabricColorOption[]
 }
 
@@ -69,8 +75,8 @@ export type ConfigOptions = {
 
 const asNumber = (value: unknown): number | null => (typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null)
 
-const mediaUrl = (value: number | Media | null | undefined): string | null =>
-  value && typeof value === 'object' ? (value.sizes?.thumbnail?.url ?? value.url ?? null) : null
+const mediaUrl = (value: number | Media | null | undefined, size: 'thumbnail' | 'full' = 'thumbnail'): string | null =>
+  value && typeof value === 'object' ? ((size === 'thumbnail' ? value.sizes?.thumbnail?.url : null) ?? value.url ?? null) : null
 
 export function fabricOption(fabric: Fabric): FabricOption {
   return {
@@ -83,6 +89,9 @@ export function fabricOption(fabric: Fabric): FabricOption {
     features: (fabric.features ?? []).map((value) => ({ value, label: labelOf(FABRIC_FEATURES, value) })),
     composition: fabric.composition?.trim() || null,
     martindale: asNumber(fabric.martindale),
+    supplier: fabric.supplier?.trim() || null,
+    weight: fabric.weight?.trim() || null,
+    datasheetUrl: fabric.datasheetUrl && /^https?:\/\//.test(fabric.datasheetUrl) ? fabric.datasheetUrl : null,
     colors: (fabric.colors ?? []).map((color, index) => ({
       id: color.id ?? String(index),
       name: color.name,
@@ -90,6 +99,7 @@ export function fabricOption(fabric: Fabric): FabricOption {
       swatchColor: color.swatchColor,
       available: color.available !== false,
       imageUrl: mediaUrl(color.image),
+      photoUrl: mediaUrl(color.photo, 'full'),
     })),
   }
 }

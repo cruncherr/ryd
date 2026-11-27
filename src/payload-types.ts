@@ -401,7 +401,21 @@ export interface Fabric {
   /**
    * Zaznacz tylko to, co potwierdza karta techniczna tkaniny.
    */
-  features?: ('easy_clean' | 'water_repellent' | 'pet_friendly' | 'durable' | 'soft')[] | null;
+  features?:
+    | (
+        | 'easy_clean'
+        | 'water_repellent'
+        | 'pet_friendly'
+        | 'durable'
+        | 'soft'
+        | 'fire_retardant'
+        | 'oeko_tex'
+        | 'recycled'
+      )[]
+    | null;
+  supplier?: string | null;
+  weight?: string | null;
+  datasheetUrl?: string | null;
   composition?: string | null;
   martindale?: number | null;
   /**
@@ -413,9 +427,13 @@ export interface Fabric {
     swatchColor: string;
     available?: boolean | null;
     /**
-     * Pole opcjonalne. Bez zdjęcia sklep rysuje próbkę z koloru i rodzaju tkaniny.
+     * Kwadratowe zbliżenie faktury — kółka kolorów i próbnik. Bez niego sklep rysuje próbkę z koloru.
      */
     image?: (number | null) | Media;
+    /**
+     * Np. udrapowana tkanina — duży podgląd na stronie głównej. Pole opcjonalne.
+     */
+    photo?: (number | null) | Media;
     id?: string | null;
   }[];
   active?: boolean | null;
@@ -936,6 +954,9 @@ export interface FabricsSelect<T extends boolean = true> {
   surchargePercent?: T;
   description?: T;
   features?: T;
+  supplier?: T;
+  weight?: T;
+  datasheetUrl?: T;
   composition?: T;
   martindale?: T;
   colors?:
@@ -946,6 +967,7 @@ export interface FabricsSelect<T extends boolean = true> {
         swatchColor?: T;
         available?: T;
         image?: T;
+        photo?: T;
         id?: T;
       };
   active?: T;

@@ -1,3 +1,5 @@
+import { TOPTEXTIL_FABRICS } from './toptextil'
+
 /**
  * Dane startowe sklepu. Wszystko, co tu jest, to PUNKT WYJŚCIA przygotowany na podstawie
  * zdjęć: nazwy, ceny i opisy są przykładowe i w panelu są oznaczone jako „do sprawdzenia”.
@@ -408,97 +410,27 @@ export const SETTINGS = {
 /* ---------- Konfigurator (dane przykładowe — do sprawdzenia w panelu) ---------- */
 
 export type SeedFabric = {
+  slug: string
   name: string
   type: 'velvet' | 'boucle' | 'chenille' | 'corduroy' | 'weave' | 'leather'
   surchargePercent: number
   description: string
-  features: Array<'easy_clean' | 'water_repellent' | 'pet_friendly' | 'durable' | 'soft'>
+  features: Array<'easy_clean' | 'water_repellent' | 'pet_friendly' | 'durable' | 'soft' | 'fire_retardant' | 'oeko_tex' | 'recycled'>
   composition: string
-  martindale: number
-  colors: Array<{ name: string; swatchColor: string }>
+  martindale: number | null
+  weight: string
+  supplier: string
+  datasheetUrl: string | null
+  link: string
+  /** Nazwa koloru = numer z katalogu producenta; pliki zdjęć w seed/media/tkaniny (bez rozszerzenia). */
+  colors: Array<{ name: string; swatchColor: string; swatchFile: string | null; photoFile: string | null }>
 }
 
-export const FABRICS: SeedFabric[] = [
-  {
-    name: 'Welur hydrofobowy',
-    type: 'velvet',
-    surchargePercent: 0,
-    description: 'Miękki, gładki welur z delikatnym połyskiem. Plamy z napojów zbierają się na powierzchni — wystarczy woda.',
-    features: ['water_repellent', 'easy_clean', 'pet_friendly'],
-    composition: '100% poliester',
-    martindale: 100000,
-    colors: [
-      { name: 'Granat', swatchColor: '#1A3F74' },
-      { name: 'Grafit', swatchColor: '#363B47' },
-      { name: 'Butelkowa zieleń', swatchColor: '#1E4A3B' },
-      { name: 'Szary perłowy', swatchColor: '#9C9B97' },
-      { name: 'Beż', swatchColor: '#C9B79C' },
-      { name: 'Musztarda', swatchColor: '#BF8A2E' },
-      { name: 'Terakota', swatchColor: '#A65B3C' },
-      { name: 'Pudrowy róż', swatchColor: '#C8A19D' },
-    ],
-  },
-  {
-    name: 'Szenil',
-    type: 'chenille',
-    surchargePercent: 0,
-    description: 'Mięsista tkanina o melanżowej strukturze. Ciepła w dotyku i bardzo wytrzymała na co dzień.',
-    features: ['soft', 'easy_clean'],
-    composition: '88% poliester, 12% bawełna',
-    martindale: 60000,
-    colors: [
-      { name: 'Grafit melanż', swatchColor: '#5A5D61' },
-      { name: 'Piaskowy', swatchColor: '#C7B496' },
-      { name: 'Szałwia', swatchColor: '#8D9A83' },
-      { name: 'Popiel', swatchColor: '#A8A49D' },
-      { name: 'Ceglasty', swatchColor: '#9B5741' },
-    ],
-  },
-  {
-    name: 'Bouclé',
-    type: 'boucle',
-    surchargePercent: 12,
-    description: 'Tkanina z drobnych pętelek — przytulna, z wyraźną fakturą. Najlepiej wygląda w jasnych, naturalnych kolorach.',
-    features: ['soft'],
-    composition: '100% poliester',
-    martindale: 40000,
-    colors: [
-      { name: 'Mleczny', swatchColor: '#EAE3D6' },
-      { name: 'Owsiany', swatchColor: '#D4C5AB' },
-      { name: 'Kamienny', swatchColor: '#A39C90' },
-      { name: 'Czekoladowy', swatchColor: '#5B4637' },
-    ],
-  },
-  {
-    name: 'Sztruks',
-    type: 'corduroy',
-    surchargePercent: 8,
-    description: 'Miękki sztruks w szeroki prążek. Dodaje meblowi charakteru i ładnie odbija światło.',
-    features: ['durable'],
-    composition: '100% poliester',
-    martindale: 50000,
-    colors: [
-      { name: 'Karmel', swatchColor: '#A8743F' },
-      { name: 'Oliwka', swatchColor: '#6B6B40' },
-      { name: 'Kość słoniowa', swatchColor: '#E2D9C6' },
-      { name: 'Atrament', swatchColor: '#253552' },
-    ],
-  },
-  {
-    name: 'Plecionka',
-    type: 'weave',
-    surchargePercent: 0,
-    description: 'Matowa tkanina o wyraźnym splocie. Odporna na ścieranie i pazurki — dobra do domu z dziećmi i zwierzętami.',
-    features: ['durable', 'pet_friendly'],
-    composition: '100% poliester',
-    martindale: 80000,
-    colors: [
-      { name: 'Jasnoszary', swatchColor: '#B8B6B1' },
-      { name: 'Ciemnoszary', swatchColor: '#5D5D5D' },
-      { name: 'Beżowy melanż', swatchColor: '#BCAD95' },
-    ],
-  },
-]
+/** Biblioteka tkanin: kolekcje partnera Toptextil (src/seed/toptextil.ts). */
+export const FABRICS: SeedFabric[] = TOPTEXTIL_FABRICS
+
+/** Przykładowe tkaniny z pierwszej wersji konfiguratora — zastępowane tkaninami Toptextil przy wdrożeniu. */
+export const LEGACY_SAMPLE_FABRICS = ['Welur hydrofobowy', 'Szenil', 'Bouclé', 'Sztruks', 'Plecionka']
 
 type SeedSize = {
   label: string
@@ -538,9 +470,9 @@ export const CONFIGURATORS: Record<string, SeedConfigurator> = {
       { label: '3-osobowa', priceDelta: 0, width: 222, depth: 98, height: 92, sleepWidth: 150, sleepLength: 195 },
       { label: '3-osobowa XL', priceDelta: 500, width: 246, depth: 98, height: 92, sleepWidth: 170, sleepLength: 195 },
     ],
-    fabrics: ['Szenil', 'Welur hydrofobowy', 'Plecionka', 'Bouclé'],
+    fabrics: ['Greta', 'Rugia', 'Magic Velvet', 'Hygge', 'Baloo'],
     legs: [],
-    photo: { fabric: 'Szenil', color: 'Grafit melanż' },
+    photo: { fabric: 'Greta', color: '884' },
   },
   'sofa-rozkladana-lund': {
     sizes: [
@@ -548,9 +480,9 @@ export const CONFIGURATORS: Record<string, SeedConfigurator> = {
       { label: '3-osobowa', priceDelta: 0, width: 214, depth: 96, height: 88, sleepWidth: 155, sleepLength: 195 },
       { label: '3-osobowa XL', priceDelta: 450, width: 236, depth: 96, height: 88, sleepWidth: 175, sleepLength: 195 },
     ],
-    fabrics: ['Welur hydrofobowy', 'Szenil', 'Sztruks', 'Bouclé', 'Plecionka'],
+    fabrics: ['Magic Velvet', 'Rugia', 'Baloo', 'Cord', 'Hygge', 'Greta'],
     legs: LEGS_BLACK,
-    photo: { fabric: 'Welur hydrofobowy', color: 'Granat' },
+    photo: { fabric: 'Magic Velvet', color: '2297' },
   },
   'sofa-rozkladana-visby': {
     sizes: [
@@ -558,13 +490,13 @@ export const CONFIGURATORS: Record<string, SeedConfigurator> = {
       { label: '3-osobowa', priceDelta: 0, width: 208, depth: 92, height: 86, sleepWidth: 145, sleepLength: 190 },
       { label: '3-osobowa XL', priceDelta: 400, width: 228, depth: 92, height: 86, sleepWidth: 165, sleepLength: 190 },
     ],
-    fabrics: ['Welur hydrofobowy', 'Szenil', 'Sztruks', 'Bouclé', 'Plecionka'],
+    fabrics: ['Magic Velvet', 'Rugia', 'Baloo', 'Cord', 'Hygge', 'Greta'],
     legs: [
       { name: 'Jasny buk', swatchColor: '#D3B48C', priceDelta: 0 },
       { name: 'Czarny metal', swatchColor: '#1E1E1E', priceDelta: 0 },
       { name: 'Orzech', swatchColor: '#6A4A34', priceDelta: 190 },
     ],
-    photo: { fabric: 'Welur hydrofobowy', color: 'Granat' },
+    photo: { fabric: 'Magic Velvet', color: '2226' },
   },
   'naroznik-rozkladany-oslo': {
     sizes: [
@@ -572,11 +504,11 @@ export const CONFIGURATORS: Record<string, SeedConfigurator> = {
       { label: 'Narożnik 275', priceDelta: 0, width: 275, depth: 170, height: 88, sleepWidth: 155, sleepLength: 210, bodyDepth: 95, chaiseWidth: 95 },
       { label: 'Narożnik 300', priceDelta: 600, width: 300, depth: 180, height: 88, sleepWidth: 165, sleepLength: 220, bodyDepth: 98, chaiseWidth: 100 },
     ],
-    fabrics: ['Welur hydrofobowy', 'Szenil', 'Sztruks', 'Bouclé', 'Plecionka'],
+    fabrics: ['Hygge', 'Magic Velvet', 'Rugia', 'Baloo', 'Cord', 'Greta'],
     legs: LEGS_BLACK,
     sideChoice: true,
     defaultSide: 'right',
-    photo: { fabric: 'Welur hydrofobowy', color: 'Grafit' },
+    photo: { fabric: 'Hygge', color: '2554' },
     category: 'narozniki',
   },
 }
@@ -626,7 +558,7 @@ export const HOMEPAGE_V2 = {
       },
       {
         title: 'Dobierz tkaninę i kolor',
-        text: 'Welur, szenil, bouclé, sztruks albo plecionka. Zamów bezpłatne próbki i zobacz kolor w swoim wnętrzu.',
+        text: 'Welur, szenil, bouclé, sztruks albo plecionka — tkaniny Toptextil. Zamów bezpłatne próbki i zobacz kolor w swoim wnętrzu.',
       },
       {
         title: 'Szyjemy i dostarczamy',

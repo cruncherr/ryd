@@ -12,6 +12,7 @@ import {
   FABRICS,
   HOMEPAGE,
   HOMEPAGE_V2,
+  LEGACY_SAMPLE_FABRICS,
   PAGES,
   PRODUCTS,
   SETTINGS,
@@ -24,6 +25,21 @@ const SEED_DIR = path.resolve(process.cwd(), 'seed')
 // Każde wywołanie dostaje własną kopię: Payload i wtyczka magazynu zdjęć zapisują w kontekście znaczniki
 // (np. skipCloudStorage po wgraniu pliku), więc wspólny obiekt sprawiłby, że kolejne zdjęcia nie trafią do magazynu.
 const context = { skipRevalidate: true }
+
+/** Zdjęcie z katalogu seed/media wgrane do biblioteki (jeśli już jest — używamy istniejącego). */
+async function ensureMedia(payload: Payload, file: string, alt: string): Promise<number> {
+  const filename = `${path.basename(file)}.jpg`
+  const existing = await payload.find({ collection: 'media', where: { filename: { equals: filename } }, limit: 1, depth: 0 })
+  const found = existing.docs[0]
+  if (found) return found.id
+  const doc = await payload.create({
+    collection: 'media',
+    data: { alt },
+    filePath: path.join(SEED_DIR, 'media', `${file}.jpg`),
+    context: { ...context },
+  })
+  return doc.id
+}
 
 export type SeedResult =
   | { status: 'skipped'; reason: string }
@@ -279,19 +295,58 @@ export async function upgradeSeed(payload: Payload): Promise<string[]> {
   const done: string[] = []
 
   // --- Tkaniny ---------------------------------------------------------------
-  const fabricCount = await payload.count({ collection: 'fabrics' })
-  if (fabricCount.totalDocs === 0) {
-    for (const [index, fabric] of FABRICS.entries()) {
-      await payload.create({
-        collection: 'fabrics',
-        data: { ...fabric, active: true, sortOrder: (index + 1) * 10, sampleData: true },
-        context: { ...context },
+  // Biblioteka tkanin partnera (Toptextil): tworzymy brakujące kolekcje razem ze zdjęciami kolorów.
+  const existingFabrics = await payload.find({ collection: 'fabrics', depth: 0, limit: 200, pagination: false })
+  const existingNames = new Set(existingFabrics.docs.map((fabric) => fabric.name))
+  const sortBase = existingFabrics.docs.filter((fabric) => !LEGACY_SAMPLE_FABRICS.includes(fabric.name)).length
+  let createdFabrics = 0
+  for (const [index, fabric] of FABRICS.entries()) {
+    if (existingNames.has(fabric.name)) continue
+    const colors = []
+    for (const color of fabric.colors) {
+      colors.push({
+        name: color.name,
+        swatchColor: color.swatchColor,
+        available: true,
+        image: color.swatchFile
+          ? await ensureMedia(payload, path.join('tkaniny', color.swatchFile), `${fabric.name} ${color.name} — próbka tkaniny`)
+          : null,
+        photo: color.photoFile
+          ? await ensureMedia(payload, path.join('tkaniny', color.photoFile), `${fabric.name} ${color.name} — tkanina na zbliżeniu`)
+          : null,
       })
     }
-    done.push(`tkaniny: ${FABRICS.length}`)
+    await payload.create({
+      collection: 'fabrics',
+      data: {
+        name: fabric.name,
+        type: fabric.type,
+        surchargePercent: fabric.surchargePercent,
+        description: fabric.description,
+        features: fabric.features,
+        composition: fabric.composition,
+        martindale: fabric.martindale,
+        weight: fabric.weight,
+        supplier: fabric.supplier,
+        datasheetUrl: fabric.datasheetUrl,
+        colors,
+        active: true,
+        sortOrder: (sortBase + index + 1) * 10,
+        // Dopłaty są propozycją sklepu — właściciel potwierdza je w panelu.
+        sampleData: true,
+      },
+      context: { ...context },
+    })
+    createdFabrics += 1
   }
+  if (createdFabrics > 0) done.push(`tkaniny: ${createdFabrics}`)
+
   const fabricDocs = await payload.find({ collection: 'fabrics', depth: 0, limit: 200, pagination: false })
   const fabricByName = new Map(fabricDocs.docs.map((fabric) => [fabric.name, fabric]))
+  // Przykładowe tkaniny z pierwszej wersji (sprzed biblioteki Toptextil) — do zastąpienia.
+  const legacyIds = new Set(
+    fabricDocs.docs.filter((fabric) => fabric.sampleData && LEGACY_SAMPLE_FABRICS.includes(fabric.name)).map((fabric) => fabric.id),
+  )
 
   // --- Kategoria narożników --------------------------------------------------
   const corners = await payload.find({
@@ -317,18 +372,36 @@ export async function upgradeSeed(payload: Payload): Promise<string[]> {
     const found = await payload.find({ collection: 'products', where: { slug: { equals: slug } }, limit: 1, depth: 0 })
     const product = found.docs[0]
     if (!product || !product.sampleData) continue
-    if ((product.sizes?.length ?? 0) > 0 || (product.fabrics?.length ?? 0) > 0 || (product.legs?.length ?? 0) > 0) continue
 
     const photoFabric = fabricByName.get(config.photo.fabric)
     const fabricIds = config.fabrics.flatMap((name) => {
       const fabric = fabricByName.get(name)
       return fabric ? [fabric.id] : []
     })
-    const variants = (product.variants ?? []).map((variant, index) =>
-      index === 0 && photoFabric
-        ? { ...variant, name: config.photo.color, fabric: photoFabric.name, fabricLink: photoFabric.id }
-        : variant,
-    )
+    const relId = (value: unknown) => (typeof value === 'object' && value !== null ? (value as { id: number }).id : value)
+    const linkVariant = (variants: NonNullable<typeof product.variants>) =>
+      variants.map((variant, index) =>
+        index === 0 && photoFabric && (relId(variant.fabricLink) == null || legacyIds.has(relId(variant.fabricLink) as number))
+          ? { ...variant, name: config.photo.color, fabric: photoFabric.name, fabricLink: photoFabric.id }
+          : variant,
+      )
+
+    const configured = (product.sizes?.length ?? 0) > 0 || (product.fabrics?.length ?? 0) > 0 || (product.legs?.length ?? 0) > 0
+    if (configured) {
+      // Produkt skonfigurowany wcześniej na tkaninach przykładowych — podmieniamy je na tkaniny Toptextil.
+      const current = (product.fabrics ?? []).map((fabric) => relId(fabric) as number)
+      if (legacyIds.size === 0 || current.length === 0 || !current.every((id) => legacyIds.has(id))) continue
+      await payload.update({
+        collection: 'products',
+        id: product.id,
+        data: { fabrics: fabricIds, variants: linkVariant(product.variants ?? []), _status: 'published' },
+        context: { ...context },
+      })
+      done.push(`tkaniny Toptextil: ${slug}`)
+      continue
+    }
+
+    const variants = linkVariant(product.variants ?? [])
     // Wybór nóżek i strony szezlonga jest teraz w konfiguratorze — w danych technicznych byłby sprzeczny.
     const specs = (product.specs ?? [])
       .filter((spec) => !(config.legs.length > 1 && spec.label === 'Kolor nóżek'))
@@ -353,6 +426,14 @@ export async function upgradeSeed(payload: Payload): Promise<string[]> {
       context: { ...context },
     })
     done.push(`konfigurator: ${slug}`)
+  }
+
+  // Tkaniny przykładowe, których nie używa już żaden produkt, znikają z próbnika.
+  for (const id of legacyIds) {
+    const inUse = await payload.count({ collection: 'products', where: { fabrics: { in: [id] } } })
+    if (inUse.totalDocs > 0) continue
+    await payload.delete({ collection: 'fabrics', id, context: { ...context } })
+    done.push(`usunięto przykładową tkaninę ${id}`)
   }
 
   // --- Strona główna -----------------------------------------------------------

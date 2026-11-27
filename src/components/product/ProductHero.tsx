@@ -175,17 +175,26 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
         <div className={cn('min-w-0 lg:col-span-7', configurable && 'lg:sticky lg:top-24 lg:self-start')}>
           {/* Zmiana koloru to inny zestaw zdjęć — galeria zaczyna wtedy od nowa, od pierwszego zdjęcia. */}
           <Gallery images={photoVariant?.images ?? []} key={photoVariant?.id ?? 'brak'} title={product.title} />
-          {showsOtherColor && resolved?.fabric && resolved.color && photoVariant && (
+          {usesFabrics && resolved?.fabric && resolved.color && photoVariant && (
             <p className="mt-3 flex items-center gap-3 text-sm text-ink-soft">
-              <FabricSwatch className="size-6 shrink-0 rounded-full" color={resolved.color.swatchColor} type={resolved.fabric.type} />
+              <FabricSwatch
+                className="size-6 shrink-0 rounded-full"
+                color={resolved.color.swatchColor}
+                imageUrl={resolved.color.imageUrl}
+                type={resolved.fabric.type}
+              />
               <span>
-                {noOrphans(`Na zdjęciach kolor ${photoVariant.name.toLowerCase()}. Wybrany: ${resolved.color.name.toLowerCase()} — `)}
+                {showsOtherColor
+                  ? noOrphans(`Na zdjęciach inny kolor tkaniny. Wybrany: ${resolved.fabric.name} ${resolved.color.name} — `)
+                  : noOrphans('Kolor na zdjęciach jest zbliżony do wybranego. Dokładny odcień — ')}
                 {product.samplesEnabled ? (
                   <Link className="link-line text-ink" href={`/tkaniny?probka=${resolved.fabric.id}-${resolved.color.id}`}>
-                    zobacz go na próbce
+                    {showsOtherColor ? 'zobacz go na próbce' : 'na bezpłatnej próbce'}
                   </Link>
-                ) : (
+                ) : showsOtherColor ? (
                   'odcień zobaczysz na próbce'
+                ) : (
+                  'na próbce'
                 )}
                 .
               </span>

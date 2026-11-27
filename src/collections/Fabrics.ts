@@ -81,6 +81,23 @@ export const Fabrics: CollectionConfig = {
     {
       type: 'row',
       fields: [
+        { name: 'supplier', type: 'text', label: 'Dostawca tkaniny', admin: { placeholder: 'np. Toptextil', width: '30%' } },
+        { name: 'weight', type: 'text', label: 'Gramatura', admin: { placeholder: 'np. 300 g/m²', width: '25%' } },
+        {
+          name: 'datasheetUrl',
+          type: 'text',
+          label: 'Karta techniczna (adres PDF)',
+          admin: { placeholder: 'https://…', width: '45%' },
+          validate: (value: unknown) =>
+            value === null || value === undefined || value === '' || (typeof value === 'string' && /^https?:\/\/\S+$/.test(value))
+              ? true
+              : 'Podaj pełny adres zaczynający się od https://',
+        },
+      ],
+    },
+    {
+      type: 'row',
+      fields: [
         {
           name: 'composition',
           type: 'text',
@@ -135,11 +152,26 @@ export const Fabrics: CollectionConfig = {
           ],
         },
         {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
-          label: 'Zdjęcie tkaniny (zbliżenie)',
-          admin: { description: 'Pole opcjonalne. Bez zdjęcia sklep rysuje próbkę z koloru i rodzaju tkaniny.' },
+          type: 'row',
+          fields: [
+            {
+              name: 'image',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Próbka (płaska faktura)',
+              admin: {
+                width: '50%',
+                description: 'Kwadratowe zbliżenie faktury — kółka kolorów i próbnik. Bez niego sklep rysuje próbkę z koloru.',
+              },
+            },
+            {
+              name: 'photo',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Zdjęcie tkaniny',
+              admin: { width: '50%', description: 'Np. udrapowana tkanina — duży podgląd na stronie głównej. Pole opcjonalne.' },
+            },
+          ],
         },
       ],
     },

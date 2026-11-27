@@ -30,6 +30,8 @@ export default async function FabricsPage({ searchParams }: PageProps<'/tkaniny'
   const max = Math.max(1, Math.min(20, settings.samples?.max ?? 6))
   const colorCount = fabrics.reduce((total, fabric) => total + fabric.colors.filter((color) => color.available).length, 0)
   const preselected = typeof params.probka === 'string' ? params.probka : null
+  const suppliers = [...new Set(fabrics.map((fabric) => fabric.supplier).filter(Boolean))]
+  const from = suppliers.length === 1 ? ` polskiej firmy ${suppliers[0]}` : ''
 
   return (
     <div className="shell pt-8 pb-28 md:pt-12 md:pb-36">
@@ -42,7 +44,7 @@ export default async function FabricsPage({ searchParams }: PageProps<'/tkaniny'
         <p className="lead lg:col-span-5 lg:pb-2">
           {noOrphans(
             samplesEnabled
-              ? `${fabrics.length} tkanin i ${colorCount} kolorów, w których szyjemy nasze meble. Kliknij kolor, aby dodać próbkę — do ${max} próbek wyślemy bezpłatnie.`
+              ? `${fabrics.length} kolekcji tkanin${from} i ${colorCount} kolorów, w których szyjemy nasze meble. Kliknij kolor, aby dodać próbkę — do ${max} próbek wyślemy bezpłatnie.`
               : 'Tkaniny i kolory, w których szyjemy nasze meble. Napisz do nas, jeśli chcesz zobaczyć próbkę na żywo.',
           )}
         </p>
