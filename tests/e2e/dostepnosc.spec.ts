@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { addToCart, expectAccessible, openFirstProduct } from './helpers'
+import { expectAccessible, openCartDrawer, openFirstProduct, reservePiece } from './helpers'
 
 /**
  * Automatyczna kontrola dostępności (reguły WCAG 2.1 A i AA) najważniejszych stron sklepu:
@@ -36,16 +36,16 @@ test.describe('dostępność', () => {
     await openFirstProduct(page)
     await page.waitForTimeout(600)
     await expectAccessible(page, 'produkt')
-    await addToCart(page)
+    await reservePiece(page)
+    await page.goto('/sklep')
+    await openCartDrawer(page)
     await page.waitForTimeout(600)
-    await expectAccessible(page, 'produkt z otwartym koszykiem')
+    await expectAccessible(page, 'koszyk w szufladzie')
   })
 
   test('formularz zamówienia — pusty i z komunikatami błędów', async ({ page }) => {
     await openFirstProduct(page)
-    await addToCart(page)
-    await page.getByRole('dialog').getByRole('link', { name: 'Przejdź do zamówienia' }).click()
-    await page.waitForURL('**/zamowienie')
+    await reservePiece(page)
     await expect(page.getByRole('button', { name: 'Zamawiam z obowiązkiem zapłaty' })).toBeVisible()
     await page.waitForTimeout(500)
     await expectAccessible(page, 'zamówienie')

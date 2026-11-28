@@ -20,8 +20,19 @@ export async function openFirstProduct(page: Page): Promise<string> {
   return title
 }
 
-export async function addToCart(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Dodaj do koszyka' }).first().click()
+/**
+ * Rezerwacja egzemplarza z edycji numerowanej: jeden egzemplarz trafia do koszyka,
+ * a klient przechodzi od razu do formularza zamówienia.
+ */
+export async function reservePiece(page: Page): Promise<void> {
+  await page.getByRole('button', { name: /^Zarezerwuj egzemplarz/ }).first().click()
+  await page.waitForURL('**/zamowienie')
+  await expect(page.getByRole('heading', { level: 1, name: 'Zamówienie' })).toBeVisible()
+}
+
+/** Otwiera koszyk w szufladzie przyciskiem w nagłówku. */
+export async function openCartDrawer(page: Page): Promise<void> {
+  await page.getByRole('button', { name: /^Koszyk: / }).click()
   await expect(page.getByRole('dialog').getByRole('heading', { name: /Koszyk/ })).toBeVisible()
 }
 

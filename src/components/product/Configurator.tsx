@@ -26,17 +26,20 @@ type Props = {
   basePrice: number
   onChange: (patch: Partial<LineConfig>) => void
   samplesEnabled: boolean
+  /** Dodatkowy, ostatni krok (np. numer egzemplarza) — dostaje kolejny numer kroku. */
+  extraStep?: (step: number) => ReactNode
 }
 
 const cmText = (value: number) => String(value).replace('.', ',')
 
-function Step({ number, title, value, children }: { number: number; title: string; value?: ReactNode; children: ReactNode }) {
+/** Krok wyboru z numerem i nagłówkiem — wspólny dla konfiguratora i wyboru numeru egzemplarza. */
+export function Step({ number, title, value, children }: { number: number | null; title: string; value?: ReactNode; children: ReactNode }) {
   return (
     <fieldset className="border-t border-line pt-5">
       {/* Legenda pływa, żeby zajęła całą szerokość — inaczej przeglądarki ignorują układ flex. */}
       <legend className="float-left mb-4 flex w-full items-baseline justify-between gap-4">
         <span className="shrink-0 text-[0.9375rem] font-medium">
-          <span className="tabular mr-2 text-sm text-ink-faint">{String(number).padStart(2, '0')}</span>
+          {number !== null && <span className="tabular mr-2 text-sm text-ink-faint">{String(number).padStart(2, '0')}</span>}
           {title}
         </span>
         {value && <span className="min-w-0 truncate text-right text-sm text-ink-soft">{value}</span>}
@@ -61,7 +64,7 @@ function SideIcon({ side }: { side: Side }) {
  * Wybór wymiaru, tkaniny, koloru, nóżek i strony szezlonga. Każda opcja pokazuje, ile kosztuje,
  * zanim klient ją kliknie — bez zgadywania i bez niespodzianek w koszyku.
  */
-export function Configurator({ options, resolved, basePrice, onChange, samplesEnabled }: Props) {
+export function Configurator({ options, resolved, basePrice, onChange, samplesEnabled, extraStep }: Props) {
   let step = 0
   const priceWith = (patch: Partial<ResolvedConfig>) => configuredPrice(basePrice, { ...resolved, ...patch })
   const forSize = basePrice + (resolved.size?.priceDelta ?? 0)
@@ -280,6 +283,8 @@ export function Configurator({ options, resolved, basePrice, onChange, samplesEn
           <p className="mt-2.5 text-[0.8125rem] text-ink-soft">Stronę określamy, stojąc przodem do mebla.</p>
         </Step>
       )}
+
+      {extraStep?.(++step)}
     </div>
   )
 }

@@ -32,6 +32,7 @@ import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloa
 import { FabricColorRowLabel as FabricColorRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { OrderItemRowLabel as OrderItemRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { default as default_68cb5732f6bc7c014dfa2820e3e9c596 } from '@/components/admin/OrderSidebar'
+import { CertificateLink as CertificateLink_8b4e748567c71f8904afde6625f3ee08 } from '@/components/admin/CertificateLink'
 import { NavRowLabel as NavRowLabel_602181e9d445b98d48bce238807017cb } from '@/components/admin/RowLabels'
 import { default as default_534076e2c753ea5d539a54b05f456b1b } from '@/components/admin/Icon'
 import { default as default_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admin/Logo'
@@ -75,6 +76,7 @@ export const importMap = {
   "@/components/admin/RowLabels#FabricColorRowLabel": FabricColorRowLabel_602181e9d445b98d48bce238807017cb,
   "@/components/admin/RowLabels#OrderItemRowLabel": OrderItemRowLabel_602181e9d445b98d48bce238807017cb,
   "@/components/admin/OrderSidebar#default": default_68cb5732f6bc7c014dfa2820e3e9c596,
+  "@/components/admin/CertificateLink#CertificateLink": CertificateLink_8b4e748567c71f8904afde6625f3ee08,
   "@/components/admin/RowLabels#NavRowLabel": NavRowLabel_602181e9d445b98d48bce238807017cb,
   "@/components/admin/Icon#default": default_534076e2c753ea5d539a54b05f456b1b,
   "@/components/admin/Logo#default": default_a44df17d0fc3dcd873dae43dc3bf66bd,

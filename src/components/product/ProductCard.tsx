@@ -10,9 +10,11 @@ import {
   productPath,
   secondaryImage,
 } from '@/lib/catalog'
+import { EditionMeter } from '@/components/edition/EditionMeter'
 import { FabricSwatch } from '@/components/fabric/FabricSwatch'
 import { cn } from '@/lib/cn'
 import { configOptions, lowestConfiguredPrice, priceVaries } from '@/lib/configurator'
+import { editionTitle, type EditionState } from '@/lib/editions'
 import { discountPercent } from '@/lib/money'
 import { plural } from '@/lib/typography'
 import { noOrphans } from '@/lib/typography'
@@ -25,9 +27,11 @@ type Props = {
   eager?: boolean
   headingLevel?: 'h2' | 'h3'
   className?: string
+  /** Stan edycji numerowanej — numer edycji na zdjęciu i liczba wolnych egzemplarzy pod nazwą. */
+  edition?: EditionState
 }
 
-export function ProductCard({ product, sizes, eager = false, headingLevel: Heading = 'h3', className }: Props) {
+export function ProductCard({ product, sizes, eager = false, headingLevel: Heading = 'h3', className, edition }: Props) {
   const first = primaryImage(product)
   const second = secondaryImage(product)
   const basePrice = priceView(product)
@@ -46,11 +50,23 @@ export function ProductCard({ product, sizes, eager = false, headingLevel: Headi
     fabric.colors.filter((color) => color.available).map((color) => ({ ...color, type: fabric.type, key: `${fabric.id}-${color.id}` })),
   )
   const unavailable = product.availability === 'unavailable'
+  const limited = edition && edition.size !== null ? edition : null
+  const editionBadge = limited
+    ? limited.soldOut
+      ? 'Nakład wyczerpany'
+      : limited.status === 'announced'
+        ? 'Zapowiedź'
+        : limited.status === 'invite'
+          ? 'Na zaproszenie'
+          : editionTitle(limited)
+    : null
   const badge = unavailable
     ? 'Chwilowo niedostępny'
-    : price.regular !== null
-      ? `−${discountPercent(price.regular, price.current)}%`
-      : product.badge
+    : editionBadge
+      ? editionBadge
+      : price.regular !== null
+        ? `−${discountPercent(price.regular, price.current)}%`
+        : product.badge
 
   return (
     <article className={cn('group relative', className)}>
@@ -77,7 +93,11 @@ export function ProductCard({ product, sizes, eager = false, headingLevel: Headi
           <span
             className={cn(
               'absolute top-4 left-4 rounded-full px-3 py-1.5 text-xs leading-none font-semibold',
-              price.regular !== null && !unavailable ? 'bg-accent text-white' : 'bg-paper text-ink',
+              limited && !unavailable
+                ? 'tabular bg-paper/90 tracking-[0.08em] text-brass uppercase backdrop-blur-sm'
+                : price.regular !== null && !unavailable
+                  ? 'bg-accent text-white'
+                  : 'bg-paper text-ink',
             )}
           >
             {badge}
@@ -127,6 +147,7 @@ export function ProductCard({ product, sizes, eager = false, headingLevel: Headi
         </div>
         <Price className="shrink-0 pt-0.5 text-[1.0625rem]" prefix={varies ? 'od' : undefined} price={price} />
       </div>
+      {limited && limited.size !== null && <EditionMeter allocated={limited.allocated} className="mt-4" compact size={limited.size} />}
     </article>
   )
 }

@@ -25,6 +25,8 @@ export type CartLine = {
   slug: string
   unitPrice: number
   imageUrl: string | null
+  /** Numer egzemplarza z edycji numerowanej, np. „Nº 07 / 50”, albo informacja o przydziale numeru. */
+  edition?: string
   /** Ustawiane po sprawdzeniu na serwerze: produkt wycofany lub kolor niedostępny. */
   unavailable?: boolean
 }
@@ -46,8 +48,9 @@ type CartState = {
 }
 
 
-const clampQuantity = (quantity: number) =>
-  Math.max(1, Math.min(CART_LIMITS.maxQuantityPerLine, Math.round(quantity)))
+/** Wybrany numer egzemplarza to jedna konkretna sztuka — taka pozycja ma zawsze ilość 1. */
+const clampQuantity = (quantity: number, config?: LineConfig) =>
+  Math.max(1, Math.min(config?.number ? 1 : CART_LIMITS.maxQuantityPerLine, Math.round(quantity)))
 
 export const useCart = create<CartState>()(
   persist(
@@ -62,16 +65,16 @@ export const useCart = create<CartState>()(
           if (existing) {
             return {
               lines: state.lines.map((item) =>
-                item.key === key ? { ...item, ...line, key, quantity: clampQuantity(item.quantity + quantity) } : item,
+                item.key === key ? { ...item, ...line, key, quantity: clampQuantity(item.quantity + quantity, line.config) } : item,
               ),
             }
           }
           if (state.lines.length >= CART_LIMITS.maxLines) return state
-          return { lines: [...state.lines, { ...line, key, quantity: clampQuantity(quantity) }] }
+          return { lines: [...state.lines, { ...line, key, quantity: clampQuantity(quantity, line.config) }] }
         }),
       setQuantity: (key, quantity) =>
         set((state) => ({
-          lines: state.lines.map((item) => (item.key === key ? { ...item, quantity: clampQuantity(quantity) } : item)),
+          lines: state.lines.map((item) => (item.key === key ? { ...item, quantity: clampQuantity(quantity, item.config) } : item)),
         })),
       remove: (key) => set((state) => ({ lines: state.lines.filter((item) => item.key !== key) })),
       clear: () => set({ lines: [] }),

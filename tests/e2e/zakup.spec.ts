@@ -1,19 +1,14 @@
 import { expect, test } from '@playwright/test'
 
-import { addToCart, collectPageErrors, expectAccessible, fillCheckout, openFirstProduct, testCustomer } from './helpers'
+import { collectPageErrors, expectAccessible, fillCheckout, openCartDrawer, openFirstProduct, reservePiece, testCustomer } from './helpers'
 
 test.describe('zakup', () => {
   test('klient kupuje produkt z płatnością przelewem', async ({ page }, testInfo) => {
     const errors = collectPageErrors(page)
     const productTitle = await openFirstProduct(page)
-    await addToCart(page)
-
-    // Koszyk w szufladzie pokazuje dodany produkt i prowadzi do zamówienia.
-    const drawer = page.getByRole('dialog')
-    await expect(drawer).toContainText(productTitle)
-    await drawer.getByRole('link', { name: 'Przejdź do zamówienia' }).click()
-    await page.waitForURL('**/zamowienie')
-    await expect(page.getByRole('heading', { level: 1, name: 'Zamówienie' })).toBeVisible()
+    // Rezerwacja egzemplarza prowadzi prosto do zamówienia — z numerem przydzielanym przy zamówieniu.
+    await reservePiece(page)
+    await expect(page.getByText('numer przy zamówieniu', { exact: false }).first()).toBeVisible()
     const submit = page.getByRole('button', { name: 'Zamawiam z obowiązkiem zapłaty' })
     await expect(submit).toBeVisible()
 
@@ -49,7 +44,11 @@ test.describe('zakup', () => {
     await page.waitForURL('**/zamowienie/potwierdzenie/**')
 
     // Strona potwierdzenia: numer zamówienia, adres e-mail klienta, kupiony produkt i sposób płatności.
-    await expect(page.getByRole('heading', { level: 1, name: 'Dziękujemy za zamówienie' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1, name: 'Twój egzemplarz czeka w rejestrze' })).toBeVisible()
+    // Karta egzemplarza: numer z nakładu i nazwisko właściciela; certyfikat — po potwierdzeniu zamówienia.
+    await expect(page.getByText(/Rejestr egzemplarzy/).first()).toBeVisible()
+    await expect(page.getByText(`${customer.firstName} ${customer.lastName}`).first()).toBeVisible()
+    await expect(page.getByText('Certyfikat autentyczności wystawimy', { exact: false })).toBeVisible()
     await expect(page.getByText(/Zamówienie [A-Z0-9]*-?\d{4,}/).first()).toBeVisible()
     await expect(page.getByText(customer.email).first()).toBeVisible()
     const summary = page.getByRole('complementary', { name: 'Podsumowanie zamówienia' })
@@ -76,7 +75,8 @@ test.describe('zakup', () => {
   test('koszyk: zmiana ilości i usunięcie produktu', async ({ page }) => {
     const errors = collectPageErrors(page)
     const productTitle = await openFirstProduct(page)
-    await addToCart(page)
+    await reservePiece(page)
+    await openCartDrawer(page)
     await page.getByRole('dialog').getByRole('link', { name: 'Zobacz cały koszyk' }).click()
     await page.waitForURL('**/koszyk')
 

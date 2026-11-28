@@ -34,7 +34,7 @@ export function PurchaseInfo({ settings, shippingMethods, productSlug }: Props) 
     (lowest, method) => (lowest === null || method.price < lowest ? method.price : lowest),
     null,
   )
-  const payments = paymentSummary(settings).map((label) => label.replace('płatność przy odbiorze', 'przy odbiorze'))
+  const payments = paymentSummary(settings, shippingMethods).map((label) => label.replace('płatność przy odbiorze', 'przy odbiorze'))
 
   return (
     <ul className="mt-8 divide-y divide-line border-y border-line">

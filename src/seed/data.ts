@@ -342,12 +342,6 @@ export const HOMEPAGE = {
     title: 'Trzy sofy, każda rozkłada się do spania',
     text: 'Różne charaktery, ta sama dbałość o wygodę i wykonanie.',
   },
-  functions: {
-    eyebrow: 'Funkcje',
-    title: 'Jedna sofa, *kilka* ustawień',
-    text: 'Zobacz, jak zmienia się Bergen: od sofy z opuszczonymi zagłówkami po wygodne łóżko.',
-    productSlug: 'sofa-rozkladana-bergen',
-  },
   quality: {
     eyebrow: 'Jakość',
     title: 'Jakość, którą czuć od *pierwszego dotyku*',
@@ -542,11 +536,6 @@ export const HOMEPAGE_V2 = {
     title: 'Wybierz model, *resztę* dopasujesz',
     text: 'Każdy w kilku wymiarach i wielu kolorach tkanin. Cena zmienia się na bieżąco, gdy konfigurujesz.',
   },
-  categories: {
-    eyebrow: 'Kategorie',
-    title: 'Czego szukasz?',
-    text: '',
-  },
   steps: {
     eyebrow: 'Jak to działa',
     title: 'Twoja sofa w *trzech* krokach',
@@ -582,4 +571,149 @@ export const SETTINGS_V2 = {
     { label: 'O nas', url: '/o-nas' },
     { label: 'Kontakt', url: '/kontakt' },
   ],
+}
+
+/* ---------- Edycje numerowane (dane przykładowe — do sprawdzenia w panelu) ---------- */
+
+export type SeedEdition = {
+  code: string
+  size: number
+  status: 'open' | 'invite' | 'announced'
+  /** Przykładowy kod zaproszenia — do zmiany w panelu przed wysłaniem zaproszeń. */
+  inviteCode?: string
+  /** Cena egzemplarza w wymiarze podstawowym. */
+  price: number
+  leadTime: string
+  /** Dopłaty za wymiar wg nazwy wymiaru z konfiguratora. */
+  sizeDeltas: Record<string, number>
+  /** Dopłaty za nóżki wg nazwy. */
+  legDeltas?: Record<string, number>
+}
+
+const HANDMADE = 'Wykonanie ręczne: 8–10 tygodni'
+
+/** Każdy model to osobna, numerowana edycja — z nakładem, oznaczeniem i ceną kolekcji limitowanej. */
+export const EDITIONS: Record<string, SeedEdition> = {
+  'sofa-rozkladana-bergen': {
+    code: '01',
+    size: 50,
+    status: 'open',
+    price: 28900,
+    leadTime: HANDMADE,
+    sizeDeltas: { '2-osobowa': -3900, '3-osobowa': 0, '3-osobowa XL': 3500 },
+  },
+  'sofa-rozkladana-lund': {
+    code: '02',
+    size: 50,
+    status: 'open',
+    price: 24500,
+    leadTime: HANDMADE,
+    sizeDeltas: { '2-osobowa': -3400, '3-osobowa': 0, '3-osobowa XL': 3100 },
+    legDeltas: { 'Czarny metal': 0, 'Dąb naturalny': 1200, 'Złoty mosiądz': 1900 },
+  },
+  'sofa-rozkladana-visby': {
+    code: '03',
+    size: 40,
+    status: 'invite',
+    inviteCode: 'VISBY-PRIVE',
+    price: 21900,
+    leadTime: HANDMADE,
+    sizeDeltas: { '2-osobowa': -2900, '3-osobowa': 0, '3-osobowa XL': 2700 },
+    legDeltas: { 'Jasny buk': 0, 'Czarny metal': 0, Orzech: 1200 },
+  },
+  'naroznik-rozkladany-oslo': {
+    code: '04',
+    size: 30,
+    status: 'open',
+    price: 38500,
+    leadTime: 'Wykonanie ręczne: 10–12 tygodni',
+    sizeDeltas: { 'Narożnik 250': -4200, 'Narożnik 275': 0, 'Narożnik 300': 4800 },
+  },
+}
+
+export const HOMEPAGE_V3 = {
+  hero: {
+    eyebrow: 'Kolekcja I · Edycje numerowane',
+    title: 'Pięćdziesiąt egzemplarzy. *Ani jednego więcej.*',
+    text: 'Każdy model VELURO powstaje w numerowanym nakładzie i jest wykonywany ręcznie na zamówienie. Gdy ostatni egzemplarz znajdzie właściciela, model nie wraca do produkcji.',
+    primaryLabel: 'Zobacz edycje',
+    primaryUrl: '/#edycje',
+    secondaryLabel: 'Lista prywatna',
+    secondaryUrl: '/#lista-prywatna',
+  },
+  usps: [
+    { title: '50', text: 'egzemplarzy — największy nakład, w jakim powstaje model VELURO.' },
+    { title: 'Nº', text: 'Każdy egzemplarz ma własny numer, certyfikat autentyczności i właściciela w rejestrze.' },
+    { title: '0', text: 'wznowień. Wyczerpana edycja nie wraca do produkcji.' },
+  ],
+  collection: {
+    eyebrow: 'Edycje',
+    title: 'Każdy egzemplarz *policzony*',
+    text: 'Liczba przy modelu pochodzi prosto z rejestru: to egzemplarze, które wciąż czekają na właściciela.',
+  },
+  steps: {
+    eyebrow: 'Od rezerwacji do dostawy',
+    title: 'Zakup, który *celebrujemy*',
+    text: '',
+    items: [
+      {
+        title: 'Wybór numeru',
+        text: 'Wybierz model, konfigurację i numer egzemplarza. Zapiszemy go w rejestrze na Twoje nazwisko.',
+      },
+      {
+        title: 'Rozmowa z atelier',
+        text: 'Opiekun z atelier zadzwoni, by potwierdzić wymiar, tkaninę i termin. Próbki tkanin wyślemy przed rozpoczęciem pracy.',
+      },
+      {
+        title: 'Wykonanie i certyfikat',
+        text: 'Egzemplarz powstaje ręcznie. Otrzymujesz certyfikat autentyczności z numerem i nazwiskiem właściciela.',
+      },
+      {
+        title: 'Dostawa z wniesieniem',
+        text: 'Przywozimy, wnosimy i ustawiamy mebel na miejscu. Opakowanie zabieramy ze sobą.',
+      },
+    ],
+  },
+  fabrics: {
+    eyebrow: 'Materiały',
+    title: 'Tkanina, którą *poczujesz* przed zakupem',
+    text: 'Wybrane tkaniny polskiej firmy Toptextil. Zaznacz kilka kolorów — próbki wyślemy bezpłatnie.',
+  },
+  privateList: {
+    eyebrow: 'Lista prywatna',
+    title: 'Kolejne edycje *najpierw* dla listy prywatnej',
+    text: 'Osoby z listy dostają zaproszenie do przedsprzedaży, zanim model pojawi się w sklepie — i jako pierwsze wybierają numery egzemplarzy.',
+    note: 'Piszemy tylko wtedy, gdy mamy coś do pokazania.',
+  },
+  contact: {
+    title: 'Porozmawiajmy o *Twoim* egzemplarzu',
+    text: 'Opiekun z atelier odpowie na pytania o wymiary, tkaniny i termin wykonania. Zadzwoń albo napisz — oddzwonimy.',
+  },
+}
+
+export const SETTINGS_V3 = {
+  announcement: 'Kolekcja I · Każdy model w nakładzie do 50 numerowanych egzemplarzy',
+  headerNav: [
+    { label: 'Kolekcja', url: '/sklep' },
+    { label: 'Materiały', url: '/tkaniny' },
+    { label: 'Atelier', url: '/o-nas' },
+    { label: 'Lista prywatna', url: '/#lista-prywatna' },
+    { label: 'Kontakt', url: '/kontakt' },
+  ],
+  tagline: 'Meble tapicerowane w numerowanych edycjach',
+  footerText: 'Meble tapicerowane wydawane w numerowanych edycjach. Każdy egzemplarz ma numer, certyfikat i właściciela.',
+}
+
+/** Dostawa dopasowana do mebla za kilkadziesiąt tysięcy złotych: z wniesieniem i ustawieniem, w cenie. */
+export const WHITE_GLOVE = {
+  from: { name: 'Dostawa z wniesieniem', price: 349 },
+  to: {
+    name: 'Dostawa z wniesieniem i ustawieniem',
+    description: 'Przywozimy egzemplarz, wnosimy go do mieszkania, ustawiamy na miejscu i zabieramy opakowanie. Termin ustalamy telefonicznie.',
+    price: 0,
+    deliveryTime: 'w terminie uzgodnionym z atelier',
+    allowCod: false,
+  },
+  /** Zwykła dostawa kurierska nie pasuje do edycji — wyłączamy ją, jeśli nikt jej nie zmieniał. */
+  retire: { name: 'Dostawa kurierska', price: 199 },
 }

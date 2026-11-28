@@ -11,6 +11,7 @@ Ten plik ma dwie części: [dla właściciela sklepu](#dla-właściciela-sklepu)
 ### Co dostajesz
 
 - **Witryna**: strona główna, lista produktów, strona produktu z galerią, konfiguratorem i pokazem funkcji, próbnik tkanin z zamawianiem bezpłatnych próbek, koszyk, formularz zamówienia, strona potwierdzenia (działa też jako „stan zamówienia”), kontakt, strony informacyjne.
+- **Edycje numerowane**: każdy model powstaje w ograniczonym nakładzie (np. 50 sztuk). Klient może wybrać numer swojego egzemplarza (np. 07/50), sklep zapisuje go w rejestrze na nazwisko klienta i nie sprzeda więcej sztuk, niż wynosi nakład. Model może być w sprzedaży otwartej, w przedsprzedaży na kod zaproszenia albo w zapowiedzi (wtedy tylko lista oczekujących). Właściciel dostaje kartę egzemplarza i certyfikat autentyczności do druku.
 - **Konfigurator**: klient wybiera wymiar (z rysunkiem i wymiarami), tkaninę i kolor, nóżki oraz stronę szezlonga; cena przelicza się na bieżąco, a pełna konfiguracja trafia do zamówienia, e-maili i panelu.
 - **Zamówienia**: przelew tradycyjny, płatność przy odbiorze, opcjonalnie płatność online (BLIK, szybki przelew, karta — przez Stripe). Ceny zawsze liczy serwer, nigdy przeglądarka klienta.
 - **E-maile**: potwierdzenie dla klienta (z regulaminem i zasadami zwrotów w załączniku), powiadomienie dla Ciebie, „płatność zaksięgowana”, „zamówienie wysłane”.
@@ -89,12 +90,23 @@ Zamówienia testowe możesz usunąć w panelu. Numeracja nie wraca do początku 
 - *Dostępność → Chwilowo niedostępny* wyłącza możliwość zakupu, ale zostawia produkt w ofercie.
 - Zdjęcia najlepiej na białym tle, w poziomie, min. 2000 px szerokości — sklep sam przygotuje mniejsze wersje.
 
+**Edycje i rejestr egzemplarzy**
+
+- W produkcie, w zakładce *Edycja*: nakład, oznaczenie edycji („01” → „Edycja Nº 01”), stan sprzedaży, kod zaproszenia, data premiery i to, czy klient wybiera numer sam.
+- *Sprzedaż otwarta* — każdy może zarezerwować egzemplarz. *Przedsprzedaż na zaproszenie* — model jest widoczny, ale rezerwacja wymaga kodu, który wysyłasz osobom z listy oczekujących (wielkość liter nie ma znaczenia). *Zapowiedź* — tylko zapis na listę oczekujących.
+- *Sprzedaż → Rejestr egzemplarzy* to lista sprzedanych numerów z właścicielami. Wpisy z zamówień powstają same. Egzemplarz sprzedany poza sklepem (np. w salonie) dodaj tu ręcznie — jego numer zniknie z puli w sklepie.
+- Ten sam numer nie trafi do dwóch osób — pilnuje tego baza danych, także gdy dwóch klientów zamawia w tej samej sekundzie.
+- **Anulowanie zamówienia zwalnia jego numery.** Nieopłacone zamówienie trzyma numer, dopóki go nie anulujesz.
+- Certyfikat autentyczności (z numerem, konfiguracją i nazwiskiem właściciela) jest dostępny, gdy zamówienie jest potwierdzone albo opłacone — odnośnik jest na stronie zamówienia klienta i przy egzemplarzu w panelu.
+- Numery zajęte przez zamówienia testowe wracają do puli automatycznie, gdy uruchomisz sprzedaż.
+- Zapisy na listę oczekujących i listę prywatną trafiają do *Wiadomości* (rodzaj „Lista oczekujących”).
+
 **Konfigurator i tkaniny**
 
 - *Sklep → Tkaniny* to próbnik: tkanina, jej kolory, właściwości i **dopłata w procentach** ceny mebla (0 = w cenie). Dane startowe są przykładowe — wpisz tkaniny, które naprawdę oferujesz, i odznacz „Dane przykładowe”.
 - W produkcie, w zakładce *Konfiguracja*: wymiary (każdy z dopłatą, także ujemną), tkaniny do wyboru, nóżki z dopłatą i wybór strony szezlonga. Na start zaznaczony jest wymiar z dopłatą 0 i kolor ze zdjęć.
 - Masz zdjęcia mebla w innym kolorze? Dodaj je w *Zdjęcia i kolory* jako nowy kolor, wskaż tkaninę z próbnika i nazwij kolor tak samo jak w Tkaninach — sklep pokaże je po wybraniu tego koloru.
-- Ceny konfiguracji liczy serwer: wymiar + procent za tkaninę (od ceny wymiaru, zaokrąglony do złotówki) + nóżki.
+- Ceny konfiguracji liczy serwer: wymiar + procent za tkaninę (od ceny wymiaru, zaokrąglony do pełnych 50 zł) + nóżki.
 
 **Wiadomości** (*Sprzedaż → Wiadomości*) — zapytania z formularza kontaktowego i zamówienia bezpłatnych próbek tkanin (rodzaj „Próbki tkanin”, z listą kolorów i adresem). Ustawienia próbek (włączenie, limit, tekst dla klienta) są w *Ustawieniach sklepu*. Odpowiadasz zwykłym e-mailem (odpowiedź na powiadomienie trafia prosto do klienta).
 

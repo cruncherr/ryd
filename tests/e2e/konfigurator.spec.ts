@@ -23,15 +23,14 @@ test.describe('konfigurator', () => {
     await page.locator('label.choice', { hasText: 'Po lewej' }).click()
     const finalPrice = Number((await priceText()) ?? 0)
 
-    await page.getByRole('button', { name: 'Dodaj do koszyka' }).first().click()
-    const drawer = page.getByRole('dialog')
-    await expect(drawer).toContainText('Narożnik 300')
-    await expect(drawer).toContainText('Baloo')
-    await expect(drawer).toContainText('szezlong po lewej')
+    await page.getByRole('button', { name: /^Zarezerwuj egzemplarz/ }).first().click()
+    await page.waitForURL('**/zamowienie')
+    const checkoutSummary = page.getByRole('main')
+    await expect(checkoutSummary).toContainText('Narożnik 300')
+    await expect(checkoutSummary).toContainText('Baloo')
+    await expect(checkoutSummary).toContainText('szezlong po lewej')
 
     // Serwer liczy kwotę sam — zamówienie przechodzi tylko wtedy, gdy zgadza się z tym, co widział klient.
-    await drawer.getByRole('link', { name: 'Przejdź do zamówienia' }).click()
-    await page.waitForURL('**/zamowienie')
     await fillCheckout(page, testCustomer(`konfigurator-${testInfo.project.name}`))
     await page.getByRole('radio', { name: /Przelew tradycyjny/ }).check({ force: true })
     await page.getByRole('checkbox', { name: /Akceptuję/ }).check({ force: true })

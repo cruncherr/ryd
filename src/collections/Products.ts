@@ -1,10 +1,10 @@
-import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
+import type { CollectionBeforeChangeHook, CollectionConfig, PayloadRequest } from 'payload'
 
-import { isAdmin, nobodyField, publishedOrAdmin } from '@/access'
+import { isAdmin, isAdminField, nobodyField, publishedOrAdmin } from '@/access'
 import { amountField } from '@/fields/amount'
 import { polishSlugField } from '@/fields/slug'
 import { revalidateAfterChange, revalidateAfterDelete } from '@/hooks/revalidate'
-import { AVAILABILITY, SIDES } from '@/lib/constants'
+import { AVAILABILITY, EDITION_STATUSES, MAX_EDITION_SIZE, SIDES } from '@/lib/constants'
 import { effectivePrice, isValidAmount } from '@/lib/money'
 import { appendPriceHistory, type PriceHistoryEntry } from '@/lib/priceHistory'
 
@@ -144,6 +144,124 @@ export const Products: CollectionConfig = {
                 placeholder: 'np. Nowość',
                 description: 'Krótka etykieta na zdjęciu produktu. Pole opcjonalne.',
               },
+            },
+          ],
+        },
+        {
+          label: 'Edycja',
+          description:
+            'Model powstaje w ograniczonym, numerowanym nakładzie. Każdy sprzedany egzemplarz dostaje numer (np. 07/50) i trafia do rejestru egzemplarzy — sklep nie sprzeda więcej sztuk, niż wynosi nakład.',
+          fields: [
+            {
+              name: 'edition',
+              type: 'group',
+              label: false,
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'size',
+                      type: 'number',
+                      label: 'Nakład (liczba egzemplarzy)',
+                      min: 1,
+                      max: MAX_EDITION_SIZE,
+                      defaultValue: 50,
+                      admin: {
+                        width: '34%',
+                        step: 1,
+                        description: 'Zostaw puste, jeśli model nie jest limitowany.',
+                      },
+                      validate: async (value: unknown, { req, id }: { req: PayloadRequest; id?: number | string }) => {
+                        if (value === null || value === undefined || value === '') return true
+                        if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > MAX_EDITION_SIZE) {
+                          return `Podaj liczbę całkowitą od 1 do ${MAX_EDITION_SIZE}.`
+                        }
+                        // Nakładu nie da się zmniejszyć poniżej numerów, które mają już właścicieli.
+                        if (id !== undefined) {
+                          const beyond = await req.payload.find({
+                            collection: 'pieces',
+                            depth: 0,
+                            limit: 1,
+                            pagination: false,
+                            req,
+                            sort: '-number',
+                            where: { and: [{ product: { equals: id } }, { number: { greater_than: value } }] },
+                          })
+                          const highest = beyond.docs[0]?.number
+                          if (highest) return `Egzemplarz nr ${highest} ma już właściciela — nakład nie może być mniejszy niż ${highest}.`
+                        }
+                        return true
+                      },
+                    },
+                    {
+                      name: 'code',
+                      type: 'text',
+                      label: 'Oznaczenie edycji',
+                      maxLength: 8,
+                      admin: {
+                        width: '33%',
+                        placeholder: 'np. 01',
+                        description: 'W sklepie: „Edycja Nº 01”.',
+                      },
+                    },
+                    {
+                      name: 'status',
+                      type: 'select',
+                      label: 'Sprzedaż',
+                      required: true,
+                      defaultValue: 'open',
+                      options: EDITION_STATUSES.map(({ value, label }) => ({ value, label })),
+                      admin: { width: '33%' },
+                    },
+                  ],
+                },
+                {
+                  name: 'inviteCode',
+                  type: 'text',
+                  label: 'Kod zaproszenia',
+                  maxLength: 32,
+                  // Kod zna tylko panel — nie trafia do publicznego API ani do przeglądarki klienta.
+                  access: { read: isAdminField },
+                  admin: {
+                    condition: (_data, siblingData) => siblingData?.status === 'invite',
+                    placeholder: 'np. BERGEN-PRIVE',
+                    description:
+                      'Wyślij go osobom z listy oczekujących. Bez kodu klient widzi model, ale nie może zarezerwować egzemplarza. Wielkość liter nie ma znaczenia.',
+                  },
+                  validate: (value: unknown, { siblingData }: { siblingData: unknown }) => {
+                    const status = (siblingData as { status?: unknown })?.status
+                    if (status !== 'invite') return true
+                    if (typeof value !== 'string' || value.trim().length < 4) return 'Podaj kod zaproszenia (co najmniej 4 znaki).'
+                    return true
+                  },
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'numberChoice',
+                      type: 'checkbox',
+                      label: 'Klient wybiera numer egzemplarza',
+                      defaultValue: true,
+                      admin: {
+                        width: '50%',
+                        description: 'Wyłączone: sklep przydziela kolejny wolny numer.',
+                      },
+                    },
+                    {
+                      name: 'releaseDate',
+                      type: 'date',
+                      label: 'Data premiery',
+                      admin: {
+                        width: '50%',
+                        date: { pickerAppearance: 'dayOnly', displayFormat: 'd MMMM yyyy' },
+                        description: 'Pokazywana przy zapowiedzi. Pole opcjonalne.',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },

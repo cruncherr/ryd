@@ -12,7 +12,7 @@ import { PreviewBar } from '@/components/layout/PreviewBar'
 import { Toaster } from '@/components/layout/Toaster'
 import { defaultShareImage } from '@/lib/metadata'
 import { LEGAL_SLUGS } from '@/lib/constants'
-import { getCategories, getPublishedPageSlugs, getSettings } from '@/lib/queries'
+import { getCategories, getPublishedPageSlugs, getSettings, getShippingMethods } from '@/lib/queries'
 import { getSiteUrl } from '@/lib/site'
 
 import './globals.css'
@@ -63,7 +63,12 @@ export default async function FrontendLayout({ children }: { children: ReactNode
   ReactDOM.preload('/fonts/inter-roman.woff2', { as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' })
   ReactDOM.preload('/fonts/fraunces-roman.woff2', { as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' })
 
-  const [settings, categories, pages] = await Promise.all([getSettings(), getCategories(), getPublishedPageSlugs()])
+  const [settings, categories, pages, shippingMethods] = await Promise.all([
+    getSettings(),
+    getCategories(),
+    getPublishedPageSlugs(),
+    getShippingMethods(),
+  ])
   const isLive = settings.storeStatus === 'live'
 
   // Identyfikatory narzędzi pomiarowych trafiają do skryptów — przepuszczamy tylko poprawnie zbudowane.
@@ -94,7 +99,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
         <main className="flex-1" id="tresc">
           {children}
         </main>
-        <Footer categories={categories} settings={settings} />
+        <Footer categories={categories} settings={settings} shippingMethods={shippingMethods} />
         <CartDrawer />
         <Toaster />
       </body>

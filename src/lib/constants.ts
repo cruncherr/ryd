@@ -94,3 +94,18 @@ export const SIDES = [
 ] as const
 
 export type Side = (typeof SIDES)[number]['value']
+
+/**
+ * Stan sprzedaży edycji. Wyczerpanie nakładu nie jest osobnym stanem — sklep wylicza je sam
+ * z rejestru egzemplarzy, więc nie da się sprzedać więcej sztuk, niż wynosi nakład.
+ */
+export const EDITION_STATUSES = [
+  { value: 'open', label: 'Sprzedaż otwarta' },
+  { value: 'invite', label: 'Przedsprzedaż na zaproszenie' },
+  { value: 'announced', label: 'Zapowiedź — tylko lista oczekujących' },
+] as const
+
+export type EditionStatus = (typeof EDITION_STATUSES)[number]['value']
+
+/** Największy nakład, jaki da się ustawić — wybór numeru w sklepie musi mieścić się na ekranie. */
+export const MAX_EDITION_SIZE = 300

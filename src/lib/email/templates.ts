@@ -61,7 +61,9 @@ export function orderPageUrl(order: Pick<Order, 'accessToken'>, siteUrl: string)
 function emailItems(order: Order, siteUrl: string): EmailItem[] {
   return order.items.map((item) => ({
     title: item.title,
-    details: [item.variantName, `${item.quantity} × ${formatPLN(item.unitPrice)}`].filter(Boolean).join(' · '),
+    details: [item.edition ? `Egzemplarz ${item.edition}` : '', item.variantName, `${item.quantity} × ${formatPLN(item.unitPrice)}`]
+      .filter(Boolean)
+      .join(' · '),
     amount: formatPLN(item.lineTotal),
     imageUrl: absolute(siteUrl, orderItemImage(item)),
   }))
@@ -79,7 +81,7 @@ function totalsRows(order: Order): Array<[string, string]> {
 function itemsText(order: Order): string {
   return order.items
     .map((item) => {
-      const name = [item.title, item.variantName].filter(Boolean).join(', ')
+      const name = [item.title, item.edition ? `egzemplarz ${item.edition}` : '', item.variantName].filter(Boolean).join(', ')
       return `- ${name} — ${item.quantity} × ${formatPLN(item.unitPrice)} = ${formatPLN(item.lineTotal)}`
     })
     .join('\n')
@@ -443,19 +445,25 @@ export function contactMessageEmail(
   const { settings, siteUrl } = context
   const storeName = storeNameOf(settings)
   const isSamples = message.kind === 'samples'
-  const subject = isSamples ? `Zamówienie próbek tkanin: ${message.name}` : `Wiadomość ze sklepu od: ${message.name}`
+  const isWaitlist = message.kind === 'waitlist'
+  const subject = isSamples
+    ? `Zamówienie próbek tkanin: ${message.name}`
+    : isWaitlist
+      ? `Lista oczekujących: ${message.name}`
+      : `Wiadomość ze sklepu od: ${message.name}`
+  const title = isSamples ? 'Nowe zamówienie próbek tkanin' : isWaitlist ? 'Nowy zapis na listę oczekujących' : 'Nowa wiadomość ze sklepu'
   const phone = formatPhone(message.phone)
   const adminUrl = message.id ? `${siteUrl}/admin/collections/messages/${message.id}` : `${siteUrl}/admin/collections/messages`
 
   const content = [
-    heading(isSamples ? 'Nowe zamówienie próbek tkanin' : 'Nowa wiadomość ze sklepu'),
+    heading(title),
     keyValues([
       ['Od', escapeHtml(message.name)],
       ['E-mail', link(message.email, `mailto:${message.email}`)],
       ['Telefon', phone ? link(phone, `tel:${message.phone}`) : ''],
       ['Dotyczy', escapeHtml(message.source ?? '')],
     ]),
-    subheading(isSamples ? 'Próbki i adres' : 'Treść'),
+    subheading(isSamples ? 'Próbki i adres' : isWaitlist ? 'Zapis' : 'Treść'),
     panel(escapeMultiline(message.message)),
     button('Otwórz w panelu', adminUrl),
   ].join('\n')
@@ -471,7 +479,7 @@ export function contactMessageEmail(
       footerLines: [`Wiadomość z formularza kontaktowego sklepu ${storeName}. Odpowiedź trafi bezpośrednio do nadawcy.`],
     }),
     text: [
-      isSamples ? 'Nowe zamówienie próbek tkanin' : 'Nowa wiadomość ze sklepu',
+      title,
       [`Od: ${message.name}`, `E-mail: ${message.email}`, phone ? `Telefon: ${phone}` : '', message.source ? `Dotyczy: ${message.source}` : '']
         .filter(Boolean)
         .join('\n'),

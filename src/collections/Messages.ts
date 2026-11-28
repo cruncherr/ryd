@@ -9,7 +9,7 @@ export const Messages: CollectionConfig = {
     useAsTitle: 'name',
     group: 'Sprzedaż',
     defaultColumns: ['name', 'kind', 'email', 'createdAt', 'handled'],
-    description: 'Zapytania z formularza kontaktowego i zamówienia bezpłatnych próbek tkanin.',
+    description: 'Zapytania z formularza kontaktowego, zamówienia bezpłatnych próbek tkanin i zapisy na listę oczekujących.',
   },
   defaultSort: '-createdAt',
   // Wiadomości zapisuje wyłącznie serwer sklepu (formularz kontaktowy), nigdy przeglądarka klienta.
@@ -37,8 +37,20 @@ export const Messages: CollectionConfig = {
       options: [
         { value: 'contact', label: 'Pytanie' },
         { value: 'samples', label: 'Próbki tkanin' },
+        { value: 'waitlist', label: 'Lista oczekujących' },
       ],
       admin: { position: 'sidebar' },
+    },
+    {
+      name: 'product',
+      type: 'relationship',
+      relationTo: 'products',
+      label: 'Dotyczy modelu',
+      admin: {
+        readOnly: true,
+        condition: (data) => data?.kind === 'waitlist',
+        description: 'Puste: zapis na listę prywatną — zaproszenia do wszystkich kolejnych edycji.',
+      },
     },
     {
       name: 'samples',

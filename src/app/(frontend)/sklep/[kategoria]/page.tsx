@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { ProductListing } from '@/components/product/ProductListing'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { categoryPath } from '@/lib/catalog'
+import { getEditionStates } from '@/lib/editionData'
 import { pageMetadata } from '@/lib/metadata'
 import { getCategories, getCategoryBySlug, getProducts, getSwatches, parseSort } from '@/lib/queries'
 import { breadcrumbJsonLd, productListJsonLd } from '@/lib/seo'
@@ -23,13 +24,14 @@ export default async function CategoryPage({ params, searchParams }: PageProps<'
 
   const sort = parseSort((await searchParams).sortuj)
   const [products, categories, swatches] = await Promise.all([getProducts({ categoryId: category.id, sort }), getCategories(), getSwatches()])
+  const editions = await getEditionStates(products)
 
   return (
     <>
       <JsonLd
         data={[
           breadcrumbJsonLd([
-            { name: 'Sklep', path: '/sklep' },
+            { name: 'Kolekcja', path: '/sklep' },
             { name: category.title, path: categoryPath(category) },
           ]),
           productListJsonLd(products, category.title),
@@ -39,6 +41,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<'
         activeCategorySlug={category.slug}
         categories={categories}
         description={category.description}
+        editions={editions}
         products={products}
         sort={sort}
         swatches={swatches}

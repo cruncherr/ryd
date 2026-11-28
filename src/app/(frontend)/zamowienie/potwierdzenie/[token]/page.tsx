@@ -6,7 +6,9 @@ import { notFound } from 'next/navigation'
 import type { ReactNode } from 'react'
 
 import { CopyButton, OrderPlacedEffects, PaymentStatusPoller, PayOnlineButton } from '@/components/checkout/OrderClient'
+import { PieceCard } from '@/components/edition/PieceCard'
 import { buttonClass } from '@/components/ui/Button'
+import { certificateIssued, findOrderPieces, type PieceView } from '@/lib/certificates'
 import { cn } from '@/lib/cn'
 import { labelOf, ORDER_STATUSES, PAYMENT_METHODS } from '@/lib/constants'
 import { safeTrackingUrl } from '@/lib/email/templates'
@@ -47,7 +49,7 @@ const FRESH_FOR = 30 * 60 * 1000
 type StepState = 'done' | 'current' | 'upcoming'
 type Step = { title: string; text: string; state: StepState }
 
-function orderSteps(order: Order, detailed: boolean): Step[] {
+function orderSteps(order: Order, detailed: boolean, numbered: boolean): Step[] {
   const paid = order.paymentStatus === 'paid'
   const cod = order.paymentMethod === 'cod'
   const shipped = order.status === 'shipped' || order.status === 'completed'
@@ -70,11 +72,17 @@ function orderSteps(order: Order, detailed: boolean): Step[] {
       state: 'done',
     },
     paymentStep,
-    {
-      title: 'Przygotowanie zamówienia',
-      text: 'Gdy Twój mebel będzie gotowy do wysyłki, damy Ci znać e-mailem.',
-      state: shipped ? 'done' : paid || cod ? 'current' : 'upcoming',
-    },
+    numbered
+      ? {
+          title: 'Wykonanie egzemplarza',
+          text: 'Opiekun z atelier skontaktuje się z Tobą, by potwierdzić szczegóły wykonania. Gdy egzemplarz będzie gotowy, umówimy dostawę.',
+          state: shipped ? 'done' : paid || cod ? 'current' : 'upcoming',
+        }
+      : {
+          title: 'Przygotowanie zamówienia',
+          text: 'Gdy Twój mebel będzie gotowy do wysyłki, damy Ci znać e-mailem.',
+          state: shipped ? 'done' : paid || cod ? 'current' : 'upcoming',
+        },
     {
       title: order.status === 'completed' ? 'Dostarczone' : shipped ? 'W drodze do Ciebie' : 'Dostawa',
       text: shipped
@@ -222,6 +230,7 @@ function ItemList({ order }: { order: Order }) {
               <p className="line-clamp-3 leading-snug font-medium" title={item.title}>
                 {item.title}
               </p>
+              {item.edition && <p className="tabular mt-0.5 text-[0.8125rem] font-medium text-brass">Egzemplarz {item.edition}</p>}
               <p className="mt-0.5 line-clamp-2 text-sm text-ink-soft">{[item.variantName, `${item.quantity} szt.`].filter(Boolean).join(' · ')}</p>
             </div>
             <p className="tabular shrink-0 font-medium">{formatPLN(item.lineTotal)}</p>
@@ -229,6 +238,16 @@ function ItemList({ order }: { order: Order }) {
         )
       })}
     </ul>
+  )
+}
+
+function PieceCards({ pieces, storeName, issued }: { pieces: PieceView[]; storeName: string; issued: boolean }) {
+  return (
+    <div className={cn('mt-10 grid gap-6 md:mt-12', pieces.length > 1 ? 'md:grid-cols-2' : 'max-w-xl')}>
+      {pieces.map((piece) => (
+        <PieceCard issued={issued} key={piece.id} piece={piece} storeName={storeName} />
+      ))}
+    </div>
   )
 }
 
@@ -254,7 +273,7 @@ export default async function OrderConfirmationPage({ params, searchParams }: Pa
     if (outcome === 'paid') order = (await findOrderByToken(payload, token)) ?? order
   }
 
-  const settings = await getSettings()
+  const [settings, pieces] = await Promise.all([getSettings(), findOrderPieces(payload, order.id)])
   const age = orderAgeMs(order)
   const detailed = age < DETAILS_VISIBLE_FOR
   const fresh = age < FRESH_FOR
@@ -272,7 +291,18 @@ export default async function OrderConfirmationPage({ params, searchParams }: Pa
           ? 'Czekamy na potwierdzenie od operatora płatności — zwykle trwa to do kilku minut. Tę stronę można bezpiecznie zamknąć: potwierdzenie wyślemy e-mailem.'
           : null
 
-  const heading = cancelled ? 'Zamówienie anulowane' : fresh ? 'Dziękujemy za zamówienie' : `Zamówienie ${order.orderNumber}`
+  const numbered = pieces.length > 0 && !cancelled
+  const heading = cancelled
+    ? 'Zamówienie anulowane'
+    : numbered && fresh
+      ? pieces.length === 1
+        ? 'Twój egzemplarz czeka w rejestrze'
+        : 'Twoje egzemplarze czekają w rejestrze'
+      : fresh
+        ? 'Dziękujemy za zamówienie'
+        : `Zamówienie ${order.orderNumber}`
+  const storeName = settings.storeName?.trim() || 'VELURO'
+  const issued = certificateIssued(order)
   const invoice = detailed ? invoiceLines(order) : []
   const trackingUrl = safeTrackingUrl(order.trackingUrl)
   const contactEmail = settings.contact?.email
@@ -307,7 +337,8 @@ export default async function OrderConfirmationPage({ params, searchParams }: Pa
         <h1 className="display-1 mt-4 text-[clamp(2.5rem,1.5rem+3.6vw,4.5rem)]">{heading}</h1>
         {!cancelled && fresh && (
           <p className="lead mt-5">
-            Przyjęliśmy Twoje zamówienie{detailed ? (
+            {numbered ? 'Przyjęliśmy Twoją rezerwację' : 'Przyjęliśmy Twoje zamówienie'}
+            {detailed ? (
               <>
                 {' '}
                 i wysłaliśmy potwierdzenie na adres <strong className="font-medium text-ink">{order.email}</strong>
@@ -318,6 +349,8 @@ export default async function OrderConfirmationPage({ params, searchParams }: Pa
         )}
         {cancelled && <p className="lead mt-5">To zamówienie zostało anulowane i nie będzie realizowane. Jeśli to pomyłka — skontaktuj się z nami.</p>}
       </div>
+
+      {numbered && <PieceCards issued={issued} pieces={pieces} storeName={storeName} />}
 
       {order.isTest && (
         <div className="mt-8 max-w-3xl">
@@ -343,7 +376,7 @@ export default async function OrderConfirmationPage({ params, searchParams }: Pa
                 Co dalej
               </h2>
               <div className="mt-7">
-                <StepList steps={orderSteps(order, detailed)} />
+                <StepList steps={orderSteps(order, detailed, numbered)} />
               </div>
               {trackingUrl && (order.status === 'shipped' || order.status === 'completed') && (
                 <a className={buttonClass({ variant: 'secondary', className: 'mt-7' })} href={trackingUrl} rel="noopener noreferrer" target="_blank">

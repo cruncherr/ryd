@@ -72,6 +72,7 @@ export interface Config {
     categories: Category;
     'shipping-methods': ShippingMethod;
     orders: Order;
+    pieces: Piece;
     messages: Message;
     pages: Page;
     media: Media;
@@ -89,6 +90,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     'shipping-methods': ShippingMethodsSelect<false> | ShippingMethodsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
+    pieces: PiecesSelect<false> | PiecesSelect<true>;
     messages: MessagesSelect<false> | MessagesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -170,6 +172,29 @@ export interface Product {
    * Krótka etykieta na zdjęciu produktu. Pole opcjonalne.
    */
   badge?: string | null;
+  edition: {
+    /**
+     * Zostaw puste, jeśli model nie jest limitowany.
+     */
+    size?: number | null;
+    /**
+     * W sklepie: „Edycja Nº 01”.
+     */
+    code?: string | null;
+    status: 'open' | 'invite' | 'announced';
+    /**
+     * Wyślij go osobom z listy oczekujących. Bez kodu klient widzi model, ale nie może zarezerwować egzemplarza. Wielkość liter nie ma znaczenia.
+     */
+    inviteCode?: string | null;
+    /**
+     * Wyłączone: sklep przydziela kolejny wolny numer.
+     */
+    numberChoice?: boolean | null;
+    /**
+     * Pokazywana przy zapowiedzi. Pole opcjonalne.
+     */
+    releaseDate?: string | null;
+  };
   /**
    * Każdy kolor ma własne zdjęcia. Pierwszy kolor i jego pierwsze zdjęcie są pokazywane domyślnie.
    */
@@ -534,6 +559,10 @@ export interface Order {
     title: string;
     variantName?: string | null;
     sku?: string | null;
+    /**
+     * Przydzielone przy składaniu zamówienia, np. „Nº 07 / 50”.
+     */
+    edition?: string | null;
     unitPrice: number;
     quantity: number;
     lineTotal: number;
@@ -611,7 +640,38 @@ export interface Order {
   createdAt: string;
 }
 /**
- * Zapytania z formularza kontaktowego i zamówienia bezpłatnych próbek tkanin.
+ * Każdy sprzedany egzemplarz z numerem i właścicielem. Wpisy z zamówień powstają same; egzemplarz sprzedany poza sklepem (np. w salonie) dodaj ręcznie — jego numer zniknie z puli w sklepie. Anulowanie zamówienia zwalnia jego numery.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pieces".
+ */
+export interface Piece {
+  id: number;
+  product: number | Product;
+  number: number;
+  /**
+   * Imię i nazwisko na certyfikacie.
+   */
+  owner?: string | null;
+  /**
+   * Puste przy sprzedaży poza sklepem.
+   */
+  order?: (number | null) | Order;
+  /**
+   * Widoczna tylko w panelu.
+   */
+  note?: string | null;
+  /**
+   * Takie numery wracają do puli automatycznie, gdy uruchomisz sprzedaż.
+   */
+  isTest?: boolean | null;
+  label?: string | null;
+  token?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Zapytania z formularza kontaktowego, zamówienia bezpłatnych próbek tkanin i zapisy na listę oczekujących.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "messages".
@@ -621,7 +681,11 @@ export interface Message {
   name: string;
   email: string;
   phone?: string | null;
-  kind: 'contact' | 'samples';
+  kind: 'contact' | 'samples' | 'waitlist';
+  /**
+   * Puste: zapis na listę prywatną — zaproszenia do wszystkich kolejnych edycji.
+   */
+  product?: (number | null) | Product;
   samples?: string | null;
   address?: string | null;
   message: string;
@@ -771,6 +835,10 @@ export interface PayloadLockedDocument {
         value: number | Order;
       } | null)
     | ({
+        relationTo: 'pieces';
+        value: number | Piece;
+      } | null)
+    | ({
         relationTo: 'messages';
         value: number | Message;
       } | null)
@@ -845,6 +913,16 @@ export interface ProductsSelect<T extends boolean = true> {
   availability?: T;
   leadTime?: T;
   badge?: T;
+  edition?:
+    | T
+    | {
+        size?: T;
+        code?: T;
+        status?: T;
+        inviteCode?: T;
+        numberChoice?: T;
+        releaseDate?: T;
+      };
   variants?:
     | T
     | {
@@ -1020,6 +1098,7 @@ export interface OrdersSelect<T extends boolean = true> {
         title?: T;
         variantName?: T;
         sku?: T;
+        edition?: T;
         unitPrice?: T;
         quantity?: T;
         lineTotal?: T;
@@ -1076,6 +1155,22 @@ export interface OrdersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pieces_select".
+ */
+export interface PiecesSelect<T extends boolean = true> {
+  product?: T;
+  number?: T;
+  owner?: T;
+  order?: T;
+  note?: T;
+  isTest?: T;
+  label?: T;
+  token?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "messages_select".
  */
 export interface MessagesSelect<T extends boolean = true> {
@@ -1083,6 +1178,7 @@ export interface MessagesSelect<T extends boolean = true> {
   email?: T;
   phone?: T;
   kind?: T;
+  product?: T;
   samples?: T;
   address?: T;
   message?: T;
@@ -1249,7 +1345,7 @@ export interface Homepage {
     image?: (number | null) | Media;
   };
   /**
-   * Trzy–cztery krótkie obietnice, które możesz spełnić, np. zwrot, dostawa, gwarancja.
+   * Trzy–cztery krótkie fakty na ciemnym pasie pod pierwszym ekranem: duża liczba lub znak (np. „50”) i jedno zdanie wyjaśnienia.
    */
   usps?:
     | {
@@ -1259,23 +1355,9 @@ export interface Homepage {
       }[]
     | null;
   /**
-   * Pokazuje produkty z zaznaczoną opcją „Pokaż na stronie głównej”.
+   * Modele z zaznaczoną opcją „Pokaż na stronie głównej” — każdy z numerem edycji, nakładem i liczbą wolnych egzemplarzy.
    */
   collection?: {
-    /**
-     * Małe słowo nad nagłówkiem. Pole opcjonalne.
-     */
-    eyebrow?: string | null;
-    /**
-     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
-     */
-    title?: string | null;
-    text?: string | null;
-  };
-  /**
-   * Kafelki tworzą się same z kategorii, które mają produkty, oraz z próbnika tkanin. Tu ustawiasz tylko nagłówek.
-   */
-  categories?: {
     /**
      * Małe słowo nad nagłówkiem. Pole opcjonalne.
      */
@@ -1318,21 +1400,6 @@ export interface Homepage {
     title?: string | null;
     text?: string | null;
   };
-  functions?: {
-    /**
-     * Małe słowo nad nagłówkiem. Pole opcjonalne.
-     */
-    eyebrow?: string | null;
-    /**
-     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
-     */
-    title?: string | null;
-    text?: string | null;
-    /**
-     * Wybierz produkt, który ma uzupełnione widoki w zakładce „Zdjęcia i kolory → Pokaz funkcji”.
-     */
-    product?: (number | null) | Product;
-  };
   quality?: {
     /**
      * Małe słowo nad nagłówkiem. Pole opcjonalne.
@@ -1354,6 +1421,21 @@ export interface Homepage {
           id?: string | null;
         }[]
       | null;
+  };
+  /**
+   * Ciemny pas z formularzem: imię i e-mail osób, które chcą dostawać zaproszenia do kolejnych edycji. Zapisy trafiają do „Wiadomości”.
+   */
+  privateList?: {
+    /**
+     * Małe słowo nad nagłówkiem. Pole opcjonalne.
+     */
+    eyebrow?: string | null;
+    /**
+     * Słowo wpisane między gwiazdkami, np. *dłużej*, zostanie wyróżnione kursywą.
+     */
+    title?: string | null;
+    text?: string | null;
+    note?: string | null;
   };
   story?: {
     /**
@@ -1538,13 +1620,6 @@ export interface HomepageSelect<T extends boolean = true> {
         title?: T;
         text?: T;
       };
-  categories?:
-    | T
-    | {
-        eyebrow?: T;
-        title?: T;
-        text?: T;
-      };
   steps?:
     | T
     | {
@@ -1566,14 +1641,6 @@ export interface HomepageSelect<T extends boolean = true> {
         title?: T;
         text?: T;
       };
-  functions?:
-    | T
-    | {
-        eyebrow?: T;
-        title?: T;
-        text?: T;
-        product?: T;
-      };
   quality?:
     | T
     | {
@@ -1588,6 +1655,14 @@ export interface HomepageSelect<T extends boolean = true> {
               image?: T;
               id?: T;
             };
+      };
+  privateList?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        text?: T;
+        note?: T;
       };
   story?:
     | T

@@ -2,6 +2,8 @@
 
 import { randomBytes } from 'crypto'
 
+import { commitTransaction, createLocalReq, initTransaction, killTransaction } from 'payload'
+
 import { runAfterResponse } from '@/lib/afterResponse'
 import { orderTotal, parseCartInput, paymentOptions, priceCart, shippingCostFor, toCartLines } from '@/lib/cart/pricing'
 import { sendOrderPlacedEmails } from '@/lib/email/send'
@@ -13,9 +15,12 @@ import { getSettings, getShippingMethods } from '@/lib/queries'
 import { clientFingerprint, rateLimit } from '@/lib/rateLimit'
 import { getSiteUrl } from '@/lib/site'
 import { validateCheckout } from '@/lib/validation'
+import type { Order } from '@/payload-types'
 
 import { findOrderByToken } from './find'
 import { formatOrderNumber, nextOrderSequence } from './number'
+import { EditionConflictError, isUniqueViolation, piecesText, planPieces } from './pieces'
+
 import type { PlaceOrderResult, StartPaymentResult } from './types'
 import { canPayOnline } from './view'
 
@@ -144,49 +149,94 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
 
     const sequence = await nextOrderSequence(payload)
     const accessToken = randomBytes(24).toString('base64url')
+    const isTest = settings.storeStatus !== 'live'
 
-    const order = await payload.create({
-      collection: 'orders',
-      data: {
-        orderNumber: formatOrderNumber(settings.orders?.prefix, sequence),
-        status: 'new',
-        paymentStatus: payment.value === 'cod' ? 'on_delivery' : 'pending',
-        items: priced.lines.map((line) => ({
-          title: line.title,
-          variantName: line.variantName,
-          configuration: line.configuration,
-          sku: line.sku,
-          unitPrice: line.unitPrice,
-          quantity: line.quantity,
-          lineTotal: line.lineTotal,
-          product: line.productId,
-          image: line.imageId,
-        })),
-        subtotal: priced.subtotal,
-        shippingCost,
-        paymentFee,
-        total,
-        paymentMethod: payment.value,
-        shippingMethodName: shippingMethod.name,
-        shippingMethod: shippingMethod.id,
-        customerNote: values.note || null,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        phone: values.phone,
-        shippingAddress: { street: values.street, postalCode: values.postalCode, city: values.city },
-        invoice: {
-          wanted: values.wantsInvoice,
-          companyName: values.wantsInvoice ? values.companyName : null,
-          nip: values.wantsInvoice ? values.nip : null,
-          address: values.wantsInvoice && values.invoiceAddress ? values.invoiceAddress : null,
+    // Zamówienie i numery egzemplarzy zapisują się razem albo wcale: jeśli wybrany numer zajmie
+    // w tej samej chwili ktoś inny, nie powstaje ani zamówienie, ani pół rezerwacji.
+    const req = await createLocalReq({}, payload)
+    await initTransaction(req)
+    let order: Order
+    try {
+      const plan = await planPieces(priced.lines, req)
+
+      order = await payload.create({
+        collection: 'orders',
+        req,
+        data: {
+          orderNumber: formatOrderNumber(settings.orders?.prefix, sequence),
+          status: 'new',
+          paymentStatus: payment.value === 'cod' ? 'on_delivery' : 'pending',
+          items: priced.lines.map((line, index) => ({
+            title: line.title,
+            variantName: line.variantName,
+            edition: piecesText(plan.get(index), line.editionSize),
+            configuration: line.configuration,
+            sku: line.sku,
+            unitPrice: line.unitPrice,
+            quantity: line.quantity,
+            lineTotal: line.lineTotal,
+            product: line.productId,
+            image: line.imageId,
+          })),
+          subtotal: priced.subtotal,
+          shippingCost,
+          paymentFee,
+          total,
+          paymentMethod: payment.value,
+          shippingMethodName: shippingMethod.name,
+          shippingMethod: shippingMethod.id,
+          customerNote: values.note || null,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          phone: values.phone,
+          shippingAddress: { street: values.street, postalCode: values.postalCode, city: values.city },
+          invoice: {
+            wanted: values.wantsInvoice,
+            companyName: values.wantsInvoice ? values.companyName : null,
+            nip: values.wantsInvoice ? values.nip : null,
+            address: values.wantsInvoice && values.invoiceAddress ? values.invoiceAddress : null,
+          },
+          isTest,
+          termsAcceptedAt: new Date().toISOString(),
+          accessToken,
+          requestId,
         },
-        isTest: settings.storeStatus !== 'live',
-        termsAcceptedAt: new Date().toISOString(),
-        accessToken,
-        requestId,
-      },
-    })
+      })
+
+      const owner = `${values.firstName} ${values.lastName}`.trim()
+      for (const [index, numbers] of plan) {
+        const line = priced.lines[index]
+        if (!line) continue
+        for (const number of numbers) {
+          try {
+            await payload.create({
+              collection: 'pieces',
+              req,
+              data: { product: line.productId, number, order: order.id, owner, isTest },
+            })
+          } catch (error) {
+            if (isUniqueViolation(error)) throw new EditionConflictError()
+            throw error
+          }
+        }
+      }
+
+      await commitTransaction(req)
+    } catch (error) {
+      await killTransaction(req)
+      if (error instanceof EditionConflictError) {
+        const repriced = await priceCart(cartInput)
+        return {
+          ok: false,
+          reason: 'cart-changed',
+          cart: toCartLines(repriced),
+          message:
+            'Wybrany egzemplarz został przed chwilą przydzielony innemu klientowi. Sprawdź koszyk — na stronie modelu możesz wybrać inny numer.',
+        }
+      }
+      throw error
+    }
 
     runAfterResponse(payload, () => sendOrderPlacedEmails(payload, order.id))
 

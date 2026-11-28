@@ -5,6 +5,7 @@ import { amountField } from '@/fields/amount'
 import { ORDER_STATUSES, PAYMENT_METHODS, PAYMENT_STATUSES } from '@/lib/constants'
 
 import { notifyOnStatusChange } from './hooks/notifyOnStatusChange'
+import { releasePiecesOnCancel, releasePiecesOnDelete } from './hooks/releasePieces'
 
 /** Pełne imię i nazwisko w jednym polu — do listy zamówień i wyszukiwania. */
 const fillCustomerName: CollectionBeforeChangeHook = ({ data, originalDoc }) => {
@@ -95,6 +96,12 @@ export const Orders: CollectionConfig = {
                     { name: 'variantName', type: 'text', label: 'Wariant', admin: { width: '30%' } },
                     { name: 'sku', type: 'text', label: 'Symbol (SKU)', admin: { width: '30%' } },
                   ],
+                },
+                {
+                  name: 'edition',
+                  type: 'text',
+                  label: 'Numery egzemplarzy',
+                  admin: { description: 'Przydzielone przy składaniu zamówienia, np. „Nº 07 / 50”.' },
                 },
                 {
                   type: 'row',
@@ -308,7 +315,8 @@ export const Orders: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [fillCustomerName],
-    afterChange: [notifyOnStatusChange],
+    afterChange: [notifyOnStatusChange, releasePiecesOnCancel],
+    afterDelete: [releasePiecesOnDelete],
   },
   endpoints: [
     {

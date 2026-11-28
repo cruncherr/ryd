@@ -125,6 +125,7 @@ function SummaryLines({ lines }: { lines: CartLine[] }) {
             <p className="line-clamp-3 leading-snug font-medium" title={line.title}>
               {line.title}
             </p>
+            {line.edition && !line.unavailable && <p className="tabular mt-0.5 text-[0.8125rem] font-medium text-brass">{line.edition}</p>}
             <p className="mt-0.5 line-clamp-2 text-sm text-ink-soft">
               {[line.variantName, `${line.quantity} szt.`].filter(Boolean).join(' · ')}
             </p>

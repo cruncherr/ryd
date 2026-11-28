@@ -2,8 +2,12 @@
 
 import { Check, Minus, Plus } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 
+import { InviteGate } from '@/components/edition/InviteGate'
+import { NumberPicker } from '@/components/edition/NumberPicker'
+import { WaitlistForm } from '@/components/edition/WaitlistForm'
 import { AnimatedPrice } from '@/components/ui/AnimatedPrice'
 import { Price } from '@/components/ui/Price'
 import { buttonClass } from '@/components/ui/Button'
@@ -21,11 +25,12 @@ import {
   type ConfigOptions,
   type LineConfig,
 } from '@/lib/configurator'
-import { CART_LIMITS } from '@/lib/constants'
+import { CART_LIMITS, type EditionStatus } from '@/lib/constants'
+import { editionLineText, editionTitle, padNumber } from '@/lib/editions'
 import { discountPercent, formatPLN } from '@/lib/money'
 import { noOrphans } from '@/lib/typography'
 
-import { Configurator } from './Configurator'
+import { Configurator, Step } from './Configurator'
 import { Gallery, type GalleryImage } from './Gallery'
 
 export type HeroVariant = {
@@ -55,7 +60,34 @@ export type ProductHeroData = {
   options: ConfigOptions
   configurable: boolean
   samplesEnabled: boolean
+  /** Edycja numerowana — `null`, gdy model nie jest limitowany. */
+  edition: HeroEdition | null
 }
+
+export type HeroEdition = {
+  size: number
+  code: string | null
+  status: EditionStatus
+  numberChoice: boolean
+  releaseDate: string | null
+  taken: number[]
+  allocated: number
+  remaining: number
+  soldOut: boolean
+}
+
+const releaseFormat = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Warsaw' })
+const inviteKey = (productId: number) => `veluro-zaproszenie-${productId}`
+
+function readInvite(productId: number): string | null {
+  try {
+    return sessionStorage.getItem(inviteKey(productId))
+  } catch {
+    return null
+  }
+}
+
+const noSubscription = () => () => {}
 
 type Props = {
   product: ProductHeroData
@@ -91,8 +123,41 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
   const cta = useRef<HTMLDivElement>(null)
   const addedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const [number, setNumber] = useState<number | undefined>(undefined)
+  const [enteredInvite, setEnteredInvite] = useState<string | undefined>(undefined)
+  const router = useRouter()
+
   const add = useCart((state) => state.add)
   const openCart = useCart((state) => state.open)
+  const { edition } = product
+
+  // Kod zaproszenia wpisany wcześniej w tej karcie przeglądarki — nie trzeba go podawać drugi raz.
+  const storedInvite = useSyncExternalStore(
+    noSubscription,
+    () => (edition?.status === 'invite' ? readInvite(product.id) : null),
+    () => null,
+  )
+  const invite = enteredInvite ?? storedInvite ?? undefined
+
+  const unlockInvite = (code: string) => {
+    setEnteredInvite(code)
+    try {
+      sessionStorage.setItem(inviteKey(product.id), code)
+    } catch {
+      // Pamięć przeglądarki bywa wyłączona (tryb prywatny) — kod zostaje tylko do odświeżenia strony.
+    }
+  }
+
+  // Czy edycja pozwala teraz zarezerwować egzemplarz (zapowiedź i wyczerpany nakład — nie).
+  const editionGate: 'open' | 'invite' | 'announced' | 'sold-out' = !edition
+    ? 'open'
+    : edition.soldOut
+      ? 'sold-out'
+      : edition.status === 'announced'
+        ? 'announced'
+        : edition.status === 'invite' && !invite
+          ? 'invite'
+          : 'open'
 
   const { options, configurable } = product
   const usesFabrics = options.fabrics.length > 0
@@ -105,8 +170,9 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
   const photoVariant = (matchedIndex >= 0 ? product.variants[matchedIndex] : undefined) ?? firstAvailable
   const showsOtherColor = usesFabrics && matchedIndex < 0
 
-  const purchasable =
+  const inStock =
     product.availability !== 'unavailable' && Boolean(photoVariant) && (usesFabrics ? Boolean(resolved?.color?.available) : Boolean(photoVariant?.available))
+  const purchasable = inStock && editionGate === 'open'
 
   const price: PriceView = {
     current: configuredPrice(product.price.current, resolved),
@@ -137,14 +203,41 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
     trackViewItem({ id: productId, name: productTitle, price: basePrice, quantity: 1 })
   }, [productId, productTitle, basePrice])
 
+  const lineConfig = (): LineConfig | undefined => {
+    const config: LineConfig = configurable && resolved ? toLineConfig(resolved) : {}
+    if (edition && number !== undefined) config.number = number
+    if (edition?.status === 'invite' && invite) config.invite = invite
+    return Object.keys(config).length > 0 ? config : undefined
+  }
+
+  /** Edycja numerowana: jeden egzemplarz na kliknięcie i od razu do zamówienia — bez koszyka po drodze. */
+  const reserve = () => {
+    if (!photoVariant || !purchasable || !edition) return
+    const variantName = configLine(resolved) || photoVariant.name
+    add({
+      productId: product.id,
+      variantId: photoVariant.id,
+      config: lineConfig(),
+      title: product.title,
+      variantName,
+      edition: editionLineText(edition.size, number),
+      slug: product.slug,
+      unitPrice: price.current,
+      imageUrl: photoVariant.thumbUrl,
+    })
+    trackAddToCart({ id: product.id, name: product.title, variant: variantName, price: price.current, quantity: 1 })
+    router.push('/zamowienie')
+  }
+
   const addToCart = () => {
+    if (edition) return reserve()
     if (!photoVariant || !purchasable) return
     const variantName = configLine(resolved) || photoVariant.name
     add(
       {
         productId: product.id,
         variantId: photoVariant.id,
-        config: configurable && resolved ? toLineConfig(resolved) : undefined,
+        config: lineConfig(),
         title: product.title,
         variantName,
         slug: product.slug,
@@ -168,6 +261,43 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
         : 'bg-ink-faint'
 
   const onSale = price.regular !== null
+
+  const numberStep = (step: number | null) =>
+    edition && (
+      <Step number={step} title="Numer egzemplarza">
+        <NumberPicker onChange={setNumber} size={edition.size} taken={edition.taken} value={number} />
+      </Step>
+    )
+
+  const gatePanel = () => {
+    if (!edition) return null
+    if (editionGate === 'invite') return <InviteGate onUnlock={unlockInvite} productId={product.id} />
+    const soldOut = editionGate === 'sold-out'
+    return (
+      <div className="rounded-[var(--radius-panel)] border border-line-strong p-6 md:p-7">
+        <p className="eyebrow text-brass">{soldOut ? 'Nakład wyczerpany' : 'Zapowiedź'}</p>
+        <p className="display-4 mt-3">
+          {soldOut
+            ? `Wszystkie ${edition.size} egzemplarzy mają już właścicieli.`
+            : edition.releaseDate
+              ? `Premiera ${releaseFormat.format(new Date(edition.releaseDate))}.`
+              : 'Premiera wkrótce.'}
+        </p>
+        <p className="mt-2 max-w-[46ch] text-ink-soft">
+          {noOrphans(
+            soldOut
+              ? 'Ten model nie wróci w tej edycji. Zostaw nam swoje dane — o kolejnej dowiesz się przed innymi.'
+              : 'Osoby z listy oczekujących dostaną zaproszenie do przedsprzedaży, zanim model trafi do sklepu.',
+          )}
+        </p>
+        <WaitlistForm
+          className="mt-6"
+          productId={product.id}
+          submitLabel={soldOut ? 'Powiadom mnie o kolejnej edycji' : 'Zapisz mnie na listę'}
+        />
+      </div>
+    )
+  }
 
   return (
     <>
@@ -205,10 +335,15 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
         <div className="min-w-0 lg:col-span-5">
           <div className={cn(!configurable && 'lg:sticky lg:top-24')}>
             {breadcrumbs}
+            {edition && (
+              <p className="eyebrow mt-5 text-brass">
+                {editionTitle(edition)} · Nakład {edition.size} egz.
+              </p>
+            )}
             {/* Bardzo długa nazwa dostaje mniejszy stopień pisma, żeby nie zajęła całego ekranu. */}
             <h1
               className={cn(
-                'display-2 mt-4',
+                edition ? 'display-2 mt-2.5' : 'display-2 mt-4',
                 product.title.length > 56 ? 'text-[clamp(1.625rem,1.3rem+1.3vw,2.375rem)]' : 'text-[clamp(2rem,1.5rem+2vw,3.125rem)]',
               )}
             >
@@ -255,6 +390,7 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
                 options={options}
                 resolved={resolved}
                 samplesEnabled={product.samplesEnabled}
+                extraStep={edition && edition.numberChoice && editionGate !== 'sold-out' && editionGate !== 'announced' ? (step) => numberStep(step) : undefined}
               />
             ) : (
               product.variants.length > 0 &&
@@ -296,7 +432,11 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
               )
             )}
 
-            <p className={cn('flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm', configurable ? 'mt-8 border-t border-line pt-5' : 'mt-7')}>
+            {!configurable && edition && edition.numberChoice && editionGate !== 'sold-out' && editionGate !== 'announced' && (
+              <div className="mt-8">{numberStep(null)}</div>
+            )}
+
+            <p className={cn('flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm', configurable || edition ? 'mt-8 border-t border-line pt-5' : 'mt-7')}>
               <span aria-hidden="true" className={cn('size-2 shrink-0 rounded-full', dot)} />
               <span className="font-medium whitespace-nowrap">{product.availabilityLabel}</span>
               {product.leadTime && product.availability !== 'unavailable' && (
@@ -306,7 +446,20 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
 
             {/* Na najwęższych telefonach przycisk przechodzi pod wybór ilości, zamiast wystawać poza ekran. */}
             <div className="mt-5 flex flex-wrap gap-3" ref={cta}>
-              {purchasable ? (
+              {edition && inStock && editionGate !== 'open' ? (
+                <div className="w-full">{gatePanel()}</div>
+              ) : edition && purchasable ? (
+                <div className="grid w-full gap-3">
+                  <button className={buttonClass({ size: 'lg', variant: 'brand', className: 'w-full' })} onClick={reserve} type="button">
+                    <span className="inline-flex animate-[label-swap_260ms_var(--ease-out)_both] items-center gap-2" key={number ?? 'auto'}>
+                      {number !== undefined ? `Zarezerwuj egzemplarz Nº ${padNumber(number, edition.size)}` : 'Zarezerwuj egzemplarz'}
+                    </span>
+                  </button>
+                  <p className="text-center text-[0.8125rem] text-ink-soft">
+                    {noOrphans('Po rezerwacji atelier skontaktuje się z Tobą osobiście, by potwierdzić wykonanie.')}
+                  </p>
+                </div>
+              ) : purchasable ? (
                 <>
                   <div className="flex h-14 shrink-0 items-center rounded-full border border-line-strong">
                     <button
@@ -380,11 +533,11 @@ export function ProductHero({ product, breadcrumbs, info }: Props) {
               <p className="truncate text-sm font-medium">{product.title}</p>
               <p className="tabular truncate text-sm text-ink-soft">
                 {formatPLN(price.current)}
-                {configurable && resolved?.size ? ` · ${resolved.size.label}` : ''}
+                {edition && number !== undefined ? ` · Nº ${padNumber(number, edition.size)}` : configurable && resolved?.size ? ` · ${resolved.size.label}` : ''}
               </p>
             </div>
-            <button className={buttonClass({ size: 'md', className: 'shrink-0' })} onClick={addToCart} type="button">
-              Do koszyka
+            <button className={buttonClass({ size: 'md', variant: edition ? 'brand' : 'primary', className: 'shrink-0' })} onClick={addToCart} type="button">
+              {edition ? 'Zarezerwuj' : 'Do koszyka'}
             </button>
           </div>
         </div>

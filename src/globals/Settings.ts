@@ -1,4 +1,4 @@
-import type { GlobalConfig, PayloadRequest } from 'payload'
+import type { GlobalAfterChangeHook, GlobalConfig, PayloadRequest } from 'payload'
 
 import { anyone, isAdmin, isAdminField } from '@/access'
 import { amountField } from '@/fields/amount'
@@ -21,6 +21,17 @@ const navFields = [
     ],
   },
 ]
+
+/**
+ * Uruchomienie sprzedaży: numery egzemplarzy zajęte przez zamówienia testowe wracają do puli,
+ * żeby pierwszy prawdziwy klient mógł wybrać na przykład egzemplarz nr 01.
+ */
+const releaseTestPieces: GlobalAfterChangeHook = async ({ doc, previousDoc, req }) => {
+  if (doc?.storeStatus === 'live' && previousDoc?.storeStatus !== 'live') {
+    await req.payload.delete({ collection: 'pieces', req, where: { isTest: { equals: true } } })
+  }
+  return doc
+}
 
 export const Settings: GlobalConfig = {
   slug: 'settings',
@@ -446,6 +457,6 @@ export const Settings: GlobalConfig = {
     { name: 'seededAt', type: 'date', admin: { hidden: true } },
   ],
   hooks: {
-    afterChange: [revalidateGlobalAfterChange],
+    afterChange: [releaseTestPieces, revalidateGlobalAfterChange],
   },
 }

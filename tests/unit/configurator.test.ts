@@ -95,8 +95,8 @@ describe('konfigurator: cena', () => {
     const base = 3690
     expect(configuredPrice(base, resolveConfig(options, {}))).toBe(3690)
     expect(configuredPrice(base, resolveConfig(options, { size: 's2' }))).toBe(3190)
-    // 12% od (3690 + 450) = 496,80 → 497 zł; + 190 zł za nóżki
-    expect(configuredPrice(base, resolveConfig(options, { size: 'sxl', fabric: 2, legs: 'dab' }))).toBe(3690 + 450 + 497 + 190)
+    // 12% od (3690 + 450) = 496,80 → 500 zł (pełne 50 zł); + 190 zł za nóżki
+    expect(configuredPrice(base, resolveConfig(options, { size: 'sxl', fabric: 2, legs: 'dab' }))).toBe(3690 + 450 + 500 + 190)
   })
 
   it('zaokrągla dopłatę za tkaninę do pełnych złotych', () => {

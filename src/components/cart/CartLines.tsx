@@ -58,7 +58,10 @@ function Line({ line, onNavigate }: { line: CartLine; onNavigate?: () => void })
                 <Link className="line-clamp-3 font-medium" href={`/produkt/${line.slug}`} onClick={onNavigate} title={line.title}>
                   {line.title}
                 </Link>
-                {line.variantName && <p className="mt-0.5 line-clamp-2 text-sm text-ink-soft">{line.variantName}</p>}
+                {line.edition && !line.unavailable && <p className="tabular mt-0.5 text-[0.8125rem] font-medium text-brass">{line.edition}</p>}
+                {line.variantName && (
+                  <p className={cn('mt-0.5 line-clamp-2 text-sm', line.unavailable ? 'text-danger' : 'text-ink-soft')}>{line.variantName}</p>
+                )}
               </div>
               <p className="tabular shrink-0 font-medium">
                 {line.unavailable ? '—' : formatPLN(line.unitPrice * line.quantity)}
@@ -66,12 +69,14 @@ function Line({ line, onNavigate }: { line: CartLine; onNavigate?: () => void })
             </div>
 
             {line.unavailable ? (
-              <p className="mt-2 text-sm text-danger">Ten produkt nie jest już dostępny. Usuń go, aby złożyć zamówienie.</p>
+              <p className="mt-2 text-sm text-ink-soft">Usuń tę pozycję, aby złożyć zamówienie.</p>
             ) : null}
 
             <div className="mt-auto flex items-center justify-between pt-3">
               {line.unavailable ? (
                 <span />
+              ) : line.config?.number ? (
+                <span className="text-sm text-ink-soft">1 egzemplarz</span>
               ) : (
                 <div className="flex h-10 items-center rounded-full border border-line-strong">
                   <button

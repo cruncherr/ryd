@@ -2,6 +2,7 @@ import { asCategory, productPath, variantImages } from '@/lib/catalog'
 import { shippingCostFor } from '@/lib/cart/totals'
 import { effectivePrice } from '@/lib/money'
 import { absoluteUrl, getSiteUrl } from '@/lib/site'
+import type { EditionState } from '@/lib/editions'
 import type { Product, Setting, ShippingMethod } from '@/payload-types'
 
 /**
@@ -86,7 +87,22 @@ export function breadcrumbJsonLd(items: BreadcrumbItem[]): JsonLdData {
   }
 }
 
-export function productJsonLd(product: Product, settings: Setting, shippingMethods: ShippingMethod[]): JsonLdData {
+/** Dostępność dla wyszukiwarek z uwzględnieniem edycji: zapowiedź to przedsprzedaż, wyczerpany nakład — brak. */
+function availabilityUrl(product: Product, edition?: Pick<EditionState, 'size' | 'status' | 'soldOut'>): string {
+  if (edition?.size) {
+    if (edition.soldOut) return 'https://schema.org/SoldOut'
+    if (edition.status === 'announced') return 'https://schema.org/PreOrder'
+    if (edition.status === 'invite') return 'https://schema.org/PreSale'
+  }
+  return AVAILABILITY_URL[product.availability]
+}
+
+export function productJsonLd(
+  product: Product,
+  settings: Setting,
+  shippingMethods: ShippingMethod[],
+  edition?: Pick<EditionState, 'size' | 'status' | 'soldOut'>,
+): JsonLdData {
   const variants = product.variants ?? []
   const images = variants.flatMap((variant) => variantImages(variant)).map((image) => (image.url ? absoluteUrl(image.url) : null))
   const uniqueImages = [...new Set(images.filter((url): url is string => Boolean(url)))].slice(0, 8)
@@ -123,7 +139,7 @@ export function productJsonLd(product: Product, settings: Setting, shippingMetho
       url: absoluteUrl(productPath(product)),
       priceCurrency: 'PLN',
       price: price.toFixed(2),
-      availability: AVAILABILITY_URL[product.availability],
+      availability: availabilityUrl(product, edition),
       itemCondition: 'https://schema.org/NewCondition',
       seller: sellerReference(settings),
       shippingDetails:

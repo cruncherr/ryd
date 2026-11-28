@@ -89,53 +89,43 @@ export const Homepage: GlobalConfig = {
             {
               name: 'usps',
               type: 'array',
-              label: 'Atuty pod pierwszym ekranem',
-              labels: { singular: 'Atut', plural: 'Atuty' },
+              label: 'Liczby edycji',
+              labels: { singular: 'Liczba', plural: 'Liczby' },
               maxRows: 4,
               admin: {
-                description: 'Trzy–cztery krótkie obietnice, które możesz spełnić, np. zwrot, dostawa, gwarancja.',
+                description:
+                  'Trzy–cztery krótkie fakty na ciemnym pasie pod pierwszym ekranem: duża liczba lub znak (np. „50”) i jedno zdanie wyjaśnienia.',
                 components: { RowLabel: '@/components/admin/RowLabels#TitleRowLabel' },
               },
               fields: [
-                { name: 'title', type: 'text', label: 'Atut', required: true, maxLength: 40 },
-                { name: 'text', type: 'text', label: 'Dopowiedzenie', maxLength: 90 },
+                { name: 'title', type: 'text', label: 'Liczba lub znak', required: true, maxLength: 40 },
+                { name: 'text', type: 'text', label: 'Wyjaśnienie', maxLength: 90 },
               ],
             },
           ],
         },
         {
-          label: 'Kolekcja',
+          label: 'Edycje',
           fields: [
             {
               name: 'collection',
               type: 'group',
-              label: 'Sekcja z produktami',
-              admin: { description: 'Pokazuje produkty z zaznaczoną opcją „Pokaż na stronie głównej”.' },
-              fields: heading('np. Kolekcja'),
-            },
-          ],
-        },
-        {
-          label: 'Kategorie',
-          fields: [
-            {
-              name: 'categories',
-              type: 'group',
-              label: 'Kafelki kategorii',
+              label: 'Sekcja z modelami',
               admin: {
-                description: 'Kafelki tworzą się same z kategorii, które mają produkty, oraz z próbnika tkanin. Tu ustawiasz tylko nagłówek.',
+                description:
+                  'Modele z zaznaczoną opcją „Pokaż na stronie głównej” — każdy z numerem edycji, nakładem i liczbą wolnych egzemplarzy.',
               },
-              fields: heading('np. Czego szukasz?'),
+              fields: heading('np. Edycje'),
             },
           ],
         },
         {
-          label: 'Jak to działa',
+          label: 'Przebieg zakupu',
           fields: [
             {
               name: 'steps',
               type: 'group',
-              label: 'Konfiguracja krok po kroku',
+              label: 'Od rezerwacji do dostawy',
               fields: [
                 ...heading('np. Twoja sofa w trzech krokach'),
                 {
@@ -167,29 +157,7 @@ export const Homepage: GlobalConfig = {
           ],
         },
         {
-          label: 'Pokaz funkcji',
-          fields: [
-            {
-              name: 'functions',
-              type: 'group',
-              label: 'Mebel w kilku ustawieniach',
-              fields: [
-                ...heading('np. Jedna sofa, trzy zastosowania'),
-                {
-                  name: 'product',
-                  type: 'relationship',
-                  relationTo: 'products',
-                  label: 'Produkt z pokazem funkcji',
-                  admin: {
-                    description: 'Wybierz produkt, który ma uzupełnione widoki w zakładce „Zdjęcia i kolory → Pokaz funkcji”.',
-                  },
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: 'Jakość',
+          label: 'Atelier',
           fields: [
             {
               name: 'quality',
@@ -217,6 +185,30 @@ export const Homepage: GlobalConfig = {
                       admin: { description: 'Zbliżenie tkaniny, szwu lub wypełnienia. Proporcja 4:5 lub kwadrat.' },
                     },
                   ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Lista prywatna',
+          fields: [
+            {
+              name: 'privateList',
+              type: 'group',
+              label: 'Zapis na listę prywatną',
+              admin: {
+                description:
+                  'Ciemny pas z formularzem: imię i e-mail osób, które chcą dostawać zaproszenia do kolejnych edycji. Zapisy trafiają do „Wiadomości”.',
+              },
+              fields: [
+                ...heading('np. Kolejne edycje najpierw dla listy prywatnej'),
+                {
+                  name: 'note',
+                  type: 'text',
+                  label: 'Drobny dopisek pod formularzem',
+                  maxLength: 160,
+                  admin: { placeholder: 'np. Piszemy tylko wtedy, gdy mamy coś do pokazania.' },
                 },
               ],
             },

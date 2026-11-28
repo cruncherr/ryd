@@ -15,6 +15,10 @@ export type LineConfig = {
   color?: string
   legs?: string
   side?: Side
+  /** Numer egzemplarza wybrany przez klienta (edycje numerowane). Brak: kolejny wolny numer. */
+  number?: number
+  /** Kod zaproszenia do przedsprzedaży — nie rozróżnia pozycji koszyka. */
+  invite?: string
 }
 
 export type SizeOption = {
@@ -217,6 +221,7 @@ export function configKey(config: LineConfig | undefined): string {
     config.color ? `c=${config.color}` : '',
     config.legs ? `l=${config.legs}` : '',
     config.side ? `d=${config.side}` : '',
+    config.number ? `n=${config.number}` : '',
   ]
     .filter(Boolean)
     .join('|')
@@ -226,10 +231,10 @@ export function lineKey(productId: number, variantId: string, config: LineConfig
   return `${productId}:${variantId}:${configKey(config)}`
 }
 
-/** Dopłata za tkaninę w złotych — procent od ceny mebla w wybranym wymiarze, zaokrąglony do pełnych złotych. */
+/** Dopłata za tkaninę w złotych — procent od ceny mebla w wybranym wymiarze, zaokrąglony do pełnych 50 zł. */
 export function fabricSurcharge(priceForSize: number, surchargePercent: number): number {
   if (surchargePercent <= 0) return 0
-  return Math.round((priceForSize * surchargePercent) / 100)
+  return Math.round((priceForSize * surchargePercent) / 100 / 50) * 50
 }
 
 /**

@@ -62,6 +62,9 @@
   --color-line: rgb(28 26 24 / 0.12);
   --color-line-strong: rgb(28 26 24 / 0.28);
   --color-accent: #a34e2b;
+  /* Mosiądz — akcent edycji numerowanych: numery, linia nakładu, cienkie obramowania. */
+  --color-brass: #765a32;
+  --color-brass-light: #d2b483;
   --color-success: #2c6648;
   --color-danger: #b3261e;
   --color-notice: #f1e2b8;
@@ -1054,5 +1057,109 @@
 @media (prefers-reduced-motion: reduce) {
   .announce-item {
     animation: none;
+  }
+}
+
+/* Pole na ciemnym tle (pas w kolorze marki): przezroczyste, jasna ramka i tekst. */
+@utility field-input-dark {
+  &.field-input {
+    border-color: rgb(246 243 238 / 0.28);
+    background: rgb(246 243 238 / 0.06);
+    color: var(--color-paper);
+  }
+
+  &.field-input::placeholder {
+    color: rgb(246 243 238 / 0.5);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &.field-input:hover {
+      border-color: rgb(246 243 238 / 0.55);
+    }
+  }
+
+  &.field-input:focus-visible {
+    border-color: var(--color-paper);
+    box-shadow: 0 0 0 3px rgb(246 243 238 / 0.18);
+  }
+
+  &.field-input:-webkit-autofill,
+  &.field-input:-webkit-autofill:hover {
+    -webkit-text-fill-color: var(--color-paper);
+    box-shadow: 0 0 0 100px #16382b inset;
+  }
+}
+
+/* Potwierdzenie pojawia się delikatnie z dołu. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*='fade-up'] {
+    animation: fade-only 150ms ease both;
+  }
+}
+
+/* ---------- Certyfikat i karta egzemplarza ---------- */
+
+@layer components {
+  /* Papier z podwójną, cienką ramką w kolorze mosiądzu — jak karta z zaproszeniem. */
+  .certificate-frame {
+    position: relative;
+    isolation: isolate;
+    background: var(--color-surface);
+    border-radius: 4px;
+    box-shadow:
+      0 1px 0 rgb(28 26 24 / 0.04),
+      0 30px 70px -40px rgb(28 26 24 / 0.4);
+  }
+
+  .certificate-frame::before,
+  .certificate-frame::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .certificate-frame::before {
+    inset: 10px;
+    border: 1px solid rgb(118 90 50 / 0.5);
+  }
+
+  .certificate-frame::after {
+    inset: 14px;
+    border: 1px solid rgb(118 90 50 / 0.2);
+  }
+}
+
+/* Wydruk certyfikatu: tylko treść strony, bez menu, stopki i przycisków. */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  body > :not(main),
+  .no-print {
+    display: none !important;
+  }
+
+  .certificate-frame {
+    box-shadow: none;
+    break-inside: avoid;
   }
 }

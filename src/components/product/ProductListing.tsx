@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { FabricSwatch } from '@/components/fabric/FabricSwatch'
 import { ProductCard } from '@/components/product/ProductCard'
 import type { FabricType } from '@/lib/constants'
+import type { EditionState } from '@/lib/editions'
 import { categoryPath } from '@/lib/catalog'
 import { cn } from '@/lib/cn'
 import type { ProductSort } from '@/lib/queries'
@@ -20,6 +21,8 @@ type Props = {
   sort: ProductSort
   /** Próbki kolorów do kafelka zachęcającego do zamówienia próbek (pusty = bez kafelka). */
   swatches?: Array<{ key: string; color: string; type: FabricType }>
+  /** Stan edycji numerowanych — liczba wolnych egzemplarzy na kartach. */
+  editions?: Map<number, EditionState>
 }
 
 // Kafelek próbnika domyka ostatni rząd siatki: zajmuje wolne kolumny (pełne nazwy klas — Tailwind ich szuka).
@@ -59,7 +62,7 @@ function SamplesPromo({ swatches, count }: { swatches: NonNullable<Props['swatch
 }
 
 /** Lista produktów: wspólna dla całego sklepu i pojedynczej kategorii. */
-export function ProductListing({ title, description, products, categories, activeCategorySlug, sort, swatches = [] }: Props) {
+export function ProductListing({ title, description, products, categories, activeCategorySlug, sort, swatches = [], editions }: Props) {
   const chip = (active: boolean) =>
     cn(
       'btn h-10 px-4 text-sm',
@@ -120,6 +123,7 @@ export function ProductListing({ title, description, products, categories, activ
               eager={index < 3}
               headingLevel="h2"
               key={product.id}
+              edition={editions?.get(product.id)}
               product={product}
               sizes="(min-width: 1024px) 31vw, (min-width: 768px) 46vw, 92vw"
             />

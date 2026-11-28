@@ -33,14 +33,18 @@ export function useCartSync(active: boolean): void {
 
     running.current = true
     const sent = lines.map(({ productId, variantId, quantity, config }) => ({ productId, variantId, quantity, config }))
+    const sentKeys = lines.map((line) => line.key)
 
     refreshCart(sent)
       .then((fresh) => {
         // Jeśli klient zdążył coś zmienić w koszyku, zachowujemy jego ilości i usunięcia.
+        // Pozycja zapisana starszym kluczem (np. bez pełnej konfiguracji) dostaje odpowiedź z tego samego miejsca listy.
         const current = useCart.getState().lines
         const merged = current.flatMap((line) => {
-          const match = fresh.find((item) => item.key === line.key)
-          return match ? [{ ...match, quantity: line.quantity }] : [line]
+          const index = sentKeys.indexOf(line.key)
+          const match =
+            fresh.find((item) => item.key === line.key) ?? (fresh.length === sentKeys.length && index >= 0 ? fresh[index] : undefined)
+          return match ? [{ ...match, quantity: match.config?.number ? 1 : line.quantity }] : [line]
         })
         sync(merged)
       })

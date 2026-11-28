@@ -4,13 +4,15 @@ import { BRAND_NAME, isBrandName, Logo } from '@/components/brand/Logo'
 import { categoryPath } from '@/lib/catalog'
 import { paymentSummary } from '@/lib/payments/labels'
 import { noOrphans } from '@/lib/typography'
-import type { Category, Setting } from '@/payload-types'
+import type { Category, Setting, ShippingMethod } from '@/payload-types'
 
 import { CookieSettingsButton } from './CookieSettingsButton'
 
 type Props = {
   settings: Setting
   categories: Array<Pick<Category, 'id' | 'title' | 'slug'>>
+  /** Aktywne sposoby dostawy — płatność przy odbiorze pokazujemy, tylko gdy któryś na nią pozwala. */
+  shippingMethods?: ShippingMethod[]
 }
 
 function FooterHeading({ children }: { children: string }) {
@@ -19,7 +21,7 @@ function FooterHeading({ children }: { children: string }) {
 
 const linkClass = 'link-line text-[0.9375rem]'
 
-export function Footer({ settings, categories }: Props) {
+export function Footer({ settings, categories, shippingMethods }: Props) {
   const storeName = settings.storeName || BRAND_NAME
   const { contact, social, company } = settings
   const socials = [
@@ -28,7 +30,7 @@ export function Footer({ settings, categories }: Props) {
     { label: 'Pinterest', url: social?.pinterest },
   ].filter((item): item is { label: string; url: string } => Boolean(item.url))
 
-  const paymentLabels = paymentSummary(settings)
+  const paymentLabels = paymentSummary(settings, shippingMethods)
 
   const hasAnalytics = Boolean(settings.analytics?.ga4Id || settings.analytics?.metaPixelId)
   const legalLine = [company?.legalName, company?.nip ? `NIP ${company.nip}` : null].filter(Boolean).join(' · ')
@@ -55,12 +57,12 @@ export function Footer({ settings, categories }: Props) {
           )}
         </div>
 
-        <nav aria-label="Sklep">
-          <FooterHeading>Sklep</FooterHeading>
+        <nav aria-label="Kolekcja">
+          <FooterHeading>Kolekcja</FooterHeading>
           <ul className="grid gap-3">
             <li>
               <Link className={linkClass} href="/sklep">
-                Wszystkie produkty
+                Wszystkie modele
               </Link>
             </li>
             {categories.map((category) => (

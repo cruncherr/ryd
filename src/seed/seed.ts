@@ -9,15 +9,19 @@ import {
   CONFIGURATORS,
   CORNER_CATEGORY,
   DETAIL_IMAGES,
+  EDITIONS,
   FABRICS,
   HOMEPAGE,
   HOMEPAGE_V2,
+  HOMEPAGE_V3,
   LEGACY_SAMPLE_FABRICS,
   PAGES,
   PRODUCTS,
   SETTINGS,
   SETTINGS_V2,
+  SETTINGS_V3,
   SHIPPING,
+  WHITE_GLOVE,
   type SeedImage,
 } from './data'
 
@@ -167,6 +171,8 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
         care: product.care,
         featured: true,
         sortOrder: product.sortOrder,
+        // Nakład, oznaczenie edycji i ceny ustawia upgradeSeed (EDITIONS) — tu tylko stan sprzedaży.
+        edition: { status: 'open' },
         sampleData: true,
         _status: 'published',
       },
@@ -242,12 +248,6 @@ export async function seed(payload: Payload, options: { force?: boolean } = {}):
         },
         usps: HOMEPAGE.usps,
         collection: HOMEPAGE.collection,
-        functions: {
-          eyebrow: HOMEPAGE.functions.eyebrow,
-          title: HOMEPAGE.functions.title,
-          text: HOMEPAGE.functions.text,
-          product: productIds.get(HOMEPAGE.functions.productSlug),
-        },
         quality: {
           eyebrow: HOMEPAGE.quality.eyebrow,
           title: HOMEPAGE.quality.title,
@@ -436,6 +436,58 @@ export async function upgradeSeed(payload: Payload): Promise<string[]> {
     done.push(`usunięto przykładową tkaninę ${id}`)
   }
 
+  // --- Edycje numerowane ------------------------------------------------------
+  // Przykładowe modele dostają nakład, numer edycji i ceny kolekcji limitowanej — raz, dopóki edycja nie ma oznaczenia.
+  for (const [slug, edition] of Object.entries(EDITIONS)) {
+    const found = await payload.find({ collection: 'products', where: { slug: { equals: slug } }, limit: 1, depth: 0 })
+    const product = found.docs[0]
+    if (!product || !product.sampleData || product.edition?.code) continue
+
+    const sizes = (product.sizes ?? []).map((size) =>
+      size.label in edition.sizeDeltas ? { ...size, priceDelta: edition.sizeDeltas[size.label] ?? size.priceDelta } : size,
+    )
+    const legs = (product.legs ?? []).map((leg) =>
+      edition.legDeltas && leg.name in edition.legDeltas ? { ...leg, priceDelta: edition.legDeltas[leg.name] ?? leg.priceDelta } : leg,
+    )
+
+    await payload.update({
+      collection: 'products',
+      id: product.id,
+      data: {
+        price: edition.price,
+        salePrice: null,
+        badge: null,
+        leadTime: edition.leadTime,
+        sizes,
+        legs,
+        edition: {
+          size: edition.size,
+          code: edition.code,
+          status: edition.status,
+          inviteCode: edition.inviteCode ?? null,
+          numberChoice: true,
+        },
+        _status: 'published',
+      },
+      context: { ...context },
+    })
+    done.push(`edycja Nº ${edition.code}: ${slug}`)
+  }
+
+  // --- Dostawa ------------------------------------------------------------------
+  const shipping = await payload.find({ collection: 'shipping-methods', depth: 0, limit: 50, pagination: false })
+  for (const method of shipping.docs) {
+    if (!method.sampleData) continue
+    if (method.name === WHITE_GLOVE.from.name && method.price === WHITE_GLOVE.from.price) {
+      await payload.update({ collection: 'shipping-methods', id: method.id, data: { ...WHITE_GLOVE.to }, context: { ...context } })
+      done.push('dostawa: z wniesieniem i ustawieniem')
+    }
+    if (method.name === WHITE_GLOVE.retire.name && method.price === WHITE_GLOVE.retire.price && method.active !== false) {
+      await payload.update({ collection: 'shipping-methods', id: method.id, data: { active: false }, context: { ...context } })
+      done.push('dostawa: wyłączono zwykłą kurierską')
+    }
+  }
+
   // --- Strona główna -----------------------------------------------------------
   const homepage = await payload.findGlobal({ slug: 'homepage', depth: 0 })
   if (homepage.needsReview && !homepage.steps?.title) {
@@ -445,7 +497,6 @@ export async function upgradeSeed(payload: Payload): Promise<string[]> {
         hero: { ...homepage.hero, ...HOMEPAGE_V2.hero },
         usps: HOMEPAGE_V2.usps,
         collection: HOMEPAGE_V2.collection,
-        categories: HOMEPAGE_V2.categories,
         steps: HOMEPAGE_V2.steps,
         fabrics: HOMEPAGE_V2.fabrics,
       },
@@ -454,21 +505,45 @@ export async function upgradeSeed(payload: Payload): Promise<string[]> {
     done.push('strona główna: nowe sekcje')
   }
 
-  // --- Menu i pasek informacji -------------------------------------------------
-  const settings = await payload.findGlobal({ slug: 'settings', depth: 0 })
-  const oldNav = SETTINGS.headerNav.map((item) => `${item.label}>${item.url}`).join('|')
-  const currentNav = (settings.headerNav ?? []).map((item) => `${item.label}>${item.url}`).join('|')
-  const navIsDefault = currentNav === oldNav || currentNav === ''
-  if (navIsDefault || !settings.announcement) {
+  const homepageNow = await payload.findGlobal({ slug: 'homepage', depth: 0 })
+  if (homepageNow.needsReview && !homepageNow.privateList?.title) {
     await payload.updateGlobal({
-      slug: 'settings',
+      slug: 'homepage',
       data: {
-        ...(navIsDefault ? { headerNav: SETTINGS_V2.headerNav } : {}),
-        ...(!settings.announcement ? { announcement: SETTINGS_V2.announcement } : {}),
+        hero: { ...homepageNow.hero, ...HOMEPAGE_V3.hero },
+        usps: HOMEPAGE_V3.usps,
+        collection: HOMEPAGE_V3.collection,
+        steps: HOMEPAGE_V3.steps,
+        fabrics: HOMEPAGE_V3.fabrics,
+        privateList: HOMEPAGE_V3.privateList,
+        contact: HOMEPAGE_V3.contact,
       },
       context: { ...context },
     })
-    done.push('menu i pasek informacji')
+    done.push('strona główna: edycje numerowane')
+  }
+
+  // --- Menu, pasek informacji i opis marki --------------------------------------
+  // Zmieniamy tylko to, czego właściciel nie ruszał (wartości z poprzednich wersji danych startowych).
+  const settings = await payload.findGlobal({ slug: 'settings', depth: 0 })
+  const navKey = (items: Array<{ label: string; url: string }> | null | undefined) =>
+    (items ?? []).map((item) => `${item.label}>${item.url}`).join('|')
+  const currentNav = navKey(settings.headerNav)
+  const navIsDefault = currentNav === '' || currentNav === navKey(SETTINGS.headerNav) || currentNav === navKey(SETTINGS_V2.headerNav)
+  const announcementIsDefault = !settings.announcement || settings.announcement === SETTINGS_V2.announcement
+  const taglineIsDefault = !settings.tagline || settings.tagline === SETTINGS.tagline
+  const footerIsDefault = !settings.footerText || settings.footerText === SETTINGS.footerText
+  if (navIsDefault || announcementIsDefault || taglineIsDefault || footerIsDefault) {
+    const data = {
+      ...(navIsDefault && currentNav !== navKey(SETTINGS_V3.headerNav) ? { headerNav: SETTINGS_V3.headerNav } : {}),
+      ...(announcementIsDefault && settings.announcement !== SETTINGS_V3.announcement ? { announcement: SETTINGS_V3.announcement } : {}),
+      ...(taglineIsDefault && settings.tagline !== SETTINGS_V3.tagline ? { tagline: SETTINGS_V3.tagline } : {}),
+      ...(footerIsDefault && settings.footerText !== SETTINGS_V3.footerText ? { footerText: SETTINGS_V3.footerText } : {}),
+    }
+    if (Object.keys(data).length > 0) {
+      await payload.updateGlobal({ slug: 'settings', data, context: { ...context } })
+      done.push('menu, pasek informacji i opis marki')
+    }
   }
 
   return done

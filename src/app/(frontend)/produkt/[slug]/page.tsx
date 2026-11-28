@@ -20,6 +20,7 @@ import {
 } from '@/lib/catalog'
 import { cn } from '@/lib/cn'
 import { configOptions, hasConfigurator } from '@/lib/configurator'
+import { getEditionState } from '@/lib/editionData'
 import { AVAILABILITY, labelOf } from '@/lib/constants'
 import { mediaShareImage, pageMetadata } from '@/lib/metadata'
 import { getProductBySlug, getProducts, getSettings, getShippingMethods } from '@/lib/queries'
@@ -49,10 +50,11 @@ export default async function ProductPage({ params }: PageProps<'/produkt/[slug]
   const product = await getProductBySlug(slug)
   if (!product) notFound()
 
-  const [settings, shippingMethods, allProducts] = await Promise.all([
+  const [settings, shippingMethods, allProducts, edition] = await Promise.all([
     getSettings(),
     getShippingMethods(),
     getProducts(),
+    getEditionState(product),
   ])
 
   const category = asCategory(product.category)
@@ -91,15 +93,29 @@ export default async function ProductPage({ params }: PageProps<'/produkt/[slug]
     options,
     configurable: hasConfigurator(options),
     samplesEnabled: settings.samples?.enabled !== false,
+    edition:
+      edition.size !== null
+        ? {
+            size: edition.size,
+            code: edition.code,
+            status: edition.status,
+            numberChoice: edition.numberChoice,
+            releaseDate: edition.releaseDate,
+            taken: edition.taken,
+            allocated: edition.allocated,
+            remaining: edition.remaining,
+            soldOut: edition.soldOut,
+          }
+        : null,
   }
 
   return (
     <>
       <JsonLd
         data={[
-          productJsonLd(product, settings, shippingMethods),
+          productJsonLd(product, settings, shippingMethods, edition),
           breadcrumbJsonLd([
-            { name: 'Sklep', path: '/sklep' },
+            { name: 'Kolekcja', path: '/sklep' },
             ...(category ? [{ name: category.title, path: categoryPath(category) }] : []),
             { name: product.title, path: productPath(product) },
           ]),
@@ -109,7 +125,7 @@ export default async function ProductPage({ params }: PageProps<'/produkt/[slug]
         breadcrumbs={
           <Breadcrumbs
             items={[
-              { label: 'Sklep', href: '/sklep' },
+              { label: 'Kolekcja', href: '/sklep' },
               ...(category ? [{ label: category.title, href: categoryPath(category) }] : []),
               { label: product.title },
             ]}

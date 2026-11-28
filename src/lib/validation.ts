@@ -321,3 +321,34 @@ export function validateSamples(raw: unknown): { values: SamplesValues; errors: 
     errors,
   }
 }
+
+/* ---------- Lista oczekujących ---------- */
+
+export type WaitlistValues = {
+  name: string
+  email: string
+  phone: string
+}
+
+export type WaitlistField = keyof WaitlistValues
+export type WaitlistErrors = Partial<Record<WaitlistField, string>>
+
+export const WAITLIST_FIELD_ORDER: WaitlistField[] = ['name', 'email', 'phone']
+
+export function validateWaitlist(raw: unknown): { values: WaitlistValues; errors: WaitlistErrors } {
+  const input = isRecord(raw) ? raw : {}
+  const errors: WaitlistErrors = {}
+
+  const name = collapse(input.name, 120)
+  if (name.length < 2) errors.name = 'Podaj imię i nazwisko — tak zaadresujemy zaproszenie.'
+
+  const email = normalizeEmail(input.email)
+  if (email === '') errors.email = 'Podaj adres e-mail — na niego wyślemy zaproszenie.'
+  else if (!isValidEmail(email)) errors.email = 'Sprawdź adres e-mail — wygląda na niepełny.'
+
+  const rawPhone = collapse(input.phone, 30)
+  const phone = normalizePhone(rawPhone)
+  if (rawPhone !== '' && phone === '') errors.phone = 'Sprawdź numer telefonu — polski numer ma 9 cyfr.'
+
+  return { values: { name, email, phone: phone || rawPhone }, errors }
+}

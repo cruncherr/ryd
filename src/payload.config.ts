@@ -16,6 +16,7 @@ import { Media } from './collections/Media'
 import { Messages } from './collections/Messages'
 import { Orders } from './collections/Orders'
 import { Pages } from './collections/Pages'
+import { Pieces } from './collections/Pieces'
 import { Products } from './collections/Products'
 import { ShippingMethods } from './collections/ShippingMethods'
 import { Users } from './collections/Users'
@@ -52,7 +53,7 @@ export default buildConfig({
       beforeDashboard: ['@/components/admin/BeforeDashboard'],
     },
   },
-  collections: [Products, Fabrics, Categories, ShippingMethods, Orders, Messages, Pages, Media, Users, Counters],
+  collections: [Products, Fabrics, Categories, ShippingMethods, Orders, Pieces, Messages, Pages, Media, Users, Counters],
   globals: [Homepage, Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
